@@ -1,10 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ガチャポン - 学習記録SNS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: white; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; text-align: center; }
+        .gacha-container { background: #2a2a2a; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 90%; max-width: 400px; border: 2px solid #fbc02d; }
+
+        .points-badge { background: #fbc02d; color: #000; padding: 5px 15px; border-radius: 20px; font-weight: bold; display: inline-block; margin-bottom: 20px; }
+
+        .result-box { min-height: 150px; margin: 20px 0; padding: 20px; background: #333; border-radius: 15px; border: 1px dashed #555; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .rarity-badge { font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        .SSR { color: #ffeb3b; text-shadow: 0 0 15px #ff9800; }
+        .SR { color: #e040fb; }
+        .R { color: #40c4ff; }
+        .N { color: #fff; }
+
+        .spin-btn { background: #fbc02d; color: #000; border: none; padding: 15px 30px; border-radius: 30px; font-size: 1.2rem; font-weight: bold; cursor: pointer; width: 100%; transition: transform 0.1s; box-shadow: 0 4px 0 #c49000; }
+        .spin-btn:active { transform: translateY(4px); box-shadow: none; }
+        .spin-btn:disabled { background: #555; color: #888; box-shadow: none; cursor: not-allowed; }
+
+        /* ホームに戻るボタン */
+        .home-link { display: inline-block; margin-top: 25px; color: #aaa; text-decoration: none; font-size: 0.9rem; transition: color 0.3s; }
+        .home-link:hover { color: #fbc02d; }
+        .error-msg { color: #ff5252; font-size: 0.9rem; margin-top: 10px; }
+
+        /* ガチャ演出アニメーション */
+        @keyframes bounce { from { transform: scale(0.9); } to { transform: scale(1.1); } }
+        .animate-result { animation: bounce 0.3s ease alternate 2; }
+    </style>
 </head>
 <body>
-$END$
+    <div class="gacha-container">
+        <div class="points-badge">
+            <i class="fas fa-gem"></i> {{ points }} pt
+        </div>
+
+        <h2><i class="fas fa-capsules"></i> ガチャポン</h2>
+
+        <div class="result-box">
+            {% if result_item %}
+                <div class="animate-result">
+                    <div class="rarity-badge {{ result_item.rarity }}">{{ result_item.rarity }}</div>
+                    <div style="font-size: 1.2rem;">{{ result_item.name }}</div>
+                </div>
+            {% else %}
+                <div style="color: #666;">何が出るかな？</div>
+            {% endif %}
+        </div>
+
+        {% if error %}
+            <div class="error-msg">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="spin-btn" {% if points < 10 %}disabled{% endif %}>
+                10pt で回す！
+            </button>
+        </form>
+
+        <a href="{% url 'index' %}" class="home-link">
+            <i class="fas fa-arrow-left"></i> タイムラインに戻る
+        </a>
+    </div>
 </body>
 </html>

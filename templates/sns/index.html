@@ -1,10 +1,138 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>学習記録SNS</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 80px; }
+        .header { background: white; padding: 10px 15px; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 10px; }
+        .points-display { background: #fff9c4; padding: 5px 12px; border-radius: 15px; font-weight: bold; font-size: 0.8rem; color: #fbc02d; border: 1px solid #fdd835; white-space: nowrap; }
+
+        .search-form { flex-grow: 1; position: relative; }
+        .search-form input { width: 100%; padding: 8px 15px 8px 35px; border-radius: 20px; border: 1px solid #ddd; background: #f0f2f5; margin-bottom: 0; outline: none; }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #65676b; }
+
+        .container { max-width: 500px; margin: auto; padding: 15px; }
+        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #ddd; z-index: 1000; }
+        .nav-item { color: #65676b; text-decoration: none; font-size: 1.5rem; text-align: center; cursor: pointer; border: none; background: none; }
+        .nav-item.active { color: #1877f2; }
+        .nav-label { font-size: 0.6rem; display: block; }
+
+        .post-btn { background: #1877f2; color: white; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; width: 100%; margin-top: 10px; cursor: pointer; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box; }
+
+        .comment-section { background: #f8f9fa; border-radius: 8px; padding: 10px; margin-top: 10px; font-size: 0.85rem; }
+        .comment-input-group { display: flex; gap: 5px; margin-top: 8px; }
+        .comment-input-group input { margin-bottom: 0; padding: 5px 10px; border-radius: 15px; }
+    </style>
 </head>
 <body>
-$END$
+    <div class="header">
+        <strong style="color:#1877f2; font-size:1.2rem;">SNS</strong>
+        <div class="points-display">
+            <i class="fas fa-gem"></i> {{ user.profile.points }} pt
+        </div>
+        <form class="search-form" action="{% url 'index' %}" method="GET">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" name="search" value="{{ search_query }}" placeholder="記録を検索">
+        </form>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <canvas id="studyChart" height="200"></canvas>
+        </div>
+
+        <div class="card">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <textarea name="content" placeholder="今日は何を学んだ？" required></textarea>
+                <div style="display: flex; gap: 10px;">
+                    <input type="number" name="study_minutes" placeholder="時間(分)">
+                    <input type="file" name="image" style="font-size: 0.7rem;">
+                </div>
+                <button type="submit" class="post-btn">投稿する</button>
+            </form>
+        </div>
+
+        {% for post in posts %}
+        <div class="card">
+            <div style="display:flex; align-items:center; margin-bottom:10px;">
+                <img src="{{ post.user.profile.icon.url }}" style="width:35px; height:35px; border-radius:50%; object-fit:cover; margin-right:10px; border:1px solid #eee;">
+                <div>
+                    <div style="font-size: 0.65rem; color: #1877f2; font-weight: bold; margin-bottom: -2px;">
+                        【{{ post.user.profile.current_title }}】
+                    </div>
+                    <strong>{{ post.user.username }}</strong>
+                </div>
+            </div>
+            <p>{{ post.content }}</p>
+            {% if post.study_minutes > 0 %}
+                <div style="color:#1877f2; font-weight:bold; font-size:0.9rem; margin-bottom:8px;"><i class="fas fa-clock"></i> {{ post.study_minutes }}分</div>
+            {% endif %}
+            {% if post.image %}
+                <img src="{{ post.image.url }}" style="max-width:100%; border-radius:8px; margin-top:10px;">
+            {% endif %}
+
+            <div style="display:flex; gap:15px; border-top:1px solid #eee; padding-top:10px;">
+                <a href="{% url 'like_post' post.id %}" style="text-decoration:none; color: {% if user in post.liked_by.all %}#ed4956{% else %}#65676b{% endif %};">
+                    <i class="fa{% if user in post.liked_by.all %}s{% else %}r{% endif %} fa-heart"></i> {{ post.liked_by.count }}
+                </a>
+                <span style="color:#65676b;"><i class="far fa-comment"></i> {{ post.comments.count }}</span>
+            </div>
+
+            <div class="comment-section">
+                {% for comment in post.comments.all %}
+                <div style="margin-bottom:5px;">
+                    <strong>{{ comment.user.username }}:</strong> {{ comment.text }}
+                </div>
+                {% endfor %}
+                <form method="POST" class="comment-input-group">
+                    {% csrf_token %}
+                    <input type="hidden" name="post_id" value="{{ post.id }}">
+                    <input type="text" name="comment_text" placeholder="コメントを入力..." required>
+                    <button type="submit" style="background:none; border:none; color:#1877f2; font-weight:bold; cursor:pointer;">送信</button>
+                </form>
+            </div>
+        </div>
+        {% empty %}
+        <div class="card" style="text-align:center; color:#666; padding:40px 20px;">
+            <i class="fas fa-edit" style="font-size:2rem; margin-bottom:10px; color:#ddd;"></i>
+            <p>まだ投稿がありません。<br>最初の学習記録を書いてみよう！</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="bottom-nav">
+        <a href="{% url 'index' %}" class="nav-item active"><i class="fas fa-home"></i><span class="nav-label">ホーム</span></a>
+        <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins" style="color: #fbc02d;"></i><span class="nav-label">ガチャ</span></a>
+        <div class="nav-item" onclick="document.querySelector('input[name=\'search\']').focus();"><i class="fas fa-search"></i><span class="nav-label">検索</span></div>
+        <a href="{% url 'edit_profile' %}" class="nav-item"><i class="fas fa-user-circle"></i><span class="nav-label">プロフィール</span></a>
+        <form action="{% url 'logout' %}" method="POST" id="logout-form" style="display:none;">{% csrf_token %}</form>
+        <a href="javascript:void(0);" onclick="document.getElementById('logout-form').submit();" class="nav-item"><i class="fas fa-sign-out-alt"></i><span class="nav-label">終了</span></a>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('studyChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ labels|safe }},
+                datasets: [{
+                    label: '勉強時間(分)',
+                    data: {{ data|safe }},
+                    borderColor: '#1877f2',
+                    tension: 0.4,
+                    fill: true,
+                    backgroundColor: 'rgba(24, 119, 242, 0.1)'
+                }]
+            }
+        });
+    </script>
 </body>
 </html>

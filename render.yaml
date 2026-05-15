@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: my-new-sns
+    runtime: python
+    buildCommand: pip install -r requirements.txt && python manage.py migrate
+    startCommand: gunicorn study_project.wsgi

@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<div style="max-width:300px; margin:100px auto; text-align:center;">
+    <h2>新規登録</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" style="width:100%; padding:10px; background:#42b72a; color:white; border:none; border-radius:5px;">登録して開始</button>
+    </form>
+    <p><a href="{% url 'login' %}">ログインに戻る</a></p>
+</div>
