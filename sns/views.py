@@ -15,7 +15,7 @@ WORDS_LIST = [
     "誰もが三度見する", "今は亡き", "月給２４万", "税金泥棒", "国の犬", "ちいかわより",
     "やっぱり僕は", "みかんから生まれし", "桃から生まれし", "３浪の", "ゲーマーの", "１留の",
     "夢はマイクワゾウスキー", "デカビタよりもオロナミンｃ", "前世がティッシュ", "歩くR18指定",
-    "煩悩の塊", "親の顔より見た", "出会い厨の", "全裸待機中の", "賢者モードの", "童貞をこじらせた",
+    "煩脳の塊", "親の顔より見た", "出会い厨の", "全裸待機中の", "賢者モードの", "童貞をこじらせた",
     "変態という名の紳士", "パパ活疑惑の", "息をするようにスベる", "令和の奇行種", "脳内お花畑の",
     "歩く公然わいせつ", "圧倒的モブ", "クソエイムの", "課金沼に沈みし", "金欠の", "遅刻魔",
     "メンヘラ製造機", "留年確定の", "クソザコなめくじ", "深夜テンションの", "西村店長に怒られし",
@@ -204,10 +204,11 @@ def edit_profile(request):
             profile.save()
             return redirect('index')
 
-    if request.method == 'POST' and 'icon' in request.FILES:
-        profile.icon = request.FILES['icon']
-        profile.save()
-        return redirect('index')
+    # アイコン変更フォーム削除に伴い、この部分は不要になります
+    # if request.method == 'POST' and 'icon' in request.FILES:
+    #     profile.icon = request.FILES['icon']
+    #     profile.save()
+    #     return redirect('index')
 
     # 称号用とアイコン用にコレクションを分ける
     my_titles = [i for i in owned_items if "【アイコン】" not in i.name]
@@ -227,10 +228,6 @@ def edit_profile(request):
         'owned_names': list(owned_names),
         'owned_words': list(owned_words)
     })
-
-# ==========================================
-# ★ 追加部分：ここから下が前回抜け落ちていた必須機能です！
-# ==========================================
 
 def logout_view(request):
     logout(request)

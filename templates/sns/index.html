@@ -59,14 +59,17 @@
            🔮 漆黒の中二病アバター・オーラエフェクトCSS
            ======================================================= */
         .avatar-container { position: relative; display: inline-block; width: 42px; height: 42px; margin-right: 15px; }
-        .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; position: relative; z-index: 5; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .avatar-placeholder { font-size: 42px; color: #ccc; position: relative; z-index: 5; background: white; border-radius: 50%; }
+        /* 画像表示用クラスを削除 */
+        /* .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; position: relative; z-index: 5; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); } */
+
+        /* 常に表示されるデフォルトアイコンのスタイル */
+        .avatar-placeholder { font-size: 42px; color: #ccc; position: relative; z-index: 5; background: white; border-radius: 50%; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
         @keyframes magic-rotation { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
         @keyframes aura-burn { 0% { box-shadow: 0 0 8px #ff0055; } 50% { box-shadow: 0 0 20px #ff0055, 0 0 30px #9400d3; } 100% { box-shadow: 0 0 8px #ff0055; } }
 
         /* 【SRアバター】怪しい紫のオーラ */
-        .avatar-container.av-SR .avatar-img, .avatar-container.av-SR .avatar-placeholder { border-color: #ba68c8 !important; box-shadow: 0 0 10px #9400d3; }
+        .avatar-container.av-SR .avatar-placeholder { border-color: #ba68c8 !important; box-shadow: 0 0 10px #9400d3; }
 
         /* 【SSRアバター】天界より降り立ちし神の装飾 */
         .avatar-container.av-SSR::before {
@@ -128,11 +131,7 @@
 
             <div style="display:flex; align-items:center; margin-bottom:10px;">
                 <div class="avatar-container av-{{ post.avatar_rarity }} {% if '翼' in post.user.profile.current_avatar %}has-wings{% endif %} {% if '眼' in post.user.profile.current_avatar %}has-eye{% endif %}">
-                    {% if post.user.profile.icon %}
-                        <img src="{{ post.user.profile.icon.url }}" class="avatar-img">
-                    {% else %}
-                        <i class="fas fa-user-circle avatar-placeholder"></i>
-                    {% endif %}
+                    <i class="fas fa-user-circle avatar-placeholder"></i>
                 </div>
 
                 <div style="display: flex; flex-direction: column; flex-grow: 1;">
