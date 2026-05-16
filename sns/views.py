@@ -65,7 +65,7 @@ def index(request):
     })
 
 
-# ガチャ画面
+# ガチャ画面（10pt消費・データ空エラー対策済みの完成版）
 @login_required
 def gacha(request):
     profile = request.user.profile
@@ -73,8 +73,12 @@ def gacha(request):
     error = None
 
     if request.method == 'POST':
-        if profile.points >= 10:
-            profile.points -= 10
+        # 1. そもそもデータベースに景品が1件もない場合のチェック
+        if not GachaItem.objects.exists():
+            error = 'ガチャの景品がまだデータベースに登録されていません！ターミナルから追加してください。'
+
+        # 2. 10ポイント以上持っているかチェック
+        elif profile.points >= 10:
             rand = random.randint(1, 100)
             if rand <= 1:
                 rarity = 'SSR'
@@ -85,13 +89,20 @@ def gacha(request):
             else:
                 rarity = 'N'
 
+            # 決まったレア度のアイテムを検索
             items = GachaItem.objects.filter(rarity=rarity)
+
             if items.exists():
+                # 指定したレア度があればそこからランダムに選ぶ
                 result_item = random.choice(items)
-                profile.items.add(result_item)
-                profile.save()
             else:
-                result_item = random.choice(GachaItem.objects.all())
+                # もしそのレア度のデータが1件もない場合は、エラーにせず登録されている全データから選ぶ
+                all_items = GachaItem.objects.all()
+                result_item = random.choice(all_items)
+
+            # アイテムが正常に選べた場合のみ、ポイントを10減らして保存する
+            if result_item:
+                profile.points -= 10
                 profile.items.add(result_item)
                 profile.save()
         else:
