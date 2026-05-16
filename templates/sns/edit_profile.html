@@ -32,7 +32,12 @@
     <div class="card">
         <h2>プロフィール編集</h2>
 
-        <img src="{{ user.profile.icon.url }}" class="current-icon">
+        {% if user.profile.icon %}
+            <img src="{{ user.profile.icon.url }}" class="current-icon">
+        {% else %}
+            <i class="fas fa-user-circle" style="font-size: 100px; color: #ccc; margin-bottom: 10px;"></i>
+        {% endif %}
+
         <span class="title-badge">【{{ user.profile.current_title }}】</span>
 
         <form method="POST" enctype="multipart/form-data" style="margin-bottom: 20px;">

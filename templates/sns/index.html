@@ -63,7 +63,11 @@
         {% for post in posts %}
         <div class="card">
             <div style="display:flex; align-items:center; margin-bottom:10px;">
-                <img src="{{ post.user.profile.icon.url }}" style="width:35px; height:35px; border-radius:50%; object-fit:cover; margin-right:10px; border:1px solid #eee;">
+                {% if post.user.profile.icon %}
+                    <img src="{{ post.user.profile.icon.url }}" style="width:35px; height:35px; border-radius:50%; object-fit:cover; margin-right:10px; border:1px solid #eee;">
+                {% else %}
+                    <i class="fas fa-user-circle" style="font-size:35px; color:#ccc; margin-right:10px;"></i>
+                {% endif %}
                 <div>
                     <div style="font-size: 0.65rem; color: #1877f2; font-weight: bold; margin-bottom: -2px;">
                         【{{ post.user.profile.current_title }}】
