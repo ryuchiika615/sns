@@ -36,15 +36,16 @@ class Comment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
-# 4. プロフィール（称号フィールドを追加！）
+# 4. プロフィール（中二病アイコンフィールドを新規追加！）
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     icon = models.ImageField(upload_to='icons/', default='icons/default.png', blank=True)
     points = models.IntegerField(default=0)
     items = models.ManyToManyField(GachaItem, blank=True)
-
-    # ★ ここを追加！今セットしている称号を保存する場所です
     current_title = models.CharField(max_length=100, default="新人エンジニア", blank=True)
+
+    # ★ ここを新規追加！今セットしているアイコンスキンを保存する場所です
+    current_avatar = models.CharField(max_length=100, default="初期アバター", blank=True)
 
     def __str__(self):
         return self.user.username
