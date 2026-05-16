@@ -6,20 +6,28 @@ from .models import Post, Profile, Comment, GachaItem
 import json
 import random
 
+# 共通の身内語録データ（ここに好きなだけ追加・編集できます！）
+NAMES_LIST = ["しゅり", "さよちゃん", "あつき", "すばる", "たいき", "ゆいちゃん", "みおちゃん", "ゆっきー"]
+WORDS_LIST = [
+    "花菜を奪いし者", "モモちゃん依存症", "なんやかんや桃が好き", "一生童貞", "ガリガリ",
+    "韓国のり顔の", "犯罪予備軍", "バ畜戦士", "意識高い系", "闇落ちした", "巨乳の", "貧乳の",
+    "誰もが三度見する", "今は亡き", "月給２４万", "税金泥棒", "国の犬", "ちいかわより",
+    "やっぱり僕は", "みかんから生まれし", "桃から生まれし", "３浪の", "ゲーマーの", "１留の",
+    "夢はマイクワゾウスキー", "デカビタよりもオロナミンｃ"
+]
+
 
 @login_required
 def index(request):
     search_query = request.GET.get('search', '')
 
     if request.method == 'POST':
-        # 1. 称号（タイトル）の装備処理を追加！
         if 'new_title' in request.POST:
             profile = request.user.profile
             profile.current_title = request.POST.get('new_title')
             profile.save()
             return redirect('index')
 
-        # 2. コメント投稿の場合
         if 'comment_text' in request.POST:
             post_id = request.POST.get('post_id')
             post = get_object_or_404(Post, id=post_id)
@@ -30,7 +38,6 @@ def index(request):
             )
             return redirect('index')
 
-        # 3. 通常の投稿の場合
         content = request.POST.get('content')
         study_minutes = request.POST.get('study_minutes', 0)
         image = request.FILES.get('image')
@@ -65,7 +72,7 @@ def index(request):
     })
 
 
-# ガチャ画面（10pt消費・データ空エラー対策済みの完成版）
+# ガチャ画面（事前データがなくてもその場でランダム自動生成する神機能付き）
 @login_required
 def gacha(request):
     profile = request.user.profile
@@ -73,12 +80,7 @@ def gacha(request):
     error = None
 
     if request.method == 'POST':
-        # 1. そもそもデータベースに景品が1件もない場合のチェック
-        if not GachaItem.objects.exists():
-            error = 'ガチャの景品がまだデータベースに登録されていません！ターミナルから追加してください。'
-
-        # 2. 10ポイント以上持っているかチェック
-        elif profile.points >= 10:
+        if profile.points >= 10:
             rand = random.randint(1, 100)
             if rand <= 1:
                 rarity = 'SSR'
@@ -89,18 +91,21 @@ def gacha(request):
             else:
                 rarity = 'N'
 
-            # 決まったレア度のアイテムを検索
+            # まずは指定のレア度のアイテムがDBにあるか探す
             items = GachaItem.objects.filter(rarity=rarity)
 
             if items.exists():
-                # 指定したレア度があればそこからランダムに選ぶ
                 result_item = random.choice(items)
             else:
-                # もしそのレア度のデータが1件もない場合は、エラーにせず登録されている全データから選ぶ
-                all_items = GachaItem.objects.all()
-                result_item = random.choice(all_items)
+                # 【超重要】DBが空っぽなら、その場でリストから合体させて新しい景品を自動作成！
+                if random.choice([True, False]):
+                    generated_name = f"{random.choice(NAMES_LIST)}{random.choice(WORDS_LIST)}"
+                else:
+                    generated_name = f"{random.choice(WORDS_LIST)}{random.choice(NAMES_LIST)}"
 
-            # アイテムが正常に選べた場合のみ、ポイントを10減らして保存する
+                # その場で景品データを作ってDBに登録
+                result_item = GachaItem.objects.create(name=generated_name, rarity=rarity)
+
             if result_item:
                 profile.points -= 10
                 profile.items.add(result_item)
@@ -115,18 +120,40 @@ def gacha(request):
     })
 
 
-# プロフィール編集（称号一覧の表示も兼ねる）
+# プロフィール編集（自分たちで名前や語録を自由に選んで称号を作れる機能を追加！）
 @login_required
 def edit_profile(request):
     if request.method == 'POST':
+        # 1. アイコン変更の処理
         if 'icon' in request.FILES:
             request.user.profile.icon = request.FILES['icon']
             request.user.profile.save()
-        return redirect('index')
+            return redirect('index')
 
-    # 自分が持っているガチャアイテムを全部取得して画面に送る
+        # 2. 【新機能】パーツを選んでオリジナル称号を作る処理
+        if 'custom_name' in request.POST and 'custom_word' in request.POST:
+            selected_name = request.POST.get('custom_name')
+            selected_word = request.POST.get('custom_word')
+            order = request.POST.get('order')  # "normal" か "reverse"
+
+            # 順番を逆にするかどうかの判定
+            if order == "reverse":
+                full_title = f"{selected_word}{selected_name}"  # 例：一生童貞しゅり
+            else:
+                full_title = f"{selected_name}{selected_word}"  # 例：しゅり一生童貞
+
+            profile = request.user.profile
+            profile.current_title = full_title
+            profile.save()
+            return redirect('index')
+
     my_items = request.user.profile.items.all().order_by('-rarity')
-    return render(request, 'sns/edit_profile.html', {'my_items': my_items})
+
+    return render(request, 'sns/edit_profile.html', {
+        'my_items': my_items,
+        'names': NAMES_LIST,
+        'words': WORDS_LIST
+    })
 
 
 def logout_view(request):
