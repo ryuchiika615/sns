@@ -210,7 +210,6 @@ def edit_profile(request):
         return redirect('index')
 
     # 称号用とアイコン用にコレクションを分ける
-    my_titles = owned_items.filter(name__contains="")  # アイコン以外を後で分けるため全体
     my_titles = [i for i in owned_items if "【アイコン】" not in i.name]
     my_avatars = owned_items.filter(name__contains="【アイコン】")
 
@@ -228,3 +227,33 @@ def edit_profile(request):
         'owned_names': list(owned_names),
         'owned_words': list(owned_words)
     })
+
+# ==========================================
+# ★ 追加部分：ここから下が前回抜け落ちていた必須機能です！
+# ==========================================
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+
+def signup(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('index')
+    else:
+        form = UserCreationForm()
+    return render(request, 'sns/signup.html', {'form': form})
+
+
+@login_required
+def like_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    if request.user in post.liked_by.all():
+        post.liked_by.remove(request.user)
+    else:
+        post.liked_by.add(request.user)
+    return redirect('index')
