@@ -7,7 +7,7 @@ from .models import Post, Profile, Comment, GachaItem
 import json
 import random
 
-# 共通の身内語録データ（超拡張版）
+# 共通の身内語録データ
 NAMES_LIST = ["しゅり", "さよちゃん", "あつき", "すばる", "たいき", "ゆいちゃん", "みおちゃん", "ゆっきー"]
 WORDS_LIST = [
     "花菜を奪いし者", "モモちゃん依存症", "なんやかんや桃が好き", "一生童貞", "ガリガリ",
@@ -16,7 +16,7 @@ WORDS_LIST = [
     "やっぱり僕は", "みかんから生まれし", "桃から生まれし", "３浪の", "ゲーマーの", "１留の",
     "夢はマイクワゾウスキー", "デカビタよりもオロナミンｃ", "前世がティッシュ", "歩くR18指定",
     "煩悩の塊", "親の顔より見た", "出会い厨の", "全裸待機中の", "賢者モードの", "童貞をこじらせた",
-    "変態という名の紳士", "パパ活疑惑の", "息をするようにスベる", "令和の奇行種", "脳内お花畑の",
+    "変態という名の紳士", "パバ活疑惑の", "息をするようにスベる", "令和の奇行種", "脳内お花畑の",
     "歩く公然わいせつ", "圧倒的モブ", "クソエイムの", "課金沼に沈みし", "金欠の", "遅刻魔",
     "メンヘラ製造機", "留年確定の", "クソザコなめくじ", "深夜テンションの", "西村店長に怒られし",
     "チームラボで迷子になった", "カリフォルニア帰りの", "松戸市代表"
@@ -28,6 +28,7 @@ def index(request):
     search_query = request.GET.get('search', '')
 
     if request.method == 'POST':
+        # 1. 称号の装備処理
         if 'new_title' in request.POST:
             new_title = request.POST.get('new_title')
             profile = request.user.profile
@@ -36,6 +37,7 @@ def index(request):
                 profile.save()
             return redirect('index')
 
+        # 2. コメント投稿の場合
         if 'comment_text' in request.POST:
             post_id = request.POST.get('post_id')
             post = get_object_or_404(Post, id=post_id)
@@ -44,6 +46,15 @@ def index(request):
             )
             return redirect('index')
 
+        # ★新機能：コメント削除の場合
+        if 'delete_comment_id' in request.POST:
+            comment_id = request.POST.get('delete_comment_id')
+            # 本人のコメントしか削除できないように条件に request.user を指定して安全に取得
+            comment = get_object_or_404(Comment, id=comment_id, user=request.user)
+            comment.delete()
+            return redirect('index')
+
+        # 3. 通常の投稿の場合
         content = request.POST.get('content')
         study_minutes = request.POST.get('study_minutes', 0)
         image = request.FILES.get('image')
@@ -87,7 +98,7 @@ def index(request):
     })
 
 
-# 10連対応 ＆ 超鬼畜確率ガチャ画面
+# ガチャ画面
 @login_required
 def gacha(request):
     profile = request.user.profile
@@ -95,24 +106,21 @@ def gacha(request):
     error = None
 
     if request.method == 'POST':
-        # 1回か10連かを判定
         pull_count = 10 if 'gacha_10' in request.POST else 1
         cost = pull_count * 10
 
         if profile.points >= cost:
             profile.points -= cost
-
             for _ in range(pull_count):
-                # 超・鬼畜確率設定（1000万分の1）
                 rand = random.randint(1, 10000000)
                 if rand == 1:
-                    rarity = 'SSR'  # 0.00001%
+                    rarity = 'SSR'
                 elif rand <= 100000:
-                    rarity = 'SR'  # 1%
+                    rarity = 'SR'
                 elif rand <= 1500000:
-                    rarity = 'R'  # 15%
+                    rarity = 'R'
                 else:
-                    rarity = 'N'  # 83.9...%
+                    rarity = 'N'
 
                 if random.choice([True, False]):
                     generated_name = f"{random.choice(NAMES_LIST)}{random.choice(WORDS_LIST)}"
@@ -120,7 +128,6 @@ def gacha(request):
                     generated_name = f"{random.choice(WORDS_LIST)}{random.choice(NAMES_LIST)}"
 
                 result_item, created = GachaItem.objects.get_or_create(name=generated_name, defaults={'rarity': rarity})
-
                 result_items.append(result_item)
                 profile.items.add(result_item)
 
@@ -129,9 +136,7 @@ def gacha(request):
             error = 'ポイントが足りません！もっと勉強しよう！'
 
     return render(request, 'sns/gacha.html', {
-        'result_items': result_items,
-        'points': profile.points,
-        'error': error
+        'result_items': result_items, 'points': profile.points, 'error': error
     })
 
 
@@ -141,7 +146,6 @@ def edit_profile(request):
     profile = request.user.profile
     owned_items = profile.items.all().order_by('-rarity')
 
-    # 持っているアイテムからパーツ（名前と語録）を抽出
     owned_names = set()
     owned_words = set()
     for item in owned_items:
@@ -158,17 +162,14 @@ def edit_profile(request):
             profile.save()
             return redirect('index')
 
-        # パーツ錬成ロジック
         if 'custom_name' in request.POST and 'custom_word' in request.POST:
             c_name = request.POST.get('custom_name')
             c_word = request.POST.get('custom_word')
             order = request.POST.get('order')
 
-            # セキュリティチェック（本当にそのパーツを持っているか）
             if c_name in owned_names and c_word in owned_words:
                 full_title = f"{c_word}{c_name}" if order == 'reverse' else f"{c_name}{c_word}"
 
-                # 使ったパーツの「最高レア度」を引き継ぐ仕様
                 max_rarity_val = 1
                 rarity_map = {'N': 1, 'R': 2, 'SR': 3, 'SSR': 4}
                 val_to_r = {1: 'N', 2: 'R', 3: 'SR', 4: 'SSR'}
@@ -179,7 +180,6 @@ def edit_profile(request):
 
                 new_rarity = val_to_r[max_rarity_val]
 
-                # 新しい組み合わせをDBに登録して付与
                 new_item, created = GachaItem.objects.get_or_create(name=full_title, defaults={'rarity': new_rarity})
                 if created or new_item not in owned_items:
                     profile.items.add(new_item)
@@ -192,9 +192,7 @@ def edit_profile(request):
     current_rarity = current_item.rarity if current_item else 'N'
 
     return render(request, 'sns/edit_profile.html', {
-        'my_items': owned_items,
-        'current_rarity': current_rarity,
-        'owned_names': list(owned_names),
+        'my_items': owned_items, 'current_rarity': current_rarity, 'owned_names': list(owned_names),
         'owned_words': list(owned_words)
     })
 

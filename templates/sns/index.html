@@ -27,33 +27,30 @@
         input, textarea { width: 100%; padding: 10px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box; }
 
         .comment-section { background: #f8f9fa; border-radius: 8px; padding: 10px; margin-top: 10px; font-size: 0.85rem; }
+
+        /* 💬 コメント行のスタイル設定 */
+        .comment-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding: 2px 0; }
+        .comment-delete-btn { background: none; border: none; color: #ff4757; cursor: pointer; padding: 0 5px; font-size: 0.85rem; transition: color 0.2s; }
+        .comment-delete-btn:hover { color: #ff1e33; }
+
         .comment-input-group { display: flex; gap: 5px; margin-top: 8px; }
         .comment-input-group input { margin-bottom: 0; padding: 5px 10px; border-radius: 15px; }
 
-        /* 👑 豪華な称号バッジのレア度別デザイン */
         .title-badge { font-size: 0.7rem; font-weight: bold; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 3px; }
-
         .title-badge.N { background: #e0e0e0; color: #424242; border: 1px solid #ccc; }
         .title-badge.R { background: #e3f2fd; color: #1e88e5; border: 1px solid #90caf9; }
         .title-badge.SR { background: #f3e5f5; color: #8e24aa; border: 1px solid #ce93d8; box-shadow: 0 0 5px rgba(142, 36, 170, 0.3); }
 
-        /* 🔥 神々しく呼吸する最上位SSR専用エフェクト */
         @keyframes ssr-glow {
             0% { box-shadow: 0 0 6px #ffd700, inset 0 0 4px #ffd700; transform: scale(1); }
             50% { box-shadow: 0 0 15px #ff8c00, inset 0 0 8px #ff8c00; transform: scale(1.02); }
             100% { box-shadow: 0 0 6px #ffd700, inset 0 0 4px #ffd700; transform: scale(1); }
         }
         .title-badge.SSR {
-            background: linear-gradient(45deg, #ffe259, #ffa751) !important;
-            color: #fff !important;
-            border: 2px solid #ffd700 !important;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
-            animation: ssr-glow 1.5s infinite ease-in-out;
-            font-size: 0.75rem;
-            padding: 3px 10px;
+            background: linear-gradient(45deg, #ffe259, #ffa751) !important; color: #fff !important; border: 2px solid #ffd700 !important;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.4); animation: ssr-glow 1.5s infinite ease-in-out; font-size: 0.75rem; padding: 3px 10px;
         }
 
-        /* タイムスタンプのスタイル */
         .post-time { font-size: 0.75rem; color: #999; margin-left: auto; white-space: nowrap; }
     </style>
 </head>
@@ -121,10 +118,22 @@
 
             <div class="comment-section">
                 {% for comment in post.comments.all %}
-                <div style="margin-bottom:5px;">
-                    <strong>{{ comment.user.username }}:</strong> {{ comment.text }}
+                <div class="comment-row">
+                    <div>
+                        <strong>{{ comment.user.username }}:</strong> {{ comment.text }}
+                    </div>
+                    {% if comment.user == user %}
+                    <form method="POST" style="margin: 0;">
+                        {% csrf_token %}
+                        <input type="hidden" name="delete_comment_id" value="{{ comment.id }}">
+                        <button type="submit" class="comment-delete-btn" onclick="return confirm('このコメントを削除してもよろしいですか？');" title="コメントを削除">
+                            <i class="far fa-trash-alt"></i>
+                        </button>
+                    </form>
+                    {% endif %}
                 </div>
                 {% endfor %}
+
                 <form method="POST" class="comment-input-group">
                     {% csrf_token %}
                     <input type="hidden" name="post_id" value="{{ post.id }}">
