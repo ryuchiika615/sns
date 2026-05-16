@@ -7,14 +7,19 @@ from .models import Post, Profile, Comment, GachaItem
 import json
 import random
 
-# 共通の身内語録データ
+# 共通の身内語録データ（超拡張版）
 NAMES_LIST = ["しゅり", "さよちゃん", "あつき", "すばる", "たいき", "ゆいちゃん", "みおちゃん", "ゆっきー"]
 WORDS_LIST = [
     "花菜を奪いし者", "モモちゃん依存症", "なんやかんや桃が好き", "一生童貞", "ガリガリ",
     "韓国のり顔の", "犯罪予備軍", "バ畜戦士", "意識高い系", "闇落ちした", "巨乳の", "貧乳の",
     "誰もが三度見する", "今は亡き", "月給２４万", "税金泥棒", "国の犬", "ちいかわより",
     "やっぱり僕は", "みかんから生まれし", "桃から生まれし", "３浪の", "ゲーマーの", "１留の",
-    "夢はマイクワゾウスキー", "デカビタよりもオロナミンｃ"
+    "夢はマイクワゾウスキー", "デカビタよりもオロナミンｃ", "前世がティッシュ", "歩くR18指定",
+    "煩悩の塊", "親の顔より見た", "出会い厨の", "全裸待機中の", "賢者モードの", "童貞をこじらせた",
+    "変態という名の紳士", "パパ活疑惑の", "息をするようにスベる", "令和の奇行種", "脳内お花畑の",
+    "歩く公然わいせつ", "圧倒的モブ", "クソエイムの", "課金沼に沈みし", "金欠の", "遅刻魔",
+    "メンヘラ製造機", "留年確定の", "クソザコなめくじ", "深夜テンションの", "西村店長に怒られし",
+    "チームラボで迷子になった", "カリフォルニア帰りの", "松戸市代表"
 ]
 
 
@@ -23,38 +28,29 @@ def index(request):
     search_query = request.GET.get('search', '')
 
     if request.method == 'POST':
-        # 1. 称号の装備処理（自分が本当に持っているか厳格にチェック！）
         if 'new_title' in request.POST:
             new_title = request.POST.get('new_title')
             profile = request.user.profile
-            # ガチャで当てて所有しているアイテムの中に、その称号がある場合のみ装備を許可
             if profile.items.filter(name=new_title).exists():
                 profile.current_title = new_title
                 profile.save()
             return redirect('index')
 
-        # 2. コメント投稿の場合
         if 'comment_text' in request.POST:
             post_id = request.POST.get('post_id')
             post = get_object_or_404(Post, id=post_id)
             Comment.objects.create(
-                post=post,
-                user=request.user,
-                text=request.POST.get('comment_text')
+                post=post, user=request.user, text=request.POST.get('comment_text')
             )
             return redirect('index')
 
-        # 3. 通常の投稿の場合
         content = request.POST.get('content')
         study_minutes = request.POST.get('study_minutes', 0)
         image = request.FILES.get('image')
         minutes = int(study_minutes) if study_minutes else 0
 
         Post.objects.create(
-            user=request.user,
-            content=content,
-            study_minutes=minutes,
-            image=image
+            user=request.user, content=content, study_minutes=minutes, image=image
         )
 
         profile = request.user.profile
@@ -62,20 +58,16 @@ def index(request):
         profile.save()
         return redirect('index')
 
-    # 投稿一覧の取得
     if search_query:
         posts = Post.objects.filter(content__icontains=search_query).order_by('-created_at')
     else:
         posts = Post.objects.all().order_by('-created_at')
 
-    # 【重要新機能】各投稿に「称号のレア度」と「きめ細かい投稿時間」をセットする
     now = timezone.now()
     for post in posts:
-        # レア度の判定
         item = GachaItem.objects.filter(name=post.user.profile.current_title).first()
         post.current_rarity = item.rarity if item else 'N'
 
-        # タイムスタンプ（〇分前など）の計算
         diff = now - post.created_at
         if diff.days > 0:
             post.formatted_time = post.created_at.strftime('%m/%d %H:%M')
@@ -91,79 +83,119 @@ def index(request):
     data = [p.study_minutes for p in recent_posts]
 
     return render(request, 'sns/index.html', {
-        'posts': posts,
-        'labels': json.dumps(labels),
-        'data': json.dumps(data),
-        'search_query': search_query
+        'posts': posts, 'labels': json.dumps(labels), 'data': json.dumps(data), 'search_query': search_query
     })
 
 
-# ガチャ画面
+# 10連対応 ＆ 超鬼畜確率ガチャ画面
 @login_required
 def gacha(request):
     profile = request.user.profile
-    result_item = None
+    result_items = []
     error = None
 
     if request.method == 'POST':
-        if profile.points >= 10:
-            rand = random.randint(1, 100)
-            if rand <= 2:  # SSRは2%の超激レア仕様！
-                rarity = 'SSR'
-            elif rand <= 15:
-                rarity = 'SR'
-            elif rand <= 40:
-                rarity = 'R'
-            else:
-                rarity = 'N'
+        # 1回か10連かを判定
+        pull_count = 10 if 'gacha_10' in request.POST else 1
+        cost = pull_count * 10
 
-            items = GachaItem.objects.filter(rarity=rarity)
+        if profile.points >= cost:
+            profile.points -= cost
 
-            if items.exists():
-                result_item = random.choice(items)
-            else:
-                # DBになければ、その場で身内語録リストから合体させて新しい称号を自動錬成！
+            for _ in range(pull_count):
+                # 超・鬼畜確率設定（1000万分の1）
+                rand = random.randint(1, 10000000)
+                if rand == 1:
+                    rarity = 'SSR'  # 0.00001%
+                elif rand <= 100000:
+                    rarity = 'SR'  # 1%
+                elif rand <= 1500000:
+                    rarity = 'R'  # 15%
+                else:
+                    rarity = 'N'  # 83.9...%
+
                 if random.choice([True, False]):
                     generated_name = f"{random.choice(NAMES_LIST)}{random.choice(WORDS_LIST)}"
                 else:
                     generated_name = f"{random.choice(WORDS_LIST)}{random.choice(NAMES_LIST)}"
 
-                result_item = GachaItem.objects.create(name=generated_name, rarity=rarity)
+                result_item, created = GachaItem.objects.get_or_create(name=generated_name, defaults={'rarity': rarity})
 
-            if result_item:
-                profile.points -= 10
+                result_items.append(result_item)
                 profile.items.add(result_item)
-                profile.save()
+
+            profile.save()
         else:
-            error = 'ポイントが足りません！あと少し勉強しよう！'
+            error = 'ポイントが足りません！もっと勉強しよう！'
 
     return render(request, 'sns/gacha.html', {
-        'result_item': result_item,
+        'result_items': result_items,
         'points': profile.points,
         'error': error
     })
 
 
-# プロフィール編集（コレクションから選ぶだけのガチ仕様に変更）
+# 所有パーツだけを使った「カスタム錬成」機能
 @login_required
 def edit_profile(request):
+    profile = request.user.profile
+    owned_items = profile.items.all().order_by('-rarity')
+
+    # 持っているアイテムからパーツ（名前と語録）を抽出
+    owned_names = set()
+    owned_words = set()
+    for item in owned_items:
+        for n in NAMES_LIST:
+            if n in item.name:
+                owned_names.add(n)
+        for w in WORDS_LIST:
+            if w in item.name:
+                owned_words.add(w)
+
     if request.method == 'POST':
         if 'icon' in request.FILES:
-            request.user.profile.icon = request.FILES['icon']
-            request.user.profile.save()
-        return redirect('index')
+            profile.icon = request.FILES['icon']
+            profile.save()
+            return redirect('index')
 
-    # 自分がこれまでにガチャで当てて所有している称号の一覧
-    my_items = request.user.profile.items.all().order_by('-rarity')
+        # パーツ錬成ロジック
+        if 'custom_name' in request.POST and 'custom_word' in request.POST:
+            c_name = request.POST.get('custom_name')
+            c_word = request.POST.get('custom_word')
+            order = request.POST.get('order')
 
-    # 現在セットしている称号のレア度を調べる
-    current_title = request.user.profile.current_title
-    current_item = GachaItem.objects.filter(name=current_title).first()
+            # セキュリティチェック（本当にそのパーツを持っているか）
+            if c_name in owned_names and c_word in owned_words:
+                full_title = f"{c_word}{c_name}" if order == 'reverse' else f"{c_name}{c_word}"
+
+                # 使ったパーツの「最高レア度」を引き継ぐ仕様
+                max_rarity_val = 1
+                rarity_map = {'N': 1, 'R': 2, 'SR': 3, 'SSR': 4}
+                val_to_r = {1: 'N', 2: 'R', 3: 'SR', 4: 'SSR'}
+
+                for item in owned_items:
+                    if c_name in item.name or c_word in item.name:
+                        max_rarity_val = max(max_rarity_val, rarity_map.get(item.rarity, 1))
+
+                new_rarity = val_to_r[max_rarity_val]
+
+                # 新しい組み合わせをDBに登録して付与
+                new_item, created = GachaItem.objects.get_or_create(name=full_title, defaults={'rarity': new_rarity})
+                if created or new_item not in owned_items:
+                    profile.items.add(new_item)
+
+                profile.current_title = full_title
+                profile.save()
+                return redirect('index')
+
+    current_item = GachaItem.objects.filter(name=profile.current_title).first()
     current_rarity = current_item.rarity if current_item else 'N'
 
     return render(request, 'sns/edit_profile.html', {
-        'my_items': my_items,
-        'current_rarity': current_rarity
+        'my_items': owned_items,
+        'current_rarity': current_rarity,
+        'owned_names': list(owned_names),
+        'owned_words': list(owned_words)
     })
 
 
