@@ -9,25 +9,45 @@
         body { font-family: sans-serif; background: #f0f2f5; padding: 20px; text-align: center; }
         .card { background: white; padding: 20px; border-radius: 12px; max-width: 450px; margin: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .current-icon { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 3px solid #1877f2; }
-        .title-badge { color: #1877f2; font-weight: bold; font-size: 1rem; margin-bottom: 20px; display: block; }
 
-        /* カスタムフォームのスタイル */
-        .custom-form { text-align: left; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-top: 10px; }
-        .custom-select { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd; margin-bottom: 12px; font-size: 0.9rem; }
-        .radio-group { margin-bottom: 15px; font-size: 0.9rem; }
+        /* 🏆 現在装備中の称号バッジ */
+        .title-badge { font-weight: bold; font-size: 1rem; margin-bottom: 20px; display: inline-block; padding: 4px 12px; border-radius: 6px; }
+        .title-badge.N { background: #f5f5f5; color: #424242; border: 1px solid #ccc; }
+        .title-badge.R { background: #e3f2fd; color: #2196f3; border: 1px solid #bbdefb; }
+        .title-badge.SR { background: #f3e5f5; color: #9c27b0; border: 1px solid #e1bee7; box-shadow: 0 0 8px rgba(156,39,176,0.3); }
 
-        /* 称号リストのスタイル */
+        @keyframes ssr-glow-profile {
+            0% { box-shadow: 0 0 8px #ffd700; transform: scale(1); }
+            50% { box-shadow: 0 0 20px #ff8c00; transform: scale(1.03); }
+            100% { box-shadow: 0 0 8px #ffd700; transform: scale(1); }
+        }
+        .title-badge.SSR {
+            background: linear-gradient(45deg, #ffe259, #ffa751) !important;
+            color: #fff !important;
+            border: 2px solid #ffd700 !important;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            animation: ssr-glow-profile 1.5s infinite ease-in-out;
+        }
+
+        /* 称号コレクションリストのスタイル */
         .item-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; text-align: left; }
-        .item-card { background: #fff; border: 1px solid #ddd; padding: 10px; border-radius: 8px; position: relative; }
-        .rarity { font-size: 0.7rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 5px; }
+        .item-card { background: #fff; border: 1px solid #ddd; padding: 10px; border-radius: 8px; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
+        .rarity { font-size: 0.7rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 5px; text-align: center; width: fit-content; }
 
-        .SSR { background: #fff9c4; color: #fbc02d; border: 1px solid #fbc02d; }
-        .SR { background: #f3e5f5; color: #9c27b0; border: 1px solid #9c27b0; }
-        .R { background: #e3f2fd; color: #2196f3; border: 1px solid #2196f3; }
-        .N { background: #f5f5f5; color: #666; border: 1px solid #ddd; }
+        /* カードのレア度別装飾 */
+        .item-card.card-SSR { border: 2px solid #ffd700; background: #fffde7; box-shadow: 0 2px 5px rgba(255, 215, 0, 0.2); }
+        .item-card.card-SR { border: 1px solid #ba68c8; background: #fcf7fd; }
 
-        .equip-btn { width: 100%; background: #f0f2f5; border: none; padding: 5px; border-radius: 5px; font-size: 0.8rem; cursor: pointer; margin-top: 8px; font-weight: bold; }
-        .equip-btn:hover { background: #1877f2; color: white; }
+        .rarity.SSR { background: linear-gradient(45deg, #ffe259, #ffa751); color: white; }
+        .rarity.SR { background: #9c27b0; color: white; }
+        .rarity.R { background: #2196f3; color: white; }
+        .rarity.N { background: #757575; color: white; }
+
+        .equip-btn { width: 100%; background: #f0f2f5; border: none; padding: 6px; border-radius: 5px; font-size: 0.8rem; cursor: pointer; margin-top: 8px; font-weight: bold; border: 1px solid #ddd; }
+        .equip-btn:hover { background: #1877f2; color: white; border-color: #1877f2; }
+
+        /* SSR専用の装備ボタン */
+        .item-card.card-SSR .equip-btn:hover { background: #ffaa00; border-color: #ffaa00; }
 
         hr { border: 0; border-top: 1px solid #eee; margin: 25px 0; }
     </style>
@@ -42,70 +62,44 @@
             <i class="fas fa-user-circle" style="font-size: 100px; color: #ccc; margin-bottom: 10px;"></i>
         {% endif %}
 
-        <span class="title-badge">【{{ user.profile.current_title }}】</span>
+        <div>
+            <span class="title-badge {{ current_rarity }}">
+                {% if current_rarity == 'SSR' %}👑 {% endif %}【{{ user.profile.current_title }}】
+            </span>
+        </div>
 
         <form method="POST" enctype="multipart/form-data" style="margin-bottom: 20px;">
             {% csrf_token %}
             <p style="font-size: 0.9rem; color: #65676b;">アイコンを変更：</p>
             <input type="file" name="icon" accept="image/*">
-            <button type="submit" style="background:#1877f2; color:white; border:none; padding:10px; border-radius:8px; width:100%; margin-top:10px; cursor:pointer;">アイコンを保存</button>
+            <button type="submit" style="background:#1877f2; color:white; border:none; padding:10px; border-radius:8px; width:100%; margin-top:10px; cursor:pointer; font-weight:bold;">アイコンを保存</button>
         </form>
 
         <hr>
 
-        <h3>🛠️ 身内ノリ称号カスタム</h3>
-        <p style="font-size: 0.8rem; color: #65676b;">好きなパーツを自由に選んで組み合わせよう！</p>
-
-        <form method="POST" class="custom-form">
-            {% csrf_token %}
-
-            <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 4px;">① 名前を選択</label>
-            <select name="custom_name" class="custom-select">
-                {% for name in names %}
-                    <option value="{{ name }}">{{ name }}</option>
-                {% endfor %}
-            </select>
-
-            <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 4px;">② 語録を選択</label>
-            <select name="custom_word" class="custom-select">
-                {% for word in words %}
-                    <option value="{{ word }}">{{ word }}</option>
-                {% endfor %}
-            </select>
-
-            <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 4px;">③ 組み合わせ順（逆も可）</label>
-            <div class="radio-group">
-                <input type="radio" name="order" value="normal" id="order_normal" checked>
-                <label for="order_normal" style="margin-right: 15px;">名前 ＋ 語録</label>
-
-                <input type="radio" name="order" value="reverse" id="order_reverse">
-                <label for="order_reverse">語録 ＋ 名前（逆パターン）</label>
-            </div>
-
-            <button type="submit" style="background:#42b72a; color:white; border:none; padding:10px; border-radius:8px; width:100%; cursor:pointer; font-weight:bold;">
-                この組み合わせで装備する！
-            </button>
-        </form>
-
-        <hr>
-
-        <h3>🏆 ガチャで獲得した称号</h3>
-        <p style="font-size: 0.8rem; color: #65676b;">過去にガチャで当てた称号を再装備できます</p>
+        <h3>🏆 獲得済みの称号コレクション</h3>
+        <p style="font-size: 0.8rem; color: #65676b;">あなたがガチャで引き当てた、装備可能な称号の一覧です。</p>
 
         <div class="item-list">
             {% for item in my_items %}
-            <div class="item-card">
-                <span class="rarity {{ item.rarity }}">{{ item.rarity }}</span>
-                <div style="font-size: 0.85rem; font-weight: bold;">{{ item.name }}</div>
+            <div class="item-card card-{{ item.rarity }}">
+                <div>
+                    <span class="rarity {{ item.rarity }}">{{ item.rarity }}</span>
+                    <div style="font-size: 0.85rem; font-weight: bold; margin-top: 3px;">
+                        {% if item.rarity == 'SSR' %}👑 {% endif %}{{ item.name }}
+                    </div>
+                </div>
 
                 <form method="POST" action="{% url 'index' %}">
                     {% csrf_token %}
                     <input type="hidden" name="new_title" value="{{ item.name }}">
-                    <button type="submit" class="equip-btn">装備する</button>
+                    <button type="submit" class="equip-btn">
+                        {% if user.profile.current_title == item.name %}装備中{% else %}装備する{% endif %}
+                    </button>
                 </form>
             </div>
             {% empty %}
-            <p style="grid-column: 1 / 3; font-size: 0.8rem; color: #999;">ガチャで当てた称号はここに保存されます。</p>
+            <p style="grid-column: 1 / 3; font-size: 0.8rem; color: #999; padding: 20px 0;">まだ称号を持っていません。<br>ガチャ画面から10ptで回してみよう！</p>
             {% endfor %}
         </div>
 

@@ -29,6 +29,32 @@
         .comment-section { background: #f8f9fa; border-radius: 8px; padding: 10px; margin-top: 10px; font-size: 0.85rem; }
         .comment-input-group { display: flex; gap: 5px; margin-top: 8px; }
         .comment-input-group input { margin-bottom: 0; padding: 5px 10px; border-radius: 15px; }
+
+        /* 👑 豪華な称号バッジのレア度別デザイン */
+        .title-badge { font-size: 0.7rem; font-weight: bold; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 3px; }
+
+        .title-badge.N { background: #e0e0e0; color: #424242; border: 1px solid #ccc; }
+        .title-badge.R { background: #e3f2fd; color: #1e88e5; border: 1px solid #90caf9; }
+        .title-badge.SR { background: #f3e5f5; color: #8e24aa; border: 1px solid #ce93d8; box-shadow: 0 0 5px rgba(142, 36, 170, 0.3); }
+
+        /* 🔥 神々しく呼吸する最上位SSR専用エフェクト */
+        @keyframes ssr-glow {
+            0% { box-shadow: 0 0 6px #ffd700, inset 0 0 4px #ffd700; transform: scale(1); }
+            50% { box-shadow: 0 0 15px #ff8c00, inset 0 0 8px #ff8c00; transform: scale(1.02); }
+            100% { box-shadow: 0 0 6px #ffd700, inset 0 0 4px #ffd700; transform: scale(1); }
+        }
+        .title-badge.SSR {
+            background: linear-gradient(45deg, #ffe259, #ffa751) !important;
+            color: #fff !important;
+            border: 2px solid #ffd700 !important;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+            animation: ssr-glow 1.5s infinite ease-in-out;
+            font-size: 0.75rem;
+            padding: 3px 10px;
+        }
+
+        /* タイムスタンプのスタイル */
+        .post-time { font-size: 0.75rem; color: #999; margin-left: auto; white-space: nowrap; }
     </style>
 </head>
 <body>
@@ -68,11 +94,14 @@
                 {% else %}
                     <i class="fas fa-user-circle" style="font-size:35px; color:#ccc; margin-right:10px;"></i>
                 {% endif %}
-                <div>
-                    <div style="font-size: 0.65rem; color: #1877f2; font-weight: bold; margin-bottom: -2px;">
-                        【{{ post.user.profile.current_title }}】
+                <div style="display: flex; flex-direction: column; flex-grow: 1;">
+                    <div style="display: flex; align-items: center; width: 100%;">
+                        <span class="title-badge {{ post.current_rarity }}">
+                            {% if post.current_rarity == 'SSR' %}👑 {% endif %}【{{ post.user.profile.current_title }}】
+                        </span>
+                        <span class="post-time"><i class="far fa-clock"></i> {{ post.formatted_time }}</span>
                     </div>
-                    <strong>{{ post.user.username }}</strong>
+                    <strong style="margin-top: 2px;">{{ post.user.username }}</strong>
                 </div>
             </div>
             <p>{{ post.content }}</p>

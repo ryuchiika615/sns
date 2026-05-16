@@ -2,11 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 from .models import Post, Profile, Comment, GachaItem
 import json
 import random
 
-# 共通の身内語録データ（ここに好きなだけ追加・編集できます！）
+# 共通の身内語録データ
 NAMES_LIST = ["しゅり", "さよちゃん", "あつき", "すばる", "たいき", "ゆいちゃん", "みおちゃん", "ゆっきー"]
 WORDS_LIST = [
     "花菜を奪いし者", "モモちゃん依存症", "なんやかんや桃が好き", "一生童貞", "ガリガリ",
@@ -22,12 +23,17 @@ def index(request):
     search_query = request.GET.get('search', '')
 
     if request.method == 'POST':
+        # 1. 称号の装備処理（自分が本当に持っているか厳格にチェック！）
         if 'new_title' in request.POST:
+            new_title = request.POST.get('new_title')
             profile = request.user.profile
-            profile.current_title = request.POST.get('new_title')
-            profile.save()
+            # ガチャで当てて所有しているアイテムの中に、その称号がある場合のみ装備を許可
+            if profile.items.filter(name=new_title).exists():
+                profile.current_title = new_title
+                profile.save()
             return redirect('index')
 
+        # 2. コメント投稿の場合
         if 'comment_text' in request.POST:
             post_id = request.POST.get('post_id')
             post = get_object_or_404(Post, id=post_id)
@@ -38,6 +44,7 @@ def index(request):
             )
             return redirect('index')
 
+        # 3. 通常の投稿の場合
         content = request.POST.get('content')
         study_minutes = request.POST.get('study_minutes', 0)
         image = request.FILES.get('image')
@@ -55,10 +62,29 @@ def index(request):
         profile.save()
         return redirect('index')
 
+    # 投稿一覧の取得
     if search_query:
         posts = Post.objects.filter(content__icontains=search_query).order_by('-created_at')
     else:
         posts = Post.objects.all().order_by('-created_at')
+
+    # 【重要新機能】各投稿に「称号のレア度」と「きめ細かい投稿時間」をセットする
+    now = timezone.now()
+    for post in posts:
+        # レア度の判定
+        item = GachaItem.objects.filter(name=post.user.profile.current_title).first()
+        post.current_rarity = item.rarity if item else 'N'
+
+        # タイムスタンプ（〇分前など）の計算
+        diff = now - post.created_at
+        if diff.days > 0:
+            post.formatted_time = post.created_at.strftime('%m/%d %H:%M')
+        elif diff.seconds < 60:
+            post.formatted_time = "たった今"
+        elif diff.seconds < 3600:
+            post.formatted_time = f"{diff.seconds // 60}分前"
+        else:
+            post.formatted_time = f"{diff.seconds // 3600}時間前"
 
     recent_posts = Post.objects.filter(user=request.user).order_by('created_at')[:7]
     labels = [p.created_at.strftime('%m/%d') for p in recent_posts]
@@ -72,7 +98,7 @@ def index(request):
     })
 
 
-# ガチャ画面（事前データがなくてもその場でランダム自動生成する神機能付き）
+# ガチャ画面
 @login_required
 def gacha(request):
     profile = request.user.profile
@@ -82,28 +108,26 @@ def gacha(request):
     if request.method == 'POST':
         if profile.points >= 10:
             rand = random.randint(1, 100)
-            if rand <= 1:
+            if rand <= 2:  # SSRは2%の超激レア仕様！
                 rarity = 'SSR'
-            elif rand <= 10:
+            elif rand <= 15:
                 rarity = 'SR'
-            elif rand <= 30:
+            elif rand <= 40:
                 rarity = 'R'
             else:
                 rarity = 'N'
 
-            # まずは指定のレア度のアイテムがDBにあるか探す
             items = GachaItem.objects.filter(rarity=rarity)
 
             if items.exists():
                 result_item = random.choice(items)
             else:
-                # 【超重要】DBが空っぽなら、その場でリストから合体させて新しい景品を自動作成！
+                # DBになければ、その場で身内語録リストから合体させて新しい称号を自動錬成！
                 if random.choice([True, False]):
                     generated_name = f"{random.choice(NAMES_LIST)}{random.choice(WORDS_LIST)}"
                 else:
                     generated_name = f"{random.choice(WORDS_LIST)}{random.choice(NAMES_LIST)}"
 
-                # その場で景品データを作ってDBに登録
                 result_item = GachaItem.objects.create(name=generated_name, rarity=rarity)
 
             if result_item:
@@ -120,39 +144,26 @@ def gacha(request):
     })
 
 
-# プロフィール編集（自分たちで名前や語録を自由に選んで称号を作れる機能を追加！）
+# プロフィール編集（コレクションから選ぶだけのガチ仕様に変更）
 @login_required
 def edit_profile(request):
     if request.method == 'POST':
-        # 1. アイコン変更の処理
         if 'icon' in request.FILES:
             request.user.profile.icon = request.FILES['icon']
             request.user.profile.save()
-            return redirect('index')
+        return redirect('index')
 
-        # 2. 【新機能】パーツを選んでオリジナル称号を作る処理
-        if 'custom_name' in request.POST and 'custom_word' in request.POST:
-            selected_name = request.POST.get('custom_name')
-            selected_word = request.POST.get('custom_word')
-            order = request.POST.get('order')  # "normal" か "reverse"
-
-            # 順番を逆にするかどうかの判定
-            if order == "reverse":
-                full_title = f"{selected_word}{selected_name}"  # 例：一生童貞しゅり
-            else:
-                full_title = f"{selected_name}{selected_word}"  # 例：しゅり一生童貞
-
-            profile = request.user.profile
-            profile.current_title = full_title
-            profile.save()
-            return redirect('index')
-
+    # 自分がこれまでにガチャで当てて所有している称号の一覧
     my_items = request.user.profile.items.all().order_by('-rarity')
+
+    # 現在セットしている称号のレア度を調べる
+    current_title = request.user.profile.current_title
+    current_item = GachaItem.objects.filter(name=current_title).first()
+    current_rarity = current_item.rarity if current_item else 'N'
 
     return render(request, 'sns/edit_profile.html', {
         'my_items': my_items,
-        'names': NAMES_LIST,
-        'words': WORDS_LIST
+        'current_rarity': current_rarity
     })
 
 
