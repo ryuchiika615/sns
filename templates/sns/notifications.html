@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通知一覧</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 80px; }
+        .header { background: #1a1a1a; padding: 15px; color: white; text-align: center; position: sticky; top: 0; z-index: 100; font-weight: bold; }
+        .container { max-width: 600px; margin: auto; padding: 15px; }
+
+        .notification-card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px; }
+        .unread { background: #e7f3ff; border-left: 4px solid #1877f2; }
+
+        .icon-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; }
+        .icon-like { background: #e0245e; }
+        .icon-reply { background: #1da1f2; }
+        .icon-follow { background: #17bf63; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
+        .nav-item { color: #aaa; text-decoration: none; font-size: 1.5rem; }
+        .nav-item.active { color: white; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <i class="far fa-bell"></i> 通知一覧
+    </div>
+
+    <div class="container">
+        {% for notif in notifications %}
+        <div class="notification-card {% if not notif.is_read %}unread{% endif %}">
+            {% if notif.notification_type == 'like' %}
+                <div class="icon-circle icon-like"><i class="fas fa-heart"></i></div>
+                <div>
+                    <strong><a href="{% url 'user_profile' notif.sender.username %}" style="color: #050505; text-decoration: none;">{{ notif.sender.username }}</a></strong>さんがあなたの投稿にいいねしました。
+                    <div style="font-size: 0.8rem; color: #999;">{{ notif.created_at|date:"n月j日 H:i" }}</div>
+                </div>
+            {% elif notif.notification_type == 'reply' %}
+                <div class="icon-circle icon-reply"><i class="fas fa-comment"></i></div>
+                <div>
+                    <strong><a href="{% url 'user_profile' notif.sender.username %}" style="color: #050505; text-decoration: none;">{{ notif.sender.username }}</a></strong>さんがあなたの投稿にコメントしました。
+                    <div style="font-size: 0.8rem; color: #999;">{{ notif.created_at|date:"n月j日 H:i" }}</div>
+                </div>
+            {% elif notif.notification_type == 'follow' %}
+                <div class="icon-circle icon-follow"><i class="fas fa-user-plus"></i></div>
+                <div>
+                    <strong><a href="{% url 'user_profile' notif.sender.username %}" style="color: #050505; text-decoration: none;">{{ notif.sender.username }}</a></strong>さんにフォローされました！
+                    <div style="font-size: 0.8rem; color: #999;">{{ notif.created_at|date:"n月j日 H:i" }}</div>
+                </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div style="text-align: center; color: #999; margin-top: 50px;">
+            <i class="far fa-bell-slash" style="font-size: 3rem; margin-bottom: 10px;"></i><br>
+            通知はまだありません。
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="bottom-nav">
+        <a href="{% url 'index' %}" class="nav-item"><i class="fas fa-home"></i></a>
+        <a href="{% url 'user_profile' user.username %}" class="nav-item"><i class="fas fa-user"></i></a>
+        <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins" style="color: #fbc02d;"></i></a>
+        <a href="{% url 'notifications' %}" class="nav-item active"><i class="fas fa-bell"></i></a>
+    </div>
+</body>
+</html>

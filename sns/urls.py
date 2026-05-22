@@ -8,8 +8,9 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('logout/', views.logout_view, name='logout'),
     path('like/<int:post_id>/', views.like_post, name='like_post'),
-
-    # ★ 新規追加：プロフィール画面とフォロー機能
     path('user/<str:username>/', views.user_profile, name='user_profile'),
     path('follow/<str:username>/', views.toggle_follow, name='toggle_follow'),
+
+    # ★ 新規追加：通知画面
+    path('notifications/', views.notifications_view, name='notifications'),
 ]
