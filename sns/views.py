@@ -158,8 +158,6 @@ def gacha(request):
 def edit_profile(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
     owned_items = profile.items.all().order_by('-rarity')
-
-    # ガチャでGETした「本物の称号アイテム」だけを厳選（【アイコン】は除外）
     real_owned_titles = owned_items.exclude(name__contains="【アイコン】")
 
     if request.method == 'POST':
@@ -168,6 +166,11 @@ def edit_profile(request):
             profile.bio = request.POST.get('bio')
             profile.department = request.POST.get('department')
             profile.theme_color = request.POST.get('theme_color', 'dark')
+
+            # ★ 復活：画像のアップロードを保存
+            if 'icon' in request.FILES:
+                profile.icon = request.FILES['icon']
+
             profile.save()
             return redirect('edit_profile')
 
@@ -182,8 +185,6 @@ def edit_profile(request):
             c_name = request.POST.get('custom_name')
             c_word = request.POST.get('custom_word')
             order = request.POST.get('order')
-
-            # 自分が本当に持っている称号の文字列の中に含まれるパーツだけを完全に絞り込む
             valid_names = [n for n in NAMES_LIST if any(n in item.name for item in real_owned_titles)]
             valid_words = [w for w in WORDS_LIST if any(w in item.name for item in real_owned_titles)]
 
@@ -202,10 +203,8 @@ def edit_profile(request):
                 profile.save()
                 return redirect('index')
 
-    # 表示用に、自分が持っているパーツだけを抽出
     owned_names = [n for n in NAMES_LIST if any(n in item.name for item in real_owned_titles)]
     owned_words = [w for w in WORDS_LIST if any(w in item.name for item in real_owned_titles)]
-
     my_titles = list(real_owned_titles)
     my_avatars = owned_items.filter(name__contains="【アイコン】")
     current_item = GachaItem.objects.filter(name=profile.current_title).first()
