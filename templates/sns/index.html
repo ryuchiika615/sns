@@ -32,7 +32,6 @@
         .title-badge { font-size: 0.7rem; font-weight: bold; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 3px; }
         .title-badge.SSR { background: linear-gradient(45deg, #ffe259, #ffa751) !important; color: #fff !important; border: 2px solid #ffd700 !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.4); }
 
-        /* 🔮 写真＋中二病エフェクト表示用コンテナ */
         .avatar-container { position: relative; display: inline-block; width: 42px; height: 42px; margin-right: 15px; flex-shrink: 0; }
         .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; position: relative; z-index: 5; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); box-sizing: border-box; background: white; }
         .avatar-placeholder { font-size: 42px; color: #ccc; position: relative; z-index: 5; background: white; border-radius: 50%; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); box-sizing: border-box; }
@@ -193,7 +192,23 @@
                 </form>
             </div>
         </div>
+        {% empty %}
+        <div class="card" style="text-align:center; color:#666; padding:40px 20px;">
+            <p>まだリュイートがありません。</p>
+        </div>
         {% endfor %}
+        <div style="text-align: center; margin: 20px 0;">
+            {% if posts.has_previous %}
+                <a href="?page={{ posts.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" style="padding: 10px 20px; background: white; border-radius: 20px; text-decoration: none; color: #1877f2; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-right: 10px;">前へ</a>
+            {% endif %}
+
+            <span style="color: #65676b; font-weight: bold; font-size: 0.9rem;">ページ {{ posts.number }} / {{ posts.paginator.num_pages }}</span>
+
+            {% if posts.has_next %}
+                <a href="?page={{ posts.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" style="padding: 10px 20px; background: white; border-radius: 20px; text-decoration: none; color: #1877f2; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-left: 10px;">過去のリュイートを見る</a>
+            {% endif %}
+        </div>
+
     </div>
 
     <div class="bottom-nav">
@@ -218,7 +233,6 @@
             document.getElementById("overlay").style.display = "none";
         }
 
-        // 📊 typeを'bar'(棒グラフ)に変更！同じ日付は1つにまとまります
         const ctx = document.getElementById('studyChart').getContext('2d');
         new Chart(ctx, {
             type: 'bar',
@@ -232,9 +246,7 @@
                 }]
             },
             options: {
-                scales: {
-                    y: { beginAtZero: true }
-                }
+                scales: { y: { beginAtZero: true } }
             }
         });
     </script>

@@ -3,7 +3,8 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from django.db.models import Sum  # まとめて集計するために追加
+from django.db.models import Sum
+from django.core.paginator import Paginator  # ★ 新機能：ページ分割用ツール
 from datetime import timedelta
 from .models import Post, Profile, Comment, GachaItem, Notification
 import json
@@ -67,7 +68,7 @@ def index(request):
         if content:
             study_minutes = request.POST.get('study_minutes', 0)
             image = request.FILES.get('image')
-            subject = request.POST.get('subject', 'その他')  # 科目を取得
+            subject = request.POST.get('subject', 'その他')
             minutes = int(study_minutes) if study_minutes else 0
 
             Post.objects.create(user=request.user, content=content, study_minutes=minutes, image=image, subject=subject)
@@ -75,18 +76,26 @@ def index(request):
             profile.save()
         return redirect('index')
 
+    # 🚀 爆速化1：N+1問題の解消（必要なデータを1回の通信でまとめて取得）
+    base_query = Post.objects.select_related('user', 'user__profile').prefetch_related('liked_by', 'comments',
+                                                                                       'comments__user')
+
     if search_query:
-        posts = Post.objects.filter(content__icontains=search_query).order_by('-created_at')
+        all_posts = base_query.filter(content__icontains=search_query).order_by('-created_at')
     else:
-        posts = Post.objects.all().order_by('-created_at')
+        all_posts = base_query.all().order_by('-created_at')
+
+    # 🚀 爆速化2：ページ分割（1ページにつき20件だけ表示）
+    paginator = Paginator(all_posts, 20)
+    page_number = request.GET.get('page')
+    posts = paginator.get_page(page_number)
 
     now = timezone.now()
     for post in posts:
-        try:
-            p_profile = post.user.profile
-            title = p_profile.current_title
-            avatar = p_profile.current_avatar
-        except Profile.DoesNotExist:
+        if hasattr(post.user, 'profile'):
+            title = post.user.profile.current_title
+            avatar = post.user.profile.current_avatar
+        else:
             Profile.objects.get_or_create(user=post.user)
             title = "新人エンジニア"
             avatar = "初期アバター"
@@ -106,24 +115,20 @@ def index(request):
         else:
             post.formatted_time = f"{diff.seconds // 3600}時間前"
 
-    # 📊 改良点：直近7日間の「同じ日」の勉強時間をまとめて合計するロジック
     today = timezone.now().date()
     labels = []
     data = []
     for i in range(6, -1, -1):
         day = today - timedelta(days=i)
         labels.append(day.strftime('%m/%d'))
-        # その日の自分の投稿の勉強時間を合算する
         day_total = Post.objects.filter(user=request.user, created_at__date=day).aggregate(Sum('study_minutes'))[
                         'study_minutes__sum'] or 0
         data.append(day_total)
 
-    # 🎯 改良点：目標時間までの残り時間を計算
     remaining_minutes = 0
     has_target = False
     if profile.target_date and profile.target_minutes > 0:
         has_target = True
-        # これまでの総勉強時間を計算
         total_study = Post.objects.filter(user=request.user).aggregate(Sum('study_minutes'))['study_minutes__sum'] or 0
         remaining_minutes = profile.target_minutes - total_study
         if remaining_minutes < 0:
@@ -192,13 +197,11 @@ def edit_profile(request):
             profile.department = request.POST.get('department')
             profile.theme_color = request.POST.get('theme_color', 'dark')
 
-            # 🎯 目標日付と時間の保存処理
             t_date = request.POST.get('target_date')
             profile.target_date = t_date if t_date else None
             t_minutes = request.POST.get('target_minutes')
             profile.target_minutes = int(t_minutes) if t_minutes else 0
 
-            # 📸 写真アイコンの保存
             if 'icon' in request.FILES:
                 profile.icon = request.FILES['icon']
 
@@ -283,7 +286,15 @@ def user_profile(request, username):
     from django.contrib.auth.models import User
     target_user = get_object_or_404(User, username=username)
     target_profile, created = Profile.objects.get_or_create(user=target_user)
-    user_posts = Post.objects.filter(user=target_user).order_by('-created_at')
+
+    # 🚀 爆速化＆ページ分割：プロフィール画面のリュイート一覧も最適化
+    base_user_posts = Post.objects.select_related('user', 'user__profile').prefetch_related('liked_by', 'comments',
+                                                                                            'comments__user').filter(
+        user=target_user).order_by('-created_at')
+
+    paginator = Paginator(base_user_posts, 20)
+    page_number = request.GET.get('page')
+    user_posts = paginator.get_page(page_number)
 
     is_following = False
     my_profile, created = Profile.objects.get_or_create(user=request.user)
