@@ -128,7 +128,14 @@
                         </span>
                         <span class="post-time"><i class="far fa-clock"></i> {{ post.formatted_time }}</span>
                     </div>
-                    <strong style="margin-top: 2px;">{{ post.user.username }} <span style="font-size:0.7rem; color:#888;">({{ post.user.profile.current_avatar }})</span></strong>
+
+                    <strong style="margin-top: 2px;">
+                        <a href="{% url 'user_profile' post.user.username %}" style="color: #050505; text-decoration: none;">
+                            {{ post.user.profile.display_name|default:post.user.username }}
+                        </a>
+                        <span style="font-size:0.7rem; color:#888;">({{ post.user.profile.current_avatar }})</span>
+                    </strong>
+
                 </div>
             </div>
 

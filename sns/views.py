@@ -265,3 +265,63 @@ def like_post(request, post_id):
     else:
         post.liked_by.add(request.user)
     return redirect('index')
+
+
+# ==========================================
+# ★ フェーズ3で追加：プロフィール画面とフォロー機能
+# ==========================================
+
+@login_required
+def user_profile(request, username):
+    from django.contrib.auth.models import User
+
+    # 見たいユーザーを探す
+    target_user = get_object_or_404(User, username=username)
+    target_profile, created = Profile.objects.get_or_create(user=target_user)
+
+    # その人の投稿と、いいねした投稿を取得
+    user_posts = Post.objects.filter(user=target_user).order_by('-created_at')
+
+    # 自分がフォローしているかチェック
+    is_following = False
+    my_profile, created = Profile.objects.get_or_create(user=request.user)
+    if my_profile.follows.filter(id=target_profile.id).exists():
+        is_following = True
+
+    # 称号とアバターのレア度を計算（表示用）
+    title_item = GachaItem.objects.filter(name=target_profile.current_title).first()
+    target_title_rarity = title_item.rarity if title_item else 'N'
+
+    av_item = GachaItem.objects.filter(name=target_profile.current_avatar).first()
+    target_av_rarity = av_item.rarity if av_item else 'N'
+
+    return render(request, 'sns/user_profile.html', {
+        'target_user': target_user,
+        'target_profile': target_profile,
+        'user_posts': user_posts,
+        'is_following': is_following,
+        'target_title_rarity': target_title_rarity,
+        'target_av_rarity': target_av_rarity,
+        'followers_count': target_profile.followed_by.count(),
+        'following_count': target_profile.follows.count(),
+    })
+
+
+@login_required
+def toggle_follow(request, username):
+    from django.contrib.auth.models import User
+    target_user = get_object_or_404(User, username=username)
+    target_profile, created = Profile.objects.get_or_create(user=target_user)
+    my_profile, created = Profile.objects.get_or_create(user=request.user)
+
+    # 自分自身はフォローできないようにする
+    if request.user != target_user:
+        if my_profile.follows.filter(id=target_profile.id).exists():
+            # すでにフォローしていれば解除
+            my_profile.follows.remove(target_profile)
+        else:
+            # フォローしていなければ追加
+            my_profile.follows.add(target_profile)
+            # ※次のフェーズでここに「通知を送る」処理を追加します！
+
+    return redirect('user_profile', username=username)
