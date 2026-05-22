@@ -7,7 +7,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 80px; }
-        .header { background: #1a1a1a; padding: 15px; color: white; text-align: center; position: sticky; top: 0; z-index: 100; font-weight: bold; }
+        .header { background: #1a1a1a; padding: 15px 20px; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; color: white; }
+        .menu-icon { font-size: 1.5rem; cursor: pointer; color: white; }
+        .sidebar { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; left: 0; background-color: #1a1a1a; overflow-x: hidden; transition: 0.3s; padding-top: 60px; box-shadow: 2px 0 5px rgba(0,0,0,0.5); }
+        .sidebar a { padding: 15px 25px; text-decoration: none; font-size: 1.2rem; color: #fff; display: block; transition: 0.3s; font-weight: bold; }
+        .sidebar a:hover { color: #fbc02d; background: #333; }
+        .sidebar .closebtn { position: absolute; top: 0; right: 20px; font-size: 36px; padding: 0; color: #999; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1500; display: none; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
+        .nav-item { color: #aaa; text-decoration: none; font-size: 1.5rem; position: relative; }
+        .nav-item.active { color: white; }
+        .badge { position: absolute; top: -5px; right: -8px; background: #e0245e; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; font-weight: bold; border: 2px solid #1a1a1a; }
+
         .container { max-width: 800px; margin: 20px auto; padding: 0 15px; display: flex; gap: 20px; flex-wrap: wrap; }
         .profile-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex: 1; min-width: 250px; text-align: center; height: fit-content; }
         .title-badge { font-weight: bold; font-size: 0.8rem; margin-bottom: 10px; display: inline-block; padding: 4px 10px; border-radius: 6px; }
@@ -23,9 +34,6 @@
         .tabs { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
         .tab { font-weight: bold; color: #1877f2; border-bottom: 3px solid #1877f2; padding-bottom: 8px; }
         .post-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
-        .nav-item { color: #aaa; text-decoration: none; font-size: 1.5rem; }
-        .nav-item.active { color: white; }
 
         .avatar-container { position: relative; display: inline-block; width: 120px; height: 120px; margin: 0 auto 10px; }
         .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; position: relative; z-index: 5; border: 3px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); box-sizing: border-box; background: white; }
@@ -40,8 +48,37 @@
 </head>
 <body>
     <div class="header">
-        <i class="fas fa-layer-group"></i> リュッター
+        <div style="display:flex; align-items:center; gap:15px;">
+            <i class="fas fa-bars menu-icon" onclick="openNav()"></i>
+            <span style="font-weight:bold; font-size:1.2rem;"><i class="fas fa-layer-group"></i> リュッター</span>
+        </div>
+        <div style="background: #333; padding: 5px 12px; border-radius: 15px; font-weight: bold; font-size: 0.8rem; color: #fbc02d;">
+            <i class="fas fa-gem"></i> {{ user.profile.points }} pt
+        </div>
     </div>
+
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div style="width:60px; height:60px; margin: 0 auto; position: relative;">
+                {% if user.profile.icon %}
+                    <img src="{{ user.profile.icon.url }}" style="width:100%; height:100%; border-radius:50%; object-fit:cover; border:2px solid #fff;">
+                {% else %}
+                    <i class="fas fa-user-circle" style="font-size:60px; color:#ccc;"></i>
+                {% endif %}
+            </div>
+            <div style="color: white; font-weight: bold; margin-top: 10px;">{{ user.username }}</div>
+        </div>
+        <a href="{% url 'index' %}"><i class="fas fa-home" style="width:25px;"></i> ホーム</a>
+        <a href="{% url 'analytics' %}"><i class="fas fa-chart-pie" style="width:25px;"></i> 分析レポート</a>
+        <a href="{% url 'user_profile' user.username %}"><i class="fas fa-user" style="width:25px;"></i> プロフィール</a>
+        <a href="{% url 'edit_profile' %}"><i class="fas fa-cog" style="width:25px;"></i> 設定 / 編集</a>
+        <a href="{% url 'gacha' %}"><i class="fas fa-coins" style="width:25px;"></i> ガチャポン</a>
+        <hr style="border-color: #333; margin: 20px;">
+        <form action="{% url 'logout' %}" method="POST" id="logout-form" style="display:none;">{% csrf_token %}</form>
+        <a href="javascript:void(0);" onclick="document.getElementById('logout-form').submit();" style="color:#ff4757;"><i class="fas fa-sign-out-alt" style="width:25px;"></i> ログアウト</a>
+    </div>
+    <div id="overlay" class="overlay" onclick="closeNav()"></div>
 
     <div class="container">
         <div class="profile-card">
@@ -52,7 +89,6 @@
                     <i class="fas fa-user-circle avatar-placeholder"></i>
                 {% endif %}
             </div>
-
             <h2 style="margin: 10px 0 5px;">{{ target_profile.display_name|default:target_user.username }}</h2>
             <p style="color: #65676b; margin: 0; font-size: 0.9rem;">@{{ target_user.username }}</p>
 
@@ -96,12 +132,12 @@
             <div class="post-card">
                 <div style="color: #999; font-size: 0.8rem; margin-bottom: 5px;">{{ post.created_at|date:"Y年n月j日 H:i" }}</div>
                 <div style="margin-bottom: 5px;"><span style="background: #e4e6eb; color: #333; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px;">{{ post.subject }}</span></div>
-                <p style="margin: 5px 0;">{{ post.content }}</p>
+
+                <p style="margin: 5px 0; line-height:1.5;">{{ post.content|linebreaksbr }}</p>
 
                 {% if post.study_minutes > 0 %}
                     <div style="color:#1877f2; font-weight:bold; font-size:0.9rem;"><i class="fas fa-clock"></i> {{ post.display_study_time }}</div>
                 {% endif %}
-
                 {% if post.image %}
                     <img src="{{ post.image.url }}" style="max-width:100%; border-radius:8px; margin-top:5px; margin-bottom: 10px; display: block;">
                 {% endif %}
@@ -111,9 +147,7 @@
                 </div>
             </div>
             {% empty %}
-            <div style="background: white; padding: 20px; text-align: center; border-radius: 12px; color: #999;">
-                まだ投稿がありません。
-            </div>
+            <div style="background: white; padding: 20px; text-align: center; border-radius: 12px; color: #999;">まだ投稿がありません。</div>
             {% endfor %}
 
             <div style="text-align: center; margin: 20px 0;">
@@ -133,6 +167,15 @@
         <a href="{% url 'analytics' %}" class="nav-item"><i class="fas fa-chart-pie"></i></a>
         <a href="{% url 'user_profile' user.username %}" class="nav-item active"><i class="fas fa-user"></i></a>
         <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins" style="color: #fbc02d;"></i></a>
+        <a href="{% url 'notifications' %}" class="nav-item">
+            <i class="fas fa-bell"></i>
+            {% if unread_count > 0 %}<span class="badge">{{ unread_count }}</span>{% endif %}
+        </a>
     </div>
+
+    <script>
+        function openNav() { document.getElementById("sidebar").style.width = "250px"; document.getElementById("overlay").style.display = "block"; }
+        function closeNav() { document.getElementById("sidebar").style.width = "0"; document.getElementById("overlay").style.display = "none"; }
+    </script>
 </body>
 </html>
