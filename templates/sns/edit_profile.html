@@ -8,7 +8,6 @@
     <style>
         body { font-family: sans-serif; background: #f0f2f5; padding: 20px; text-align: center; }
         .card { background: white; padding: 20px; border-radius: 12px; max-width: 500px; margin: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-align: left; }
-
         .title-badge { font-weight: bold; font-size: 1rem; margin-bottom: 10px; display: inline-block; padding: 4px 12px; border-radius: 6px; }
         .title-badge.N { background: #f5f5f5; color: #424242; border: 1px solid #ccc; }
         .title-badge.R { background: #e3f2fd; color: #2196f3; border: 1px solid #bbdefb; }
@@ -30,7 +29,6 @@
         .rarity.N { background: #757575; color: white; }
         .equip-btn { width: 100%; background: #f0f2f5; border: none; padding: 6px; border-radius: 5px; font-size: 0.8rem; cursor: pointer; margin-top: 8px; font-weight: bold; border: 1px solid #ddd; }
 
-        /* 🔮 プロフィール編集画面用の大きいアバター表示 */
         .avatar-container { position: relative; display: inline-block; width: 100px; height: 100px; margin: 0 auto 10px; }
         .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; position: relative; z-index: 5; border: 3px solid #1877f2; box-sizing: border-box; background: white; }
         .avatar-placeholder { font-size: 100px; color: #ccc; position: relative; z-index: 5; background: white; border-radius: 50%; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border: 3px solid #1877f2; box-sizing: border-box; }
@@ -73,25 +71,32 @@
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="hidden" name="update_profile" value="1">
-
             <div class="form-group">
                 <label>ユーザーID (変更不可)</label>
                 <input type="text" class="form-control" value="{{ user.username }}" disabled style="background-color: #f5f5f5;">
             </div>
-
             <div class="form-group">
                 <label>表示名</label>
                 <input type="text" name="display_name" class="form-control" placeholder="例: りゅうのすけ" value="{{ user.profile.display_name|default:'' }}">
             </div>
-
             <div class="form-group">
                 <label>Bio (自己紹介)</label>
                 <textarea name="bio" class="form-control" placeholder="趣味や目標を書いてみよう！">{{ user.profile.bio|default:'' }}</textarea>
             </div>
 
             <div class="form-group">
-                <label>Profile image (アイコン)</label>
+                <label>写真アイコンを変更</label>
                 <input type="file" name="icon" class="form-control" accept="image/*">
+            </div>
+
+            <div class="form-group">
+                <label>目標日付（カレンダー指定）</label>
+                <input type="date" name="target_date" class="form-control" value="{{ user.profile.target_date|date:'Y-m-d' }}">
+            </div>
+
+            <div class="form-group">
+                <label>目標総勉強時間（分入力）</label>
+                <input type="number" name="target_minutes" class="form-control" placeholder="例: 600" value="{{ user.profile.target_minutes }}">
             </div>
 
             <div class="form-group">

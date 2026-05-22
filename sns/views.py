@@ -3,6 +3,8 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.db.models import Sum  # まとめて集計するために追加
+from datetime import timedelta
 from .models import Post, Profile, Comment, GachaItem, Notification
 import json
 import random
@@ -65,8 +67,10 @@ def index(request):
         if content:
             study_minutes = request.POST.get('study_minutes', 0)
             image = request.FILES.get('image')
+            subject = request.POST.get('subject', 'その他')  # 科目を取得
             minutes = int(study_minutes) if study_minutes else 0
-            Post.objects.create(user=request.user, content=content, study_minutes=minutes, image=image)
+
+            Post.objects.create(user=request.user, content=content, study_minutes=minutes, image=image, subject=subject)
             profile.points += minutes
             profile.save()
         return redirect('index')
@@ -102,14 +106,35 @@ def index(request):
         else:
             post.formatted_time = f"{diff.seconds // 3600}時間前"
 
-    recent_posts = Post.objects.filter(user=request.user).order_by('created_at')[:7]
-    labels = [p.created_at.strftime('%m/%d') for p in recent_posts]
-    data = [p.study_minutes for p in recent_posts]
+    # 📊 改良点：直近7日間の「同じ日」の勉強時間をまとめて合計するロジック
+    today = timezone.now().date()
+    labels = []
+    data = []
+    for i in range(6, -1, -1):
+        day = today - timedelta(days=i)
+        labels.append(day.strftime('%m/%d'))
+        # その日の自分の投稿の勉強時間を合算する
+        day_total = Post.objects.filter(user=request.user, created_at__date=day).aggregate(Sum('study_minutes'))[
+                        'study_minutes__sum'] or 0
+        data.append(day_total)
+
+    # 🎯 改良点：目標時間までの残り時間を計算
+    remaining_minutes = 0
+    has_target = False
+    if profile.target_date and profile.target_minutes > 0:
+        has_target = True
+        # これまでの総勉強時間を計算
+        total_study = Post.objects.filter(user=request.user).aggregate(Sum('study_minutes'))['study_minutes__sum'] or 0
+        remaining_minutes = profile.target_minutes - total_study
+        if remaining_minutes < 0:
+            remaining_minutes = 0
+
     unread_count = Notification.objects.filter(recipient=request.user, is_read=False).count()
 
     return render(request, 'sns/index.html', {
         'posts': posts, 'labels': json.dumps(labels), 'data': json.dumps(data),
-        'search_query': search_query, 'unread_count': unread_count
+        'search_query': search_query, 'unread_count': unread_count,
+        'has_target': has_target, 'remaining_minutes': remaining_minutes
     })
 
 
@@ -167,7 +192,13 @@ def edit_profile(request):
             profile.department = request.POST.get('department')
             profile.theme_color = request.POST.get('theme_color', 'dark')
 
-            # ★ 復活：画像のアップロードを保存
+            # 🎯 目標日付と時間の保存処理
+            t_date = request.POST.get('target_date')
+            profile.target_date = t_date if t_date else None
+            t_minutes = request.POST.get('target_minutes')
+            profile.target_minutes = int(t_minutes) if t_minutes else 0
+
+            # 📸 写真アイコンの保存
             if 'icon' in request.FILES:
                 profile.icon = request.FILES['icon']
 

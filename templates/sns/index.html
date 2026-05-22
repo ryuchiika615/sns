@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 80px; }
-
         .header { background: #1a1a1a; padding: 15px 20px; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; color: white; }
         .menu-icon { font-size: 1.5rem; cursor: pointer; color: white; }
 
@@ -33,7 +32,7 @@
         .title-badge { font-size: 0.7rem; font-weight: bold; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 3px; }
         .title-badge.SSR { background: linear-gradient(45deg, #ffe259, #ffa751) !important; color: #fff !important; border: 2px solid #ffd700 !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.4); }
 
-        /* 🔮 写真＋エフェクト対応のアバターCSS（サイズ可変） */
+        /* 🔮 写真＋中二病エフェクト表示用コンテナ */
         .avatar-container { position: relative; display: inline-block; width: 42px; height: 42px; margin-right: 15px; flex-shrink: 0; }
         .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; position: relative; z-index: 5; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); box-sizing: border-box; background: white; }
         .avatar-placeholder { font-size: 42px; color: #ccc; position: relative; z-index: 5; background: white; border-radius: 50%; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); box-sizing: border-box; }
@@ -42,13 +41,11 @@
         @keyframes aura-burn { 0% { box-shadow: 0 0 8px #ff0055; } 50% { box-shadow: 0 0 20px #ff0055, 0 0 30px #9400d3; } 100% { box-shadow: 0 0 8px #ff0055; } }
 
         .avatar-container.av-SR .avatar-img, .avatar-container.av-SR .avatar-placeholder { border-color: #ba68c8 !important; box-shadow: 0 0 10px #9400d3; }
-
         .avatar-container.av-SSR::before {
             content: ''; position: absolute; top: 50%; left: 50%; width: 130%; height: 130%;
             background: radial-gradient(circle, transparent 45%, rgba(255,215,0,0.2) 55%, rgba(255,69,0,0.6) 100%);
             border: 2px dashed #ffd700; border-radius: 50%; z-index: 6; animation: magic-rotation 5s linear infinite; pointer-events: none;
         }
-
         .avatar-container.has-wings::after {
             content: ''; position: absolute; top: 20%; left: -50%; width: 200%; height: 50%;
             background: #ff0055; box-shadow: 0 0 15px #ff0055, 0 0 25px #9400d3; opacity: 0.8; z-index: 1; pointer-events: none;
@@ -71,11 +68,11 @@
     <div id="sidebar" class="sidebar">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         <div style="text-align: center; margin-bottom: 20px;">
-            <div class="avatar-container" style="width:80px; height:80px; margin: 0 auto;">
+            <div class="avatar-container" style="width:60px; height:60px; margin: 0 auto;">
                 {% if user.profile.icon %}
                     <img src="{{ user.profile.icon.url }}" class="avatar-img">
                 {% else %}
-                    <i class="fas fa-user-circle avatar-placeholder" style="font-size:80px;"></i>
+                    <i class="fas fa-user-circle avatar-placeholder" style="font-size:60px;"></i>
                 {% endif %}
             </div>
             <div style="color: white; font-weight: bold; margin-top: 10px;">{{ user.username }}</div>
@@ -91,6 +88,16 @@
     <div id="overlay" class="overlay" onclick="closeNav()"></div>
 
     <div class="container">
+        {% if has_target %}
+        <div class="card" style="background: linear-gradient(45deg, #111, #222); color: white; text-align: center; padding: 15px; border: 1px solid #fbc02d;">
+            <h4 style="margin: 0 0 8px 0; color: #fbc02d;"><i class="fas fa-bullseye"></i> {{ user.profile.target_date|date:"Y年m月d日" }} までの目標</h4>
+            <div style="font-size: 0.9rem; color: #ccc;">目標総時間: {{ user.profile.target_minutes }} 分</div>
+            <div style="font-size: 1.1rem; font-weight: bold; margin-top: 5px;">
+                目標達成まであと <span style="color: #ff4757; font-size: 1.4rem;">{{ remaining_minutes }}</span> 分！
+            </div>
+        </div>
+        {% endif %}
+
         <div class="card">
             <canvas id="studyChart" height="200"></canvas>
         </div>
@@ -103,9 +110,21 @@
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <textarea name="content" placeholder="今日は何を学んだ？" required></textarea>
-                <div style="display: flex; gap: 10px;">
-                    <input type="number" name="study_minutes" placeholder="時間(分)">
-                    <input type="file" name="image" style="font-size: 0.7rem;">
+
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <select name="subject" style="width: 100%; padding: 10px; border: 1px solid #eee; border-radius: 8px; font-weight: bold; background: white;">
+                        <option value="その他">科目: その他</option>
+                        <option value="数学">科目: 数学</option>
+                        <option value="英語">科目: 英語</option>
+                        <option value="プログラミング">科目: プログラミング</option>
+                        <option value="物理">科目: 物理</option>
+                    </select>
+                    <input type="number" name="study_minutes" placeholder="時間(分)" style="margin-bottom:0;">
+                </div>
+
+                <div style="margin-bottom: 10px;">
+                    <label style="font-size: 0.8rem; color:#65676b; display:block; margin-bottom:3px;">画像を添付：</label>
+                    <input type="file" name="image" style="font-size: 0.75rem;" accept="image/*">
                 </div>
                 <button type="submit" class="post-btn">リュイートする</button>
             </form>
@@ -129,7 +148,6 @@
                         <i class="fas fa-user-circle avatar-placeholder"></i>
                     {% endif %}
                 </div>
-
                 <div style="display: flex; flex-direction: column; flex-grow: 1;">
                     <div style="display: flex; align-items: center; width: 100%;">
                         <span class="title-badge {{ post.current_rarity }}">{% if post.current_rarity == 'SSR' %}👑 {% endif %}【{{ post.user.profile.current_title }}】</span>
@@ -144,9 +162,15 @@
                 </div>
             </div>
 
+            <div style="margin-bottom: 5px;"><span style="background: #e4e6eb; color: #333; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px;">{{ post.subject }}</span></div>
             <p>{{ post.content }}</p>
+
             {% if post.study_minutes > 0 %}
                 <div style="color:#1877f2; font-weight:bold; font-size:0.9rem; margin-bottom:8px;"><i class="fas fa-clock"></i> {{ post.study_minutes }}分</div>
+            {% endif %}
+
+            {% if post.image %}
+                <img src="{{ post.image.url }}" style="max-width:100%; border-radius:8px; margin-top:5px; margin-bottom: 10px; display: block;">
             {% endif %}
 
             <div style="display:flex; gap:15px; border-top:1px solid #eee; padding-top:10px;">
@@ -193,19 +217,24 @@
             document.getElementById("sidebar").style.width = "0";
             document.getElementById("overlay").style.display = "none";
         }
+
+        // 📊 typeを'bar'(棒グラフ)に変更！同じ日付は1つにまとまります
         const ctx = document.getElementById('studyChart').getContext('2d');
         new Chart(ctx, {
-            type: 'line',
+            type: 'bar',
             data: {
                 labels: {{ labels|safe }},
                 datasets: [{
-                    label: '勉強時間(分)',
+                    label: 'その日の勉強時間(分)',
                     data: {{ data|safe }},
-                    borderColor: '#1877f2',
-                    tension: 0.4,
-                    fill: true,
-                    backgroundColor: 'rgba(24, 119, 242, 0.1)'
+                    backgroundColor: '#1877f2',
+                    borderRadius: 5,
                 }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                }
             }
         });
     </script>
