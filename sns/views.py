@@ -164,13 +164,54 @@ def edit_profile(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
     owned_items = profile.items.all().order_by('-rarity')
 
-    if request.method == 'POST' and 'new_avatar' in request.POST:
-        new_avatar = request.POST.get('new_avatar')
-        if owned_items.filter(name=new_avatar).exists():
-            profile.current_avatar = new_avatar
+    if request.method == 'POST':
+        # ★新規追加：プロフィール情報の保存処理
+        if 'update_profile' in request.POST:
+            profile.display_name = request.POST.get('display_name')
+            profile.bio = request.POST.get('bio')
+            profile.department = request.POST.get('department')
+            profile.theme_color = request.POST.get('theme_color', 'dark')
             profile.save()
-        return redirect('index')
+            return redirect('edit_profile')
 
+        if 'new_avatar' in request.POST:
+            new_avatar = request.POST.get('new_avatar')
+            if owned_items.filter(name=new_avatar).exists():
+                profile.current_avatar = new_avatar
+                profile.save()
+            return redirect('index')
+
+        if 'custom_name' in request.POST:
+            c_name = request.POST.get('custom_name')
+            c_word = request.POST.get('custom_word')
+            order = request.POST.get('order')
+
+            owned_names = set()
+            owned_words = set()
+            for item in owned_items:
+                if "【アイコン】" not in item.name:
+                    for n in NAMES_LIST:
+                        if n in item.name: owned_names.add(n)
+                    for w in WORDS_LIST:
+                        if w in item.name: owned_words.add(w)
+
+            if c_name in owned_names and c_word in owned_words:
+                full_title = f"{c_word}{c_name}" if order == 'reverse' else f"{c_name}{c_word}"
+                max_rarity_val = 1
+                rarity_map = {'N': 1, 'R': 2, 'SR': 3, 'SSR': 4}
+                val_to_r = {1: 'N', 2: 'R', 3: 'SR', 4: 'SSR'}
+                for item in owned_items:
+                    if c_name in item.name or c_word in item.name:
+                        max_rarity_val = max(max_rarity_val, rarity_map.get(item.rarity, 1))
+
+                new_item, created_item = GachaItem.objects.get_or_create(name=full_title,
+                                                                         defaults={'rarity': val_to_r[max_rarity_val]})
+                profile.items.add(new_item)
+                profile.current_title = full_title
+                profile.save()
+                return redirect('index')
+
+    # 表示用のデータ準備
     owned_names = set()
     owned_words = set()
     for item in owned_items:
@@ -179,27 +220,6 @@ def edit_profile(request):
                 if n in item.name: owned_names.add(n)
             for w in WORDS_LIST:
                 if w in item.name: owned_words.add(w)
-
-    if request.method == 'POST' and 'custom_name' in request.POST:
-        c_name = request.POST.get('custom_name')
-        c_word = request.POST.get('custom_word')
-        order = request.POST.get('order')
-
-        if c_name in owned_names and c_word in owned_words:
-            full_title = f"{c_word}{c_name}" if order == 'reverse' else f"{c_name}{c_word}"
-            max_rarity_val = 1
-            rarity_map = {'N': 1, 'R': 2, 'SR': 3, 'SSR': 4}
-            val_to_r = {1: 'N', 2: 'R', 3: 'SR', 4: 'SSR'}
-            for item in owned_items:
-                if c_name in item.name or c_word in item.name:
-                    max_rarity_val = max(max_rarity_val, rarity_map.get(item.rarity, 1))
-
-            new_item, created_item = GachaItem.objects.get_or_create(name=full_title,
-                                                                     defaults={'rarity': val_to_r[max_rarity_val]})
-            profile.items.add(new_item)
-            profile.current_title = full_title
-            profile.save()
-            return redirect('index')
 
     my_titles = [i for i in owned_items if "【アイコン】" not in i.name]
     my_avatars = owned_items.filter(name__contains="【アイコン】")

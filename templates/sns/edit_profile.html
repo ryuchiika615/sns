@@ -7,34 +7,31 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { font-family: sans-serif; background: #f0f2f5; padding: 20px; text-align: center; }
-        .card { background: white; padding: 20px; border-radius: 12px; max-width: 450px; margin: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .card { background: white; padding: 20px; border-radius: 12px; max-width: 500px; margin: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-align: left; }
 
-        .current-icon { display: inline-flex !important; align-items: center; justify-content: center; width: 100px; height: 100px; border-radius: 50%; margin-bottom: 10px; border: 3px solid #1877f2; background: white; }
+        .current-icon { display: inline-flex !important; align-items: center; justify-content: center; width: 100px; height: 100px; border-radius: 50%; margin-bottom: 10px; border: 3px solid #1877f2; background: white; margin-left: auto; margin-right: auto; }
 
         .title-badge { font-weight: bold; font-size: 1rem; margin-bottom: 10px; display: inline-block; padding: 4px 12px; border-radius: 6px; }
         .title-badge.N { background: #f5f5f5; color: #424242; border: 1px solid #ccc; }
         .title-badge.R { background: #e3f2fd; color: #2196f3; border: 1px solid #bbdefb; }
         .title-badge.SR { background: #f3e5f5; color: #9c27b0; border: 1px solid #e1bee7; box-shadow: 0 0 8px rgba(156,39,176,0.3); }
+        .title-badge.SSR { background: linear-gradient(45deg, #ffe259, #ffa751) !important; color: #fff !important; border: 2px solid #ffd700 !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
 
-        @keyframes ssr-glow-profile {
-            0% { box-shadow: 0 0 8px #ffd700; transform: scale(1); }
-            50% { box-shadow: 0 0 20px #ff8c00; transform: scale(1.03); }
-            100% { box-shadow: 0 0 8px #ffd700; transform: scale(1); }
-        }
-        .title-badge.SSR {
-            background: linear-gradient(45deg, #ffe259, #ffa751) !important; color: #fff !important; border: 2px solid #ffd700 !important;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3); animation: ssr-glow-profile 1.5s infinite ease-in-out;
-        }
+        h2, h3 { text-align: center; }
+        hr { border: 0; border-top: 1px solid #eee; margin: 25px 0; }
 
-        .custom-form { text-align: left; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-top: 10px; }
-        .custom-select { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd; margin-bottom: 12px; font-size: 0.9rem; }
-        .radio-group { margin-bottom: 15px; font-size: 0.9rem; }
+        /* 新規追加：プロフィール入力フォーム用 */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.9rem; font-weight: bold; color: #333; margin-bottom: 5px; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box; }
+        textarea.form-control { height: 100px; resize: none; }
+        .btn-primary { background: #1877f2; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        .btn-primary:hover { background: #166fe5; }
 
-        .item-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; text-align: left; }
+        /* ガチャコレクション用 */
+        .item-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .item-card { background: #fff; border: 1px solid #ddd; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between; }
         .rarity { font-size: 0.7rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 5px; text-align: center; width: fit-content; }
-        .item-card.card-SSR { border: 2px solid #ffd700; background: #fffde7; }
-        .item-card.card-SR { border: 1px solid #ba68c8; background: #fcf7fd; }
         .rarity.SSR { background: linear-gradient(45deg, #ffe259, #ffa751); color: white; }
         .rarity.SR { background: #9c27b0; color: white; }
         .rarity.R { background: #2196f3; color: white; }
@@ -42,38 +39,69 @@
 
         .equip-btn { width: 100%; background: #f0f2f5; border: none; padding: 6px; border-radius: 5px; font-size: 0.8rem; cursor: pointer; margin-top: 8px; font-weight: bold; border: 1px solid #ddd; }
         .equip-btn:hover { background: #1877f2; color: white; border-color: #1877f2; }
-
-        hr { border: 0; border-top: 1px solid #eee; margin: 25px 0; }
     </style>
 </head>
 <body>
     <div class="card">
         <h2>プロフィール編集</h2>
 
-        <i class="fas fa-user-circle current-icon" style="font-size: 100px; color: #ccc;"></i>
-
-        <div>
-            <span class="title-badge {{ current_rarity }}">
-                {% if current_rarity == 'SSR' %}👑 {% endif %}【{{ user.profile.current_title }}】
-            </span>
-            <br>
-            <span class="title-badge {{ current_av_rarity }}" style="font-size:0.8rem; background:#333; color:#fff;">
-                🔮 アイコン: {{ user.profile.current_avatar }}
-            </span>
+        <div style="text-align: center;">
+            <i class="fas fa-user-circle current-icon" style="font-size: 100px; color: #ccc;"></i><br>
+            <span class="title-badge {{ current_rarity }}">{% if current_rarity == 'SSR' %}👑 {% endif %}【{{ user.profile.current_title }}】</span><br>
+            <span class="title-badge {{ current_av_rarity }}" style="font-size:0.8rem; background:#333; color:#fff;">🔮 アイコン: {{ user.profile.current_avatar }}</span>
         </div>
 
         <hr>
 
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="update_profile" value="1">
+
+            <div class="form-group">
+                <label>ユーザーID (変更不可)</label>
+                <input type="text" class="form-control" value="{{ user.username }}" disabled style="background-color: #f5f5f5;">
+            </div>
+
+            <div class="form-group">
+                <label>表示名</label>
+                <input type="text" name="display_name" class="form-control" placeholder="例: りゅうのすけ" value="{{ user.profile.display_name|default:'' }}">
+            </div>
+
+            <div class="form-group">
+                <label>Bio (自己紹介)</label>
+                <textarea name="bio" class="form-control" placeholder="趣味や目標を書いてみよう！">{{ user.profile.bio|default:'' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label>背景色テーマ</label>
+                <select name="theme_color" class="form-control">
+                    <option value="dark" {% if user.profile.theme_color == 'dark' %}selected{% endif %}>ダークカラー</option>
+                    <option value="light" {% if user.profile.theme_color == 'light' %}selected{% endif %}>ライトカラー</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Department (所属学科)</label>
+                <select name="department" class="form-control">
+                    <option value="">---------</option>
+                    <option value="情報通信工学科" {% if user.profile.department == '情報通信工学科' %}selected{% endif %}>情報通信工学科</option>
+                    <option value="コンピュータ科学科" {% if user.profile.department == 'コンピュータ科学科' %}selected{% endif %}>コンピュータ科学科</option>
+                    <option value="その他" {% if user.profile.department == 'その他' %}selected{% endif %}>その他</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-primary">プロフィールを保存</button>
+        </form>
+
+        <hr>
+
         <h3>👁️ 獲得済みの中二病アイコン</h3>
-        <p style="font-size: 0.8rem; color: #65676b;">ガチャで引いたアバタースキンに切り替えます</p>
         <div class="item-list" style="margin-bottom:25px;">
             {% for item in my_avatars %}
-            <div class="item-card card-{{ item.rarity }}">
-                <div>
+            <div class="item-card">
+                <div style="text-align: center;">
                     <span class="rarity {{ item.rarity }}">{{ item.rarity }}</span>
-                    <div style="font-size: 0.85rem; font-weight: bold; margin-top: 3px;">
-                        {{ item.name }}
-                    </div>
+                    <div style="font-size: 0.85rem; font-weight: bold; margin-top: 3px;">{{ item.name }}</div>
                 </div>
                 <form method="POST">
                     {% csrf_token %}
@@ -84,7 +112,7 @@
                 </form>
             </div>
             {% empty %}
-            <p style="grid-column: 1 / 3; font-size: 0.8rem; color: #999; padding: 10px 0;">まだ中二病アイコンを持っていません。</p>
+            <p style="grid-column: 1 / 3; font-size: 0.8rem; color: #999; text-align: center;">まだ中二病アイコンを持っていません。</p>
             {% endfor %}
         </div>
 
@@ -92,63 +120,34 @@
 
         <h3>🛠️ 所有パーツで称号錬成</h3>
         {% if owned_names and owned_words %}
-            <form method="POST" class="custom-form">
+            <form method="POST" style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
                 {% csrf_token %}
-                <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 4px;">① 名前パーツ</label>
-                <select name="custom_name" class="custom-select">
-                    {% for name in owned_names %}
-                        <option value="{{ name }}">{{ name }}</option>
-                    {% endfor %}
-                </select>
-                <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 4px;">② 語録パーツ</label>
-                <select name="custom_word" class="custom-select">
-                    {% for word in owned_words %}
-                        <option value="{{ word }}">{{ word }}</option>
-                    {% endfor %}
-                </select>
-                <div class="radio-group">
-                    <input type="radio" name="order" value="normal" id="order_normal" checked>
-                    <label for="order_normal" style="margin-right: 15px;">名前 ＋ 語録</label>
-                    <input type="radio" name="order" value="reverse" id="order_reverse">
-                    <label for="order_reverse">語録 ＋ 名前</label>
+                <div class="form-group">
+                    <label>① 名前パーツ</label>
+                    <select name="custom_name" class="form-control" style="margin-bottom: 10px;">
+                        {% for name in owned_names %}<option value="{{ name }}">{{ name }}</option>{% endfor %}
+                    </select>
+                    <label>② 語録パーツ</label>
+                    <select name="custom_word" class="form-control" style="margin-bottom: 10px;">
+                        {% for word in owned_words %}<option value="{{ word }}">{{ word }}</option>{% endfor %}
+                    </select>
                 </div>
-                <button type="submit" style="background:#42b72a; color:white; border:none; padding:10px; border-radius:8px; width:100%; cursor:pointer; font-weight:bold;">
-                    錬成して装備する！
-                </button>
+                <div style="margin-bottom: 15px; font-size: 0.9rem;">
+                    <input type="radio" name="order" value="normal" id="order_normal" checked> <label for="order_normal">名前 ＋ 語録</label>
+                    <input type="radio" name="order" value="reverse" id="order_reverse"> <label for="order_reverse">語録 ＋ 名前</label>
+                </div>
+                <button type="submit" style="background:#42b72a; color:white; border:none; padding:10px; border-radius:8px; width:100%; font-weight:bold; cursor:pointer;">錬成して装備する！</button>
             </form>
         {% else %}
-            <p style="font-size: 0.85rem; color: #999;">ガチャを回して称号素材を集めよう！</p>
+            <p style="font-size: 0.85rem; color: #999; text-align: center;">ガチャを回して称号素材を集めよう！</p>
         {% endif %}
 
-        <hr>
-
-        <h3>🏆 獲得済みの称号コレクション</h3>
-        <div class="item-list">
-            {% for item in my_items %}
-            <div class="item-card card-{{ item.rarity }}">
-                <div>
-                    <span class="rarity {{ item.rarity }}">{{ item.rarity }}</span>
-                    <div style="font-size: 0.85rem; font-weight: bold; margin-top: 3px;">
-                        {% if item.rarity == 'SSR' %}👑 {% endif %}{{ item.name }}
-                    </div>
-                </div>
-                <form method="POST" action="{% url 'index' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="new_title" value="{{ item.name }}">
-                    <button type="submit" class="equip-btn">
-                        {% if user.profile.current_title == item.name %}装備中{% else %}装備する{% endif %}
-                    </button>
-                </form>
-            </div>
-            {% empty %}
-            <p style="grid-column: 1 / 3; font-size: 0.8rem; color: #999; padding: 10px 0;">まだ称号を持っていません。</p>
-            {% endfor %}
-        </div>
-
         <br>
-        <a href="{% url 'index' %}" style="color:#65676b; text-decoration:none; font-size: 0.9rem;">
-            <i class="fas fa-arrow-left"></i> タイムラインに戻る
-        </a>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{% url 'index' %}" style="color:#65676b; text-decoration:none; font-size: 0.9rem;">
+                <i class="fas fa-arrow-left"></i> タイムラインに戻る
+            </a>
+        </div>
     </div>
 </body>
 </html>
