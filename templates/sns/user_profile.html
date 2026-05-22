@@ -10,7 +10,6 @@
         .header { background: #1a1a1a; padding: 15px; color: white; text-align: center; position: sticky; top: 0; z-index: 100; font-weight: bold; }
         .container { max-width: 800px; margin: 20px auto; padding: 0 15px; display: flex; gap: 20px; flex-wrap: wrap; }
 
-        /* 左側のプロフィールカード */
         .profile-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex: 1; min-width: 250px; text-align: center; height: fit-content; }
         .avatar-placeholder { font-size: 120px; color: #ccc; margin-bottom: 10px; }
 
@@ -26,11 +25,9 @@
         .btn-follow { background: #1877f2; color: white; }
         .btn-unfollow { background: #e4e6eb; color: #050505; }
 
-        /* 右側のタブと投稿一覧 */
         .content-area { flex: 2; min-width: 300px; }
         .tabs { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
-        .tab { font-weight: bold; color: #65676b; text-decoration: none; cursor: pointer; }
-        .tab.active { color: #1877f2; border-bottom: 3px solid #1877f2; padding-bottom: 8px; }
+        .tab { font-weight: bold; color: #1877f2; border-bottom: 3px solid #1877f2; padding-bottom: 8px; }
 
         .post-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
 
@@ -41,13 +38,12 @@
 </head>
 <body>
     <div class="header">
-        <i class="fas fa-piggy-bank"></i> トゥットゥルー♪ SNS
+        <i class="fas fa-layer-group"></i> リュッター
     </div>
 
     <div class="container">
         <div class="profile-card">
             <i class="fas fa-user-circle avatar-placeholder"></i>
-
             <h2 style="margin: 10px 0 5px;">{{ target_profile.display_name|default:target_user.username }}</h2>
             <p style="color: #65676b; margin: 0; font-size: 0.9rem;">@{{ target_user.username }}</p>
 
@@ -84,7 +80,7 @@
 
         <div class="content-area">
             <div class="tabs">
-                <div class="tab active">Toots ({{ user_posts.count }})</div>
+                <div class="tab">リュイート ({{ user_posts.count }})</div>
             </div>
 
             {% for post in user_posts %}

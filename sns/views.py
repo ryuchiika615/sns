@@ -3,7 +3,6 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-# ★ Notification を追加
 from .models import Post, Profile, Comment, GachaItem, Notification
 import json
 import random
@@ -15,7 +14,7 @@ WORDS_LIST = [
     "誰もが三度見する", "今は亡き", "月給２４万", "税金泥棒", "国の犬", "ちいかわより",
     "やっぱり僕は", "みかんから生まれし", "桃から生まれし", "３浪の", "ゲーマーの", "１留の",
     "夢はマイクワゾウスキー", "デカビタよりもオロナミンｃ", "前世がティッシュ", "歩くR18指定",
-    "煩悩の塊", "親の顔より見た", "出会い厨の", "全裸待機中の", "賢者モードの", "童貞をこじらせた",
+    "煩脳の塊", "親の顔より見た", "出会い厨の", "全裸待機中の", "賢者モードの", "童貞をこじらせた",
     "変態という名の紳士", "パパ活疑惑の", "息をするようにスベる", "令和の奇行種", "脳内お花畑の",
     "歩く公然わいせつ", "圧倒的モブ", "クソエイムの", "課金沼に沈みし", "金欠の", "遅刻魔",
     "メンヘラ製造機", "留年確定の", "クソザコなめくじ", "深夜テンションの", "西村店長に怒られし",
@@ -45,8 +44,6 @@ def index(request):
             post_id = request.POST.get('post_id')
             post = get_object_or_404(Post, id=post_id)
             Comment.objects.create(post=post, user=request.user, text=request.POST.get('comment_text'))
-
-            # ★ 新機能：コメントされたら通知を作成
             if post.user != request.user:
                 Notification.objects.create(recipient=post.user, sender=request.user, post=post,
                                             notification_type='reply')
@@ -108,8 +105,6 @@ def index(request):
     recent_posts = Post.objects.filter(user=request.user).order_by('created_at')[:7]
     labels = [p.created_at.strftime('%m/%d') for p in recent_posts]
     data = [p.study_minutes for p in recent_posts]
-
-    # 未読の通知数を取得
     unread_count = Notification.objects.filter(recipient=request.user, is_read=False).count()
 
     return render(request, 'sns/index.html', {
@@ -164,6 +159,9 @@ def edit_profile(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
     owned_items = profile.items.all().order_by('-rarity')
 
+    # ガチャでGETした「本物の称号アイテム」だけを厳選（【アイコン】は除外）
+    real_owned_titles = owned_items.exclude(name__contains="【アイコン】")
+
     if request.method == 'POST':
         if 'update_profile' in request.POST:
             profile.display_name = request.POST.get('display_name')
@@ -184,20 +182,17 @@ def edit_profile(request):
             c_name = request.POST.get('custom_name')
             c_word = request.POST.get('custom_word')
             order = request.POST.get('order')
-            owned_names = set()
-            owned_words = set()
-            for item in owned_items:
-                if "【アイコン】" not in item.name:
-                    for n in NAMES_LIST:
-                        if n in item.name: owned_names.add(n)
-                    for w in WORDS_LIST:
-                        if w in item.name: owned_words.add(w)
-            if c_name in owned_names and c_word in owned_words:
+
+            # 自分が本当に持っている称号の文字列の中に含まれるパーツだけを完全に絞り込む
+            valid_names = [n for n in NAMES_LIST if any(n in item.name for item in real_owned_titles)]
+            valid_words = [w for w in WORDS_LIST if any(w in item.name for item in real_owned_titles)]
+
+            if c_name in valid_names and c_word in valid_words:
                 full_title = f"{c_word}{c_name}" if order == 'reverse' else f"{c_name}{c_word}"
                 max_rarity_val = 1
                 rarity_map = {'N': 1, 'R': 2, 'SR': 3, 'SSR': 4}
                 val_to_r = {1: 'N', 2: 'R', 3: 'SR', 4: 'SSR'}
-                for item in owned_items:
+                for item in real_owned_titles:
                     if c_name in item.name or c_word in item.name:
                         max_rarity_val = max(max_rarity_val, rarity_map.get(item.rarity, 1))
                 new_item, created_item = GachaItem.objects.get_or_create(name=full_title,
@@ -207,16 +202,11 @@ def edit_profile(request):
                 profile.save()
                 return redirect('index')
 
-    owned_names = set()
-    owned_words = set()
-    for item in owned_items:
-        if "【アイコン】" not in item.name:
-            for n in NAMES_LIST:
-                if n in item.name: owned_names.add(n)
-            for w in WORDS_LIST:
-                if w in item.name: owned_words.add(w)
+    # 表示用に、自分が持っているパーツだけを抽出
+    owned_names = [n for n in NAMES_LIST if any(n in item.name for item in real_owned_titles)]
+    owned_words = [w for w in WORDS_LIST if any(w in item.name for item in real_owned_titles)]
 
-    my_titles = [i for i in owned_items if "【アイコン】" not in i.name]
+    my_titles = list(real_owned_titles)
     my_avatars = owned_items.filter(name__contains="【アイコン】")
     current_item = GachaItem.objects.filter(name=profile.current_title).first()
     current_rarity = current_item.rarity if current_item else 'N'
@@ -225,7 +215,7 @@ def edit_profile(request):
 
     return render(request, 'sns/edit_profile.html', {
         'my_items': my_titles, 'my_avatars': my_avatars, 'current_rarity': current_rarity,
-        'current_av_rarity': current_av_rarity, 'owned_names': list(owned_names), 'owned_words': list(owned_words)
+        'current_av_rarity': current_av_rarity, 'owned_names': owned_names, 'owned_words': owned_words
     })
 
 
@@ -253,7 +243,6 @@ def like_post(request, post_id):
         post.liked_by.remove(request.user)
     else:
         post.liked_by.add(request.user)
-        # ★ 新機能：いいねされたら通知を作成
         if post.user != request.user:
             Notification.objects.create(recipient=post.user, sender=request.user, post=post, notification_type='like')
     return redirect('index')
@@ -296,16 +285,13 @@ def toggle_follow(request, username):
             my_profile.follows.remove(target_profile)
         else:
             my_profile.follows.add(target_profile)
-            # ★ 新機能：フォローされたら通知を作成
             Notification.objects.create(recipient=target_user, sender=request.user, notification_type='follow')
 
     return redirect('user_profile', username=username)
 
 
-# ★ 新規追加：通知を見る画面の処理
 @login_required
 def notifications_view(request):
     notifs = Notification.objects.filter(recipient=request.user).order_by('-created_at')[:30]
-    # 通知画面を開いたら、未読をすべて「既読」にする
     Notification.objects.filter(recipient=request.user, is_read=False).update(is_read=True)
     return render(request, 'sns/notifications.html', {'notifications': notifs})
