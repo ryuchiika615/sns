@@ -10,35 +10,28 @@
         body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 80px; }
         .header { background: #1a1a1a; padding: 15px 20px; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; color: white; }
         .menu-icon { font-size: 1.5rem; cursor: pointer; color: white; }
-
         .sidebar { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; left: 0; background-color: #1a1a1a; overflow-x: hidden; transition: 0.3s; padding-top: 60px; box-shadow: 2px 0 5px rgba(0,0,0,0.5); }
         .sidebar a { padding: 15px 25px; text-decoration: none; font-size: 1.2rem; color: #fff; display: block; transition: 0.3s; font-weight: bold; }
         .sidebar a:hover { color: #fbc02d; background: #333; }
         .sidebar .closebtn { position: absolute; top: 0; right: 20px; font-size: 36px; padding: 0; color: #999; }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1500; display: none; }
-
         .container { max-width: 600px; margin: auto; padding: 15px; }
         .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); position: relative; }
-
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
         .nav-item { color: #aaa; text-decoration: none; font-size: 1.5rem; position: relative; }
         .nav-item.active { color: white; }
         .badge { position: absolute; top: -5px; right: -8px; background: #e0245e; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; font-weight: bold; border: 2px solid #1a1a1a; }
-
         .post-btn { background: #1877f2; color: white; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; width: 100%; margin-top: 10px; cursor: pointer; }
         input, textarea { width: 100%; padding: 10px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box; }
         .comment-section { background: #f8f9fa; border-radius: 8px; padding: 10px; margin-top: 10px; font-size: 0.85rem; }
         .post-delete-btn { position: absolute; top: 15px; right: 15px; font-size: 1.1rem; background: none; border: none; color: #ff4757; cursor: pointer; }
         .title-badge { font-size: 0.7rem; font-weight: bold; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 3px; }
         .title-badge.SSR { background: linear-gradient(45deg, #ffe259, #ffa751) !important; color: #fff !important; border: 2px solid #ffd700 !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.4); }
-
         .avatar-container { position: relative; display: inline-block; width: 42px; height: 42px; margin-right: 15px; flex-shrink: 0; }
         .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; position: relative; z-index: 5; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); box-sizing: border-box; background: white; }
         .avatar-placeholder { font-size: 42px; color: #ccc; position: relative; z-index: 5; background: white; border-radius: 50%; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); box-sizing: border-box; }
-
         @keyframes magic-rotation { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
         @keyframes aura-burn { 0% { box-shadow: 0 0 8px #ff0055; } 50% { box-shadow: 0 0 20px #ff0055, 0 0 30px #9400d3; } 100% { box-shadow: 0 0 8px #ff0055; } }
-
         .avatar-container.av-SR .avatar-img, .avatar-container.av-SR .avatar-placeholder { border-color: #ba68c8 !important; box-shadow: 0 0 10px #9400d3; }
         .avatar-container.av-SSR::before {
             content: ''; position: absolute; top: 50%; left: 50%; width: 130%; height: 130%;
@@ -77,6 +70,7 @@
             <div style="color: white; font-weight: bold; margin-top: 10px;">{{ user.username }}</div>
         </div>
         <a href="{% url 'index' %}"><i class="fas fa-home" style="width:25px;"></i> ホーム</a>
+        <a href="{% url 'analytics' %}"><i class="fas fa-chart-pie" style="width:25px;"></i> 分析レポート</a>
         <a href="{% url 'user_profile' user.username %}"><i class="fas fa-user" style="width:25px;"></i> プロフィール</a>
         <a href="{% url 'edit_profile' %}"><i class="fas fa-cog" style="width:25px;"></i> 設定 / 編集</a>
         <a href="{% url 'gacha' %}"><i class="fas fa-coins" style="width:25px;"></i> ガチャポン</a>
@@ -89,10 +83,10 @@
     <div class="container">
         {% if has_target %}
         <div class="card" style="background: linear-gradient(45deg, #111, #222); color: white; text-align: center; padding: 15px; border: 1px solid #fbc02d;">
-            <h4 style="margin: 0 0 8px 0; color: #fbc02d;"><i class="fas fa-bullseye"></i> {{ user.profile.target_date|date:"Y年m月d日" }} までの目標</h4>
-            <div style="font-size: 0.9rem; color: #ccc;">目標総時間: {{ user.profile.target_minutes }} 分</div>
+            <h4 style="margin: 0 0 8px 0; color: #fbc02d;"><i class="fas fa-bullseye"></i> {{ target_date|date:"Y年m月d日" }} までの目標</h4>
+            <div style="font-size: 0.9rem; color: #ccc;">目標総時間: {{ target_total_display }}</div>
             <div style="font-size: 1.1rem; font-weight: bold; margin-top: 5px;">
-                目標達成まであと <span style="color: #ff4757; font-size: 1.4rem;">{{ remaining_minutes }}</span> 分！
+                目標達成まであと <span style="color: #ff4757; font-size: 1.4rem;">{{ remaining_display }}</span>！
             </div>
         </div>
         {% endif %}
@@ -109,7 +103,6 @@
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <textarea name="content" placeholder="今日は何を学んだ？" required></textarea>
-
                 <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                     <select name="subject" style="width: 100%; padding: 10px; border: 1px solid #eee; border-radius: 8px; font-weight: bold; background: white;">
                         <option value="その他">科目: その他</option>
@@ -120,7 +113,6 @@
                     </select>
                     <input type="number" name="study_minutes" placeholder="時間(分)" style="margin-bottom:0;">
                 </div>
-
                 <div style="margin-bottom: 10px;">
                     <label style="font-size: 0.8rem; color:#65676b; display:block; margin-bottom:3px;">画像を添付：</label>
                     <input type="file" name="image" style="font-size: 0.75rem;" accept="image/*">
@@ -165,7 +157,7 @@
             <p>{{ post.content }}</p>
 
             {% if post.study_minutes > 0 %}
-                <div style="color:#1877f2; font-weight:bold; font-size:0.9rem; margin-bottom:8px;"><i class="fas fa-clock"></i> {{ post.study_minutes }}分</div>
+                <div style="color:#1877f2; font-weight:bold; font-size:0.9rem; margin-bottom:8px;"><i class="fas fa-clock"></i> {{ post.display_study_time }}</div>
             {% endif %}
 
             {% if post.image %}
@@ -177,7 +169,6 @@
                     <i class="fa{% if user in post.liked_by.all %}s{% else %}r{% endif %} fa-heart"></i> {{ post.liked_by.count }}
                 </a>
             </div>
-
             <div class="comment-section">
                 {% for comment in post.comments.all %}
                 <div style="margin-bottom: 6px;">
@@ -197,30 +188,23 @@
             <p>まだリュイートがありません。</p>
         </div>
         {% endfor %}
+
         <div style="text-align: center; margin: 20px 0;">
             {% if posts.has_previous %}
                 <a href="?page={{ posts.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" style="padding: 10px 20px; background: white; border-radius: 20px; text-decoration: none; color: #1877f2; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-right: 10px;">前へ</a>
             {% endif %}
-
             <span style="color: #65676b; font-weight: bold; font-size: 0.9rem;">ページ {{ posts.number }} / {{ posts.paginator.num_pages }}</span>
-
             {% if posts.has_next %}
                 <a href="?page={{ posts.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" style="padding: 10px 20px; background: white; border-radius: 20px; text-decoration: none; color: #1877f2; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-left: 10px;">過去のリュイートを見る</a>
             {% endif %}
         </div>
-
     </div>
 
     <div class="bottom-nav">
         <a href="{% url 'index' %}" class="nav-item active"><i class="fas fa-home"></i></a>
+        <a href="{% url 'analytics' %}" class="nav-item"><i class="fas fa-chart-pie"></i></a>
         <a href="{% url 'user_profile' user.username %}" class="nav-item"><i class="fas fa-user"></i></a>
         <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins" style="color: #fbc02d;"></i></a>
-        <a href="{% url 'notifications' %}" class="nav-item">
-            <i class="fas fa-bell"></i>
-            {% if unread_count > 0 %}
-                <span class="badge">{{ unread_count }}</span>
-            {% endif %}
-        </a>
     </div>
 
     <script>
@@ -232,7 +216,6 @@
             document.getElementById("sidebar").style.width = "0";
             document.getElementById("overlay").style.display = "none";
         }
-
         const ctx = document.getElementById('studyChart').getContext('2d');
         new Chart(ctx, {
             type: 'bar',
@@ -245,9 +228,7 @@
                     borderRadius: 5,
                 }]
             },
-            options: {
-                scales: { y: { beginAtZero: true } }
-            }
+            options: { scales: { y: { beginAtZero: true } } }
         });
     </script>
 </body>
