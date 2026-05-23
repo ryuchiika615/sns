@@ -15,7 +15,7 @@ class GachaItem(models.Model):
         return f"[{self.rarity}] {self.name}"
 
 
-# 2. プロフィール（カレンダー目標日付、目標時間を追加！）
+# 2. プロフィール
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     display_name = models.CharField(max_length=50, blank=True, null=True)
@@ -24,14 +24,12 @@ class Profile(models.Model):
     theme_color = models.CharField(max_length=20, default='dark')
     follows = models.ManyToManyField('self', related_name='followed_by', symmetrical=False, blank=True)
 
-    # 📸 写真アイコン用のフィールド
-    icon = models.ImageField(upload_to='icons/', default='icons/default.png', blank=True)
+    # 🔮 裏技：画像をデータベースにテキストとして直接保存する（絶対に消えない）
+    icon = models.TextField(blank=True, null=True)
 
-    # 🎯 カレンダー目標用のフィールド
-    target_date = models.DateField(null=True, blank=True)  # 目標日付
-    target_minutes = models.IntegerField(default=0)  # 目標時間（分）
+    target_date = models.DateField(null=True, blank=True)
+    target_minutes = models.IntegerField(default=0)
 
-    # ガチャ機能
     points = models.IntegerField(default=0)
     items = models.ManyToManyField(GachaItem, blank=True)
     current_title = models.CharField(max_length=100, default="新人エンジニア", blank=True)
@@ -41,17 +39,19 @@ class Profile(models.Model):
         return self.user.username
 
 
-# 3. 投稿モデル（科目フィールドを追加！）
+# 3. 投稿モデル
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField(max_length=140)
-    image = models.ImageField(upload_to='posts/', blank=True, null=True)
 
-    # 📝 科目（例: 数学、英語、プログラミングなど）
+    # 🔮 裏技：投稿画像もデータベースに直接保存
+    image = models.TextField(blank=True, null=True)
+
     subject = models.CharField(max_length=50, default="その他")
-
     study_minutes = models.IntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
+
+    # ⚡ 爆速化：db_index=True を追加し、数万件になっても並び替えを一瞬にする
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     liked_by = models.ManyToManyField(User, related_name='liked_posts', blank=True)
     reply_to = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
 
@@ -64,7 +64,7 @@ class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField(max_length=100)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
 
 
 # 5. 通知モデル
@@ -75,7 +75,7 @@ class Notification(models.Model):
     notification_type = models.CharField(max_length=20,
                                          choices=[('like', 'いいね'), ('reply', 'リプライ'), ('follow', 'フォロー')])
     is_read = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
 
     def __str__(self):
         return f"{self.sender.username} -> {self.recipient.username} ({self.notification_type})"

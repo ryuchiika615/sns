@@ -10,7 +10,7 @@
         .header { background: #1a1a1a; padding: 15px 20px; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; color: white; }
         .menu-icon { font-size: 1.5rem; cursor: pointer; color: white; }
         .sidebar { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; left: 0; background-color: #1a1a1a; overflow-x: hidden; transition: 0.3s; padding-top: 60px; box-shadow: 2px 0 5px rgba(0,0,0,0.5); }
-        .sidebar a { padding: 15px 25px; text-decoration: none; font-size: 1.2rem; color: #fff; display: block; transition: 0.3s; font-weight: bold; }
+        .sidebar a { padding: 15px 25px; text-decoration: none; font-size: 1.2rem; color: #fff; display: block; font-weight: bold; }
         .sidebar a:hover { color: #fbc02d; background: #333; }
         .sidebar .closebtn { position: absolute; top: 0; right: 20px; font-size: 36px; padding: 0; color: #999; }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1500; display: none; }
@@ -21,20 +21,19 @@
 
         .card { background: white; padding: 20px; border-radius: 12px; max-width: 500px; margin: 20px auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-align: left; }
         .title-badge { font-weight: bold; font-size: 1rem; margin-bottom: 10px; display: inline-block; padding: 4px 12px; border-radius: 6px; }
-        .title-badge.N { background: #f5f5f5; color: #424242; border: 1px solid #ccc; }
+        .title-badge.SSR { background: linear-gradient(45deg, #ffe259, #ffa751) !important; color: #fff !important; border: 2px solid #ffd700 !important; }
+        .title-badge.SR { background: #f3e5f5; color: #9c27b0; border: 1px solid #e1bee7; }
         .title-badge.R { background: #e3f2fd; color: #2196f3; border: 1px solid #bbdefb; }
-        .title-badge.SR { background: #f3e5f5; color: #9c27b0; border: 1px solid #e1bee7; box-shadow: 0 0 8px rgba(156,39,176,0.3); }
-        .title-badge.SSR { background: linear-gradient(45deg, #ffe259, #ffa751) !important; color: #fff !important; border: 2px solid #ffd700 !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+        .title-badge.N { background: #f5f5f5; color: #424242; border: 1px solid #ccc; }
         h2, h3 { text-align: center; margin-top: 0; }
         hr { border: 0; border-top: 1px solid #eee; margin: 25px 0; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 0.9rem; font-weight: bold; color: #333; margin-bottom: 5px; }
         .form-control { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box; }
-        textarea.form-control { height: 100px; resize: none; }
         .btn-primary { background: #1877f2; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; cursor: pointer; font-weight: bold; font-size: 1rem; }
         .item-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .item-card { background: #fff; border: 1px solid #ddd; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between; }
-        .rarity { font-size: 0.7rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 5px; text-align: center; width: fit-content; }
+        .rarity { font-size: 0.7rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 5px; }
         .rarity.SSR { background: linear-gradient(45deg, #ffe259, #ffa751); color: white; }
         .rarity.SR { background: #9c27b0; color: white; }
         .rarity.R { background: #2196f3; color: white; }
@@ -44,13 +43,12 @@
         .avatar-container { position: relative; display: inline-block; width: 100px; height: 100px; margin: 0 auto 10px; }
         .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; position: relative; z-index: 5; border: 3px solid #1877f2; box-sizing: border-box; background: white; }
         .avatar-placeholder { font-size: 100px; color: #ccc; position: relative; z-index: 5; background: white; border-radius: 50%; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border: 3px solid #1877f2; box-sizing: border-box; }
-
-        @keyframes magic-rotation { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
-        @keyframes aura-burn { 0% { box-shadow: 0 0 8px #ff0055; } 50% { box-shadow: 0 0 20px #ff0055, 0 0 30px #9400d3; } 100% { box-shadow: 0 0 8px #ff0055; } }
         .avatar-container.av-SR .avatar-img, .avatar-container.av-SR .avatar-placeholder { border-color: #ba68c8 !important; box-shadow: 0 0 15px #9400d3; }
         .avatar-container.av-SSR::before { content: ''; position: absolute; top: 50%; left: 50%; width: 130%; height: 130%; background: radial-gradient(circle, transparent 45%, rgba(255,215,0,0.2) 55%, rgba(255,69,0,0.6) 100%); border: 3px dashed #ffd700; border-radius: 50%; z-index: 6; animation: magic-rotation 5s linear infinite; pointer-events: none; }
         .avatar-container.has-wings::after { content: ''; position: absolute; top: 20%; left: -50%; width: 200%; height: 50%; background: #ff0055; box-shadow: 0 0 20px #ff0055, 0 0 35px #9400d3; opacity: 0.8; z-index: 1; pointer-events: none; clip-path: polygon(0 40%, 25% 0, 45% 50%, 50% 20%, 55% 50%, 75% 0, 100% 40%, 80% 100%, 50% 70%, 20% 100%); }
         .avatar-container.has-eye { animation: aura-burn 2s infinite ease-in-out; }
+        @keyframes magic-rotation { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+        @keyframes aura-burn { 0% { box-shadow: 0 0 8px #ff0055; } 50% { box-shadow: 0 0 20px #ff0055, 0 0 30px #9400d3; } 100% { box-shadow: 0 0 8px #ff0055; } }
     </style>
 </head>
 <body>
@@ -59,31 +57,22 @@
             <i class="fas fa-bars menu-icon" onclick="openNav()"></i>
             <span style="font-weight:bold; font-size:1.2rem;"><i class="fas fa-layer-group"></i> リュッター</span>
         </div>
-        <div style="background: #333; padding: 5px 12px; border-radius: 15px; font-weight: bold; font-size: 0.8rem; color: #fbc02d;">
-            <i class="fas fa-gem"></i> {{ user.profile.points }} pt
-        </div>
+        <div style="background: #333; padding: 5px 12px; border-radius: 15px; font-weight: bold; font-size: 0.8rem; color: #fbc02d;"><i class="fas fa-gem"></i> {{ user.profile.points }} pt</div>
     </div>
 
     <div id="sidebar" class="sidebar">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         <div style="text-align: center; margin-bottom: 20px;">
-            <div style="width:60px; height:60px; margin: 0 auto; position: relative;">
-                {% if user.profile.icon %}
-                    <img src="{{ user.profile.icon.url }}" style="width:100%; height:100%; border-radius:50%; object-fit:cover; border:2px solid #fff;">
-                {% else %}
-                    <i class="fas fa-user-circle" style="font-size:60px; color:#ccc;"></i>
-                {% endif %}
+            <div class="avatar-container" style="width:60px; height:60px; margin: 0 auto;">
+                {% if user.profile.icon %}<img src="{{ user.profile.icon }}" class="avatar-img">{% else %}<i class="fas fa-user-circle avatar-placeholder" style="font-size:60px;"></i>{% endif %}
             </div>
             <div style="color: white; font-weight: bold; margin-top: 10px;">{{ user.username }}</div>
         </div>
-        <a href="{% url 'index' %}"><i class="fas fa-home" style="width:25px;"></i> ホーム</a>
-        <a href="{% url 'analytics' %}"><i class="fas fa-chart-pie" style="width:25px;"></i> 分析レポート</a>
-        <a href="{% url 'user_profile' user.username %}"><i class="fas fa-user" style="width:25px;"></i> プロフィール</a>
-        <a href="{% url 'edit_profile' %}"><i class="fas fa-cog" style="width:25px;"></i> 設定 / 編集</a>
-        <a href="{% url 'gacha' %}"><i class="fas fa-coins" style="width:25px;"></i> ガチャポン</a>
-        <hr style="border-color: #333; margin: 20px;">
-        <form action="{% url 'logout' %}" method="POST" id="logout-form" style="display:none;">{% csrf_token %}</form>
-        <a href="javascript:void(0);" onclick="document.getElementById('logout-form').submit();" style="color:#ff4757;"><i class="fas fa-sign-out-alt" style="width:25px;"></i> ログアウト</a>
+        <a href="{% url 'index' %}">ホーム</a>
+        <a href="{% url 'analytics' %}">分析レポート</a>
+        <a href="{% url 'user_profile' user.username %}">プロフィール</a>
+        <a href="{% url 'edit_profile' %}">設定 / 編集</a>
+        <a href="{% url 'gacha' %}">ガチャポン</a>
     </div>
     <div id="overlay" class="overlay" onclick="closeNav()"></div>
 
@@ -92,11 +81,7 @@
 
         <div style="text-align: center;">
             <div class="avatar-container av-{{ current_av_rarity }} {% if '翼' in user.profile.current_avatar %}has-wings{% endif %} {% if '眼' in user.profile.current_avatar %}has-eye{% endif %}">
-                {% if user.profile.icon %}
-                    <img src="{{ user.profile.icon.url }}" class="avatar-img">
-                {% else %}
-                    <i class="fas fa-user-circle avatar-placeholder"></i>
-                {% endif %}
+                {% if user.profile.icon %><img src="{{ user.profile.icon }}" class="avatar-img">{% else %}<i class="fas fa-user-circle avatar-placeholder"></i>{% endif %}
             </div><br>
             <span class="title-badge {{ current_rarity }}">{% if current_rarity == 'SSR' %}👑 {% endif %}【{{ user.profile.current_title }}】</span><br>
             <span class="title-badge {{ current_av_rarity }}" style="font-size:0.8rem; background:#333; color:#fff;">🔮 アイコン: {{ user.profile.current_avatar }}</span>
@@ -107,64 +92,24 @@
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="hidden" name="update_profile" value="1">
-            <div class="form-group"><label>ユーザーID (変更不可)</label><input type="text" class="form-control" value="{{ user.username }}" disabled style="background-color: #f5f5f5;"></div>
-            <div class="form-group"><label>表示名</label><input type="text" name="display_name" class="form-control" placeholder="例: りゅうのすけ" value="{{ user.profile.display_name|default:'' }}"></div>
-            <div class="form-group"><label>Bio (自己紹介)</label><textarea name="bio" class="form-control" placeholder="趣味や目標を書いてみよう！">{{ user.profile.bio|default:'' }}</textarea></div>
-            <div class="form-group"><label>写真アイコンを変更</label><input type="file" name="icon" class="form-control" accept="image/*"></div>
-            <div class="form-group"><label>目標日付（カレンダー指定）</label><input type="date" name="target_date" class="form-control" value="{{ user.profile.target_date|date:'Y-m-d' }}"></div>
-            <div class="form-group"><label>目標総勉強時間（分入力）</label><input type="number" name="target_minutes" class="form-control" placeholder="例: 600" value="{{ user.profile.target_minutes }}"></div>
-            <div class="form-group"><label>背景色テーマ</label><select name="theme_color" class="form-control"><option value="dark" {% if user.profile.theme_color == 'dark' %}selected{% endif %}>ダークカラー</option><option value="light" {% if user.profile.theme_color == 'light' %}selected{% endif %}>ライトカラー</option></select></div>
-            <div class="form-group"><label>Department (所属学科)</label><select name="department" class="form-control"><option value="">---------</option><option value="情報通信工学科" {% if user.profile.department == '情報通信工学科' %}selected{% endif %}>情報通信工学科</option><option value="コンピュータ科学科" {% if user.profile.department == 'コンピュータ科学科' %}selected{% endif %}>コンピュータ科学科</option><option value="その他" {% if user.profile.department == 'その他' %}selected{% endif %}>その他</option></select></div>
+            <div class="form-group"><label>表示名</label><input type="text" name="display_name" class="form-control" value="{{ user.profile.display_name|default:'' }}"></div>
+            <div class="form-group"><label>Bio (自己紹介)</label><textarea name="bio" class="form-control" style="height:80px;">{{ user.profile.bio|default:'' }}</textarea></div>
+            <div class="form-group"><label>写真アイコンを変更（消えない新システム）</label><input type="file" name="icon" class="form-control" accept="image/*"></div>
+            <div class="form-group"><label>目標日付</label><input type="date" name="target_date" class="form-control" value="{{ user.profile.target_date|date:'Y-m-d' }}"></div>
+            <div class="form-group"><label>目標総勉強時間（分入力）</label><input type="number" name="target_minutes" class="form-control" value="{{ user.profile.target_minutes }}"></div>
+            <div class="form-group"><label>Department (所属学科)</label><select name="department" class="form-control"><option value="情報通信工学科" {% if user.profile.department == '情報通信工学科' %}selected{% endif %}>情報通信工学科</option><option value="コンピュータ科学科" {% if user.profile.department == 'コンピュータ科学科' %}selected{% endif %}>コンピュータ科学科</option></select></div>
             <button type="submit" class="btn-primary">プロフィールを保存</button>
         </form>
 
         <hr>
-
-        <h3>👁️ 獲得済みの中二病アイコン</h3>
-        <div class="item-list" style="margin-bottom:25px;">
-            {% for item in my_avatars %}
-            <div class="item-card">
-                <div style="text-align: center;"><span class="rarity {{ item.rarity }}">{{ item.rarity }}</span><div style="font-size: 0.85rem; font-weight: bold; margin-top: 3px;">{{ item.name }}</div></div>
-                <form method="POST">{% csrf_token %}<input type="hidden" name="new_avatar" value="{{ item.name }}"><button type="submit" class="equip-btn">{% if user.profile.current_avatar == item.name %}装備中{% else %}装備する{% endif %}</button></form>
-            </div>
-            {% empty %}
-            <p style="grid-column: 1 / 3; font-size: 0.8rem; color: #999; text-align: center;">まだ中二病アイコンを持っていません。</p>
-            {% endfor %}
-        </div>
-
-        <hr>
-
         <h3>🛠️ 所有パーツで称号錬成</h3>
-        {% if owned_names and owned_words %}
-            <form method="POST" style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label>① 名前パーツ（ガチャで出たパーツのみ表示）</label><select name="custom_name" class="form-control" style="margin-bottom: 10px;">{% for name in owned_names %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select>
-                    <label>② 語録パーツ（ガチャで出たパーツのみ表示）</label><select name="custom_word" class="form-control" style="margin-bottom: 10px;">{% for word in owned_words %}<option value="{{ word }}">{{ word }}</option>{% endfor %}</select>
-                </div>
-                <div style="margin-bottom: 15px; font-size: 0.9rem;">
-                    <input type="radio" name="order" value="normal" id="order_normal" checked> <label for="order_normal">名前 ＋ 語録</label>
-                    <input type="radio" name="order" value="reverse" id="order_reverse"> <label for="order_reverse">語録 ＋ 名前</label>
-                </div>
-                <button type="submit" style="background:#42b72a; color:white; border:none; padding:10px; border-radius:8px; width:100%; font-weight:bold; cursor:pointer;">錬成して装備する！</button>
-            </form>
-        {% else %}
-            <p style="font-size: 0.85rem; color: #999; text-align: center;">ガチャを回して称号素材を当てると素材が解放されます！</p>
-        {% endif %}
-
-        <hr>
-
-        <h3>🏆 獲得済みの称号コレクション</h3>
-        <div class="item-list">
-            {% for item in my_items %}
-            <div class="item-card">
-                <div><span class="rarity {{ item.rarity }}">{{ item.rarity }}</span><div style="font-size: 0.85rem; font-weight: bold; margin-top: 3px;">{% if item.rarity == 'SSR' %}👑 {% endif %}{{ item.name }}</div></div>
-                <form method="POST" action="{% url 'index' %}">{% csrf_token %}<input type="hidden" name="new_title" value="{{ item.name }}"><button type="submit" class="equip-btn">{% if user.profile.current_title == item.name %}装備中{% else %}装備する{% endif %}</button></form>
-            </div>
-            {% empty %}
-            <p style="grid-column: 1 / 3; font-size: 0.8rem; color: #999; text-align: center;">まだ称号を持っていません。</p>
-            {% endfor %}
-        </div>
+        <form method="POST" style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
+            {% csrf_token %}
+            <select name="custom_name" class="form-control">{% for name in owned_names %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select>
+            <select name="custom_word" class="form-control" style="margin-top:10px;">{% for word in owned_words %}<option value="{{ word }}">{{ word }}</option>{% endfor %}</select>
+            <div style="margin: 10px 0;"><input type="radio" name="order" value="normal" checked> 名前＋語録 <input type="radio" name="order" value="reverse"> 語録＋名前</div>
+            <button type="submit" style="background:#42b72a; color:white; border:none; padding:10px; border-radius:8px; width:100%; font-weight:bold;">錬成して装備！</button>
+        </form>
     </div>
 
     <div class="bottom-nav">
@@ -173,8 +118,7 @@
         <a href="{% url 'user_profile' user.username %}" class="nav-item"><i class="fas fa-user"></i></a>
         <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins" style="color: #fbc02d;"></i></a>
         <a href="{% url 'notifications' %}" class="nav-item">
-            <i class="fas fa-bell"></i>
-            {% if unread_count > 0 %}<span class="badge">{{ unread_count }}</span>{% endif %}
+            <i class="fas fa-bell"></i>{% if unread_count > 0 %}<span class="badge">{{ unread_count }}</span>{% endif %}
         </a>
     </div>
 
