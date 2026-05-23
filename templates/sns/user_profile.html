@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>プロフィール - リュッター</title>
+    <title>{{ target_user.username }}のプロフィール</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 80px; }
@@ -29,11 +29,18 @@
         .btn-unfollow { background: #e4e6eb; color: #050505; }
         .content-area { flex: 2; min-width: 300px; }
         .post-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+
+        /* タブデザイン */
+        .tabs { display: flex; border-bottom: 2px solid #ddd; margin-bottom: 15px; overflow-x: auto; white-space: nowrap; }
+        .tab-link { padding: 10px 15px; text-decoration: none; color: #65676b; font-weight: bold; }
+        .tab-link.active { color: #1877f2; border-bottom: 3px solid #1877f2; }
+
         .avatar-container { position: relative; display: inline-block; width: 120px; height: 120px; margin: 0 auto 10px; }
         .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; position: relative; z-index: 5; border: 3px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); background: white; }
         .avatar-placeholder { font-size: 120px; color: #ccc; position: relative; z-index: 5; background: white; border-radius: 50%; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border: 3px solid #fff; }
         .avatar-container.av-SR .avatar-img, .avatar-container.av-SR .avatar-placeholder { border-color: #ba68c8 !important; box-shadow: 0 0 15px #9400d3; }
         .avatar-container.av-SSR::before { content: ''; position: absolute; top: 50%; left: 50%; width: 130%; height: 130%; background: radial-gradient(circle, transparent 45%, rgba(255,215,0,0.2) 55%, rgba(255,69,0,0.6) 100%); border: 3px dashed #ffd700; border-radius: 50%; z-index: 6; animation: magic-rotation 5s linear infinite; pointer-events: none; }
+        @keyframes magic-rotation { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -54,25 +61,66 @@
     <div class="container">
         <div class="profile-card">
             <div class="avatar-container av-{{ target_av_rarity }} {% if '翼' in target_profile.current_avatar %}has-wings{% endif %} {% if '眼' in target_profile.current_avatar %}has-eye{% endif %}">
-                {% if target_profile.icon %}<img src="{{ target_profile.icon }}" class="avatar-img">{% else %}<i class="fas fa-user-circle avatar-placeholder"></i>{% endif %}
+                {% if target_profile.icon %} <img src="{{ target_profile.icon }}" class="avatar-img"> {% else %} <i class="fas fa-user-circle avatar-placeholder"></i> {% endif %}
             </div>
             <h2>{{ target_profile.display_name|default:target_user.username }}</h2>
-            <p>@{{ target_user.username }}</p>
+            <p style="color:#666; margin-top:-10px;">@{{ target_user.username }}</p>
             <div class="bio-box">{{ target_profile.bio|default:"まだ自己紹介がありません。"|linebreaksbr }}</div>
 
             {% if user != target_user %}
                 <form action="{% url 'toggle_follow' target_user.username %}" method="POST">{% csrf_token %}{% if is_following %}<button type="submit" class="follow-btn btn-unfollow">フォロー解除</button>{% else %}<button type="submit" class="follow-btn btn-follow">フォローする</button>{% endif %}</form>
+            {% else %}
+                <a href="{% url 'edit_profile' %}" style="display:block; width:100%; padding:10px; background:#e4e6eb; color:#050505; text-decoration:none; border-radius:20px; font-weight:bold; margin-top:15px; box-sizing:border-box; text-align:center;">プロフィールを編集</a>
             {% endif %}
         </div>
 
         <div class="content-area">
-            <div class="tabs"><div class="tab">リュイート ({{ user_posts.paginator.count }})</div></div>
-            {% for post in user_posts %}
-            <div class="post-card">
-                <p style="white-space: pre-wrap;">{{ post.content|linebreaksbr }}</p>
-                {% if post.image %}<img src="{{ post.image }}" style="max-width:100%; border-radius:8px;">{% endif %}
+            <div class="tabs">
+                <a href="?tab=posts" class="tab-link {% if active_tab == 'posts' %}active{% endif %}">リュイート</a>
+                <a href="?tab=likes" class="tab-link {% if active_tab == 'likes' %}active{% endif %}">いいねした投稿</a>
+                <a href="?tab=followers" class="tab-link {% if active_tab == 'followers' %}active{% endif %}">フォロワー ({{ followers_count }})</a>
+                <a href="?tab=following" class="tab-link {% if active_tab == 'following' %}active{% endif %}">フォロー中 ({{ following_count }})</a>
             </div>
-            {% endfor %}
+
+            {% if active_tab == 'posts' or active_tab == 'likes' %}
+                {% for post in page_obj %}
+                <div class="post-card">
+                    <div style="display:flex; align-items:center; margin-bottom:10px;">
+                        <a href="{% url 'user_profile' post.user.username %}" style="font-weight:bold; color:black; text-decoration:none;">{{ post.user.username }}</a>
+                    </div>
+                    <p style="white-space: pre-wrap; line-height:1.5; margin-top:0;">{{ post.content|linebreaksbr }}</p>
+                    {% if post.image %}<img src="{{ post.image }}" style="max-width:100%; border-radius:8px;">{% endif %}
+                    {% if post.study_minutes > 0 %}<div style="color:#1877f2; font-weight:bold; margin-top:5px;"><i class="fas fa-clock"></i> {{ post.display_study_time }}</div>{% endif %}
+                </div>
+                {% empty %}
+                <div style="background: white; padding: 20px; text-align: center; border-radius: 12px; color: #999;">まだ投稿がありません。</div>
+                {% endfor %}
+
+            {% elif active_tab == 'followers' or active_tab == 'following' %}
+                {% for prof in page_obj %}
+                <div class="post-card" style="display:flex; align-items:center; gap:15px;">
+                    <div style="width:50px; height:50px;">
+                        {% if prof.icon %} <img src="{{ prof.icon }}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;"> {% else %} <i class="fas fa-user-circle" style="font-size:50px; color:#ccc;"></i> {% endif %}
+                    </div>
+                    <div>
+                        <a href="{% url 'user_profile' prof.user.username %}" style="font-weight:bold; color:black; text-decoration:none; font-size:1.1rem;">{{ prof.display_name|default:prof.user.username }}</a>
+                        <div style="color:#666; font-size:0.85rem;">@{{ prof.user.username }}</div>
+                    </div>
+                </div>
+                {% empty %}
+                <div style="background: white; padding: 20px; text-align: center; border-radius: 12px; color: #999;">ユーザーがいません。</div>
+                {% endfor %}
+            {% endif %}
+
+            <div style="text-align: center; margin: 20px 0;">
+                {% if page_obj.has_previous %}
+                    <a href="?tab={{ active_tab }}&page={{ page_obj.previous_page_number }}" style="padding: 10px 20px; background: white; border-radius: 20px; text-decoration: none; color: #1877f2; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-right: 10px;">前へ</a>
+                {% endif %}
+                <span style="color: #65676b; font-weight: bold;">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+                {% if page_obj.has_next %}
+                    <a href="?tab={{ active_tab }}&page={{ page_obj.next_page_number }}" style="padding: 10px 20px; background: white; border-radius: 20px; text-decoration: none; color: #1877f2; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-left: 10px;">次へ</a>
+                {% endif %}
+            </div>
         </div>
     </div>
 

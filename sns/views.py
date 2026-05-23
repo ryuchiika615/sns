@@ -9,40 +9,32 @@ from datetime import timedelta
 from .models import Post, Profile, Comment, GachaItem, Notification
 import json
 import random
-import base64  # 🔮 画像を暗号化するために追加
+import base64
 
 NAMES_LIST = ["しゅり", "さよちゃん", "あつき", "すばる", "たいき", "ゆいちゃん", "みおちゃん", "ゆっきー"]
-WORDS_LIST = [
-    "花菜を奪いし者", "モモちゃん依存症", "なんやかんや桃が好き", "一生童貞", "ガリガリ",
-    "韓国のり顔の", "犯罪予備軍", "バ畜戦士", "意識高い系", "闇落ちした", "巨乳の", "貧乳の",
-    "誰もが三度見する", "今は亡き", "月給２４万", "税金泥棒", "国の犬", "ちいかわより",
-    "やっぱり僕は", "みかんから生まれし", "桃から生まれし", "３浪の", "ゲーマーの", "１留の",
-    "夢はマイクワゾウスキー", "デカビタよりもオロナミンｃ", "前世がティッシュ", "歩くR18指定",
-    "煩脳の塊", "親の顔より見た", "出会い厨の", "全裸待機中の", "賢者モードの", "童貞をこじらせた",
-    "変態という名の紳士", "パパ活疑惑の", "息をするようにスベる", "令和の奇行種", "脳内お花畑の",
-    "歩く公然わいせつ", "圧倒的モブ", "クソエイムの", "課金沼に沈みし", "金欠の", "遅刻魔",
-    "メンヘラ製造機", "留年確定の", "クソザコなめくじ", "深夜テンションの", "西村店長に怒られし",
-    "チームラボで迷子になった", "カリフォルニア帰りの", "松戸市代表"
-]
-
+WORDS_LIST = ["花菜を奪いし者", "モモちゃん依存症", "なんやかんや桃が好き", "一生童貞", "ガリガリ", "韓国のり顔の",
+              "犯罪予備軍", "バ畜戦士", "意識高い系", "闇落ちした", "巨乳の", "貧乳の", "誰もが三度見する", "今は亡き",
+              "月給２４万", "税金泥棒", "国の犬", "ちいかわより", "やっぱり僕は", "みかんから生まれし", "桃から生まれし",
+              "３浪の", "ゲーマーの", "１留の", "夢はマイクワゾウスキー", "デカビタよりもオロナミンｃ", "前世がティッシュ",
+              "歩くR18指定", "煩脳の塊", "親の顔より見た", "出会い厨の", "全裸待機中の", "賢者モードの",
+              "童貞をこじらせた", "変態という名の紳士", "パパ活疑惑の", "息をするようにスベる", "令和の奇行種",
+              "脳内お花畑の", "歩く公然わいせつ", "圧倒的モブ", "クソエイムの", "課金沼に沈みし", "金欠の", "遅刻魔",
+              "メンヘラ製造機", "留年確定の", "クソザコなめくじ", "深夜テンションの", "西村店長に怒られし",
+              "チームラボで迷子になった", "カリフォルニア帰りの", "松戸市代表"]
 AVATAR_PREFIXES = ["漆黒の", "紅蓮の", "深淵の", "狂気の", "神聖なる", "禁忌の", "超電磁", "終焉の", "次元の",
                    "絶対零度の", "封印されし", "黄金の", "虚無の", "黙示録の", "終末の"]
 AVATAR_NOUNS = ["堕天使の翼", "邪王真眼", "暗黒龍", "魔導書", "幻影の残像", "聖剣", "異界の門", "混沌のオーラ",
                 "業火の盾", "裏コード", "破壊神の眼光", "神の加護", "絶対障壁", "不死鳥の羽"]
 
 
-# 🔮 画像ファイルをデータベース保存可能な文字列に変換するヘルパー関数
 def file_to_base64(file):
-    if file:
-        encoded = base64.b64encode(file.read()).decode('utf-8')
-        return f"data:{file.content_type};base64,{encoded}"
+    if file: return f"data:{file.content_type};base64,{base64.b64encode(file.read()).decode('utf-8')}"
     return None
 
 
 def format_study_time(minutes):
-    if not minutes or minutes == 0:
-        return "0分"
-    h, m = minutes // 60, minutes % 60
+    if not minutes or minutes == 0: return "0分"
+    h, m = divmod(minutes, 60)
     return f"{h}時間{m}分" if h > 0 and m > 0 else f"{h}時間" if h > 0 else f"{m}分"
 
 
@@ -58,53 +50,45 @@ def index(request):
                 profile.current_title = new_title
                 profile.save()
             return redirect('index')
-
         if 'comment_text' in request.POST:
             post = get_object_or_404(Post, id=request.POST.get('post_id'))
             Comment.objects.create(post=post, user=request.user, text=request.POST.get('comment_text'))
-            if post.user != request.user:
-                Notification.objects.create(recipient=post.user, sender=request.user, post=post,
-                                            notification_type='reply')
+            if post.user != request.user: Notification.objects.create(recipient=post.user, sender=request.user,
+                                                                      post=post, notification_type='reply')
             return redirect('index')
-
         if 'delete_post_id' in request.POST:
             get_object_or_404(Post, id=request.POST.get('delete_post_id'), user=request.user).delete()
             return redirect('index')
 
         content = request.POST.get('content')
         if content:
-            # 📝 追加：その他が選ばれたら自由入力を採用
             s_select = request.POST.get('subject', 'その他')
             s_custom = request.POST.get('subject_custom', '').strip()
             subject = s_custom if s_select == 'その他' and s_custom else s_select
-
-            minutes = int(request.POST.get('study_minutes', 0))
-            img_base64 = file_to_base64(request.FILES.get('image'))  # 🔮 投稿画像をBase64化
-
-            Post.objects.create(user=request.user, content=content, study_minutes=minutes, image=img_base64,
-                                subject=subject)
+            minutes = int(request.POST.get('study_minutes', 0) or 0)
+            Post.objects.create(user=request.user, content=content, study_minutes=minutes,
+                                image=file_to_base64(request.FILES.get('image')), subject=subject)
             profile.points += minutes
             profile.save()
         return redirect('index')
 
-    # ⚡ 爆速化：select_related と prefetch_related で1発で全データを取得（N+1問題の完全解決）
     base_query = Post.objects.select_related('user', 'user__profile').prefetch_related('liked_by', 'comments',
                                                                                        'comments__user')
-    all_posts = base_query.filter(content__icontains=search_query).order_by(
+    posts_query = base_query.filter(content__icontains=search_query).order_by(
         '-created_at') if search_query else base_query.all().order_by('-created_at')
 
-    paginator = Paginator(all_posts, 20)
-    posts = paginator.get_page(request.GET.get('page'))
+    # ⚡ 重くならないように 10件 で分割！
+    paginator = Paginator(posts_query, 10)
+    page_posts = paginator.get_page(request.GET.get('page'))
 
-    now = timezone.now()
-    for post in posts:
+    for post in page_posts:
         if hasattr(post.user, 'profile'):
             item = GachaItem.objects.filter(name=post.user.profile.current_title).first()
             post.current_rarity = item.rarity if item else 'N'
             av_item = GachaItem.objects.filter(name=post.user.profile.current_avatar).first()
             post.avatar_rarity = av_item.rarity if av_item else 'N'
         post.display_study_time = format_study_time(post.study_minutes)
-        diff = now - post.created_at
+        diff = timezone.now() - post.created_at
         post.formatted_time = "たった今" if diff.seconds < 60 else f"{diff.seconds // 60}分前" if diff.seconds < 3600 else f"{diff.seconds // 3600}時間前" if diff.days == 0 else post.created_at.strftime(
             '%m/%d %H:%M')
 
@@ -116,30 +100,22 @@ def index(request):
         data.append(Post.objects.filter(user=request.user, created_at__date=day).aggregate(Sum('study_minutes'))[
                         'study_minutes__sum'] or 0)
 
-    remaining_minutes = 0
-    remaining_display = ""
-    has_target = False
-    if profile.target_date and profile.target_minutes > 0:
-        has_target = True
-        total_study = Post.objects.filter(user=request.user).aggregate(Sum('study_minutes'))['study_minutes__sum'] or 0
-        remaining_minutes = max(0, profile.target_minutes - total_study)
-        remaining_display = format_study_time(remaining_minutes)
+    rem_m = max(0, profile.target_minutes - (
+                Post.objects.filter(user=request.user).aggregate(Sum('study_minutes'))['study_minutes__sum'] or 0))
 
     return render(request, 'sns/index.html', {
-        'posts': posts, 'labels': json.dumps(labels), 'data': json.dumps(data),
-        'search_query': search_query,
+        'posts': page_posts, 'labels': json.dumps(labels), 'data': json.dumps(data),
         'unread_count': Notification.objects.filter(recipient=request.user, is_read=False).count(),
-        'has_target': has_target, 'remaining_display': remaining_display,
-        'target_date': profile.target_date, 'target_total_display': format_study_time(profile.target_minutes)
+        'has_target': bool(profile.target_date), 'remaining_display': format_study_time(rem_m),
+        'target_date': profile.target_date, 'target_total_display': format_study_time(profile.target_minutes),
+        'search_query': search_query
     })
 
 
 @login_required
 def gacha(request):
     profile, _ = Profile.objects.get_or_create(user=request.user)
-    result_items = []
-    error = None
-
+    result_items, error = [], None
     if request.method == 'POST':
         pull_count = 10 if 'gacha_10' in request.POST else 1
         cost = pull_count * 10
@@ -157,7 +133,6 @@ def gacha(request):
             profile.save()
         else:
             error = 'ポイントが足りません！もっと勉強しよう！'
-
     return render(request, 'sns/gacha.html', {'result_items': result_items, 'points': profile.points, 'error': error,
                                               'unread_count': Notification.objects.filter(recipient=request.user,
                                                                                           is_read=False).count()})
@@ -178,11 +153,7 @@ def edit_profile(request):
             t_date = request.POST.get('target_date')
             profile.target_date = t_date if t_date else None
             profile.target_minutes = int(request.POST.get('target_minutes', 0) or 0)
-
-            # 🔮 写真アイコンをBase64文字列に変換して保存
-            if 'icon' in request.FILES:
-                profile.icon = file_to_base64(request.FILES['icon'])
-
+            if 'icon' in request.FILES: profile.icon = file_to_base64(request.FILES['icon'])
             profile.save()
             return redirect('edit_profile')
 
@@ -262,20 +233,37 @@ def user_profile(request, username):
     target_user = get_object_or_404(User, username=username)
     target_profile, _ = Profile.objects.get_or_create(user=target_user)
 
-    base_user_posts = Post.objects.select_related('user', 'user__profile').prefetch_related('liked_by', 'comments',
-                                                                                            'comments__user').filter(
-        user=target_user).order_by('-created_at')
-    paginator = Paginator(base_user_posts, 20)
-    user_posts = paginator.get_page(request.GET.get('page'))
-    for post in user_posts: post.display_study_time = format_study_time(post.study_minutes)
+    # ⚡ タブの切り替えとデータ取得
+    active_tab = request.GET.get('tab', 'posts')
+    base_query = Post.objects.select_related('user', 'user__profile').prefetch_related('liked_by', 'comments',
+                                                                                       'comments__user')
 
-    is_following = my_profile.follows.filter(id=target_profile.id).exists() if (
-        my_profile := Profile.objects.get_or_create(user=request.user)[0]) else False
+    if active_tab == 'likes':
+        query_data = base_query.filter(liked_by=target_user).order_by('-created_at')
+    elif active_tab == 'followers':
+        query_data = target_profile.followed_by.select_related('user').all()
+    elif active_tab == 'following':
+        query_data = target_profile.follows.select_related('user').all()
+    else:
+        query_data = base_query.filter(user=target_user).order_by('-created_at')
+
+    # ⚡ すべてのタブで「10件」のページネーション！重くならない！
+    paginator = Paginator(query_data, 10)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    # 時間計算 (投稿タブといいねタブのみ)
+    if active_tab in ['posts', 'likes']:
+        for post in page_obj:
+            post.display_study_time = format_study_time(post.study_minutes)
+
+    my_profile, _ = Profile.objects.get_or_create(user=request.user)
+    is_following = my_profile.follows.filter(id=target_profile.id).exists()
     title_item = GachaItem.objects.filter(name=target_profile.current_title).first()
     av_item = GachaItem.objects.filter(name=target_profile.current_avatar).first()
 
     return render(request, 'sns/user_profile.html', {
-        'target_user': target_user, 'target_profile': target_profile, 'user_posts': user_posts,
+        'target_user': target_user, 'target_profile': target_profile,
+        'page_obj': page_obj, 'active_tab': active_tab,
         'is_following': is_following, 'target_title_rarity': title_item.rarity if title_item else 'N',
         'target_av_rarity': av_item.rarity if av_item else 'N', 'followers_count': target_profile.followed_by.count(),
         'following_count': target_profile.follows.count(),
@@ -313,7 +301,6 @@ def analytics_view(request):
     pie_labels, pie_data = [item['subject'] for item in subject_data], [item['total'] for item in subject_data]
     subject_list = [{'name': item['subject'], 'display_time': format_study_time(item['total'])} for item in
                     subject_data]
-
     today, bar_labels, bar_data = timezone.now().date(), [], []
     for i in range(5, -1, -1):
         month, year = today.month - i, today.year

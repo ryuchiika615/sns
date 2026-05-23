@@ -9,134 +9,68 @@
     <style>
         body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 80px; }
         .header { background: #1a1a1a; padding: 15px 20px; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; color: white; }
-        .menu-icon { font-size: 1.5rem; cursor: pointer; color: white; }
         .sidebar { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; left: 0; background-color: #1a1a1a; overflow-x: hidden; transition: 0.3s; padding-top: 60px; box-shadow: 2px 0 5px rgba(0,0,0,0.5); }
         .sidebar a { padding: 15px 25px; text-decoration: none; font-size: 1.2rem; color: #fff; display: block; font-weight: bold; }
-        .sidebar a:hover { color: #fbc02d; background: #333; }
-        .sidebar .closebtn { position: absolute; top: 0; right: 20px; font-size: 36px; padding: 0; color: #999; }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1500; display: none; }
-        .container { max-width: 600px; margin: auto; padding: 15px; }
-        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); position: relative; }
+        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
         .nav-item { color: #aaa; text-decoration: none; font-size: 1.5rem; position: relative; }
         .nav-item.active { color: white; }
-        .badge { position: absolute; top: -5px; right: -8px; background: #e0245e; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; font-weight: bold; border: 2px solid #1a1a1a; }
-        .post-btn { background: #1877f2; color: white; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; width: 100%; margin-top: 10px; cursor: pointer; }
-        input, textarea, select { width: 100%; padding: 10px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box; }
-        .comment-section { background: #f8f9fa; border-radius: 8px; padding: 10px; margin-top: 10px; font-size: 0.85rem; }
-        .post-delete-btn { position: absolute; top: 15px; right: 15px; font-size: 1.1rem; background: none; border: none; color: #ff4757; cursor: pointer; }
-        .title-badge { font-size: 0.7rem; font-weight: bold; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 3px; }
-        .title-badge.SSR { background: linear-gradient(45deg, #ffe259, #ffa751) !important; color: #fff !important; border: 2px solid #ffd700 !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.4); }
-        .avatar-container { position: relative; display: inline-block; width: 42px; height: 42px; margin-right: 15px; flex-shrink: 0; }
-        .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; position: relative; z-index: 5; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); background: white; }
-        .avatar-placeholder { font-size: 42px; color: #ccc; position: relative; z-index: 5; background: white; border-radius: 50%; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; }
-        .avatar-container.av-SR .avatar-img, .avatar-container.av-SR .avatar-placeholder { border-color: #ba68c8 !important; box-shadow: 0 0 10px #9400d3; }
-        .avatar-container.av-SSR::before { content: ''; position: absolute; top: 50%; left: 50%; width: 130%; height: 130%; background: radial-gradient(circle, transparent 45%, rgba(255,215,0,0.2) 55%, rgba(255,69,0,0.6) 100%); border: 2px dashed #ffd700; border-radius: 50%; z-index: 6; animation: magic-rotation 5s linear infinite; pointer-events: none; }
-        .avatar-container.has-wings::after { content: ''; position: absolute; top: 20%; left: -50%; width: 200%; height: 50%; background: #ff0055; box-shadow: 0 0 15px #ff0055, 0 0 25px #9400d3; opacity: 0.8; z-index: 1; pointer-events: none; clip-path: polygon(0 40%, 25% 0, 45% 50%, 50% 20%, 55% 50%, 75% 0, 100% 40%, 80% 100%, 50% 70%, 20% 100%); }
-        .avatar-container.has-eye { animation: aura-burn 2s infinite ease-in-out; }
-        @keyframes magic-rotation { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
-        @keyframes aura-burn { 0% { box-shadow: 0 0 8px #ff0055; } 50% { box-shadow: 0 0 20px #ff0055, 0 0 30px #9400d3; } 100% { box-shadow: 0 0 8px #ff0055; } }
+        .avatar-img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; }
     </style>
 </head>
 <body>
     <div class="header">
         <div style="display:flex; align-items:center; gap:15px;">
-            <i class="fas fa-bars menu-icon" onclick="openNav()"></i>
+            <i class="fas fa-bars" style="font-size:1.5rem; cursor:pointer;" onclick="openNav()"></i>
             <span style="font-weight:bold; font-size:1.2rem;"><i class="fas fa-layer-group"></i> リュッター</span>
         </div>
-        <div style="background: #333; padding: 5px 12px; border-radius: 15px; font-weight: bold; font-size: 0.8rem; color: #fbc02d;"><i class="fas fa-gem"></i> {{ user.profile.points }} pt</div>
+        <div style="background: #333; padding: 5px 12px; border-radius: 15px; font-size: 0.8rem; color: #fbc02d;"><i class="fas fa-gem"></i> {{ user.profile.points }} pt</div>
     </div>
 
     <div id="sidebar" class="sidebar">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-        <div style="text-align: center; margin-bottom: 20px;">
-            <div class="avatar-container" style="width:60px; height:60px; margin: 0 auto;">
-                {% if user.profile.icon %}<img src="{{ user.profile.icon }}" class="avatar-img">{% else %}<i class="fas fa-user-circle avatar-placeholder" style="font-size:60px;"></i>{% endif %}
-            </div>
-            <div style="color: white; font-weight: bold; margin-top: 10px;">{{ user.username }}</div>
-        </div>
-        <a href="{% url 'index' %}"><i class="fas fa-home" style="width:25px;"></i> ホーム</a>
-        <a href="{% url 'analytics' %}"><i class="fas fa-chart-pie" style="width:25px;"></i> 分析レポート</a>
-        <a href="{% url 'user_profile' user.username %}"><i class="fas fa-user" style="width:25px;"></i> プロフィール</a>
-        <a href="{% url 'edit_profile' %}"><i class="fas fa-cog" style="width:25px;"></i> 設定 / 編集</a>
-        <a href="{% url 'gacha' %}"><i class="fas fa-coins" style="width:25px;"></i> ガチャポン</a>
-        <hr style="border-color: #333; margin: 20px;">
-        <form action="{% url 'logout' %}" method="POST" id="logout-form" style="display:none;">{% csrf_token %}</form>
-        <a href="javascript:void(0);" onclick="document.getElementById('logout-form').submit();" style="color:#ff4757;"><i class="fas fa-sign-out-alt" style="width:25px;"></i> ログアウト</a>
+        <a href="{% url 'index' %}">ホーム</a><a href="{% url 'analytics' %}">分析レポート</a><a href="{% url 'user_profile' user.username %}">プロフィール</a><a href="{% url 'edit_profile' %}">設定 / 編集</a><a href="{% url 'gacha' %}">ガチャポン</a>
     </div>
     <div id="overlay" class="overlay" onclick="closeNav()"></div>
 
-    <div class="container">
-        {% if has_target %}
-        <div class="card" style="background: linear-gradient(45deg, #111, #222); color: white; text-align: center; padding: 15px; border: 1px solid #fbc02d;">
-            <h4 style="margin: 0 0 8px 0; color: #fbc02d;"><i class="fas fa-bullseye"></i> {{ target_date|date:"Y年m月d日" }} までの目標</h4>
-            <div style="font-size: 0.9rem; color: #ccc;">目標総時間: {{ target_total_display }}</div>
-            <div style="font-size: 1.1rem; font-weight: bold; margin-top: 5px;">目標達成まであと <span style="color: #ff4757; font-size: 1.4rem;">{{ remaining_display }}</span>！</div>
-        </div>
-        {% endif %}
-
+    <div class="container" style="max-width: 600px; margin: auto; padding: 15px;">
         <div class="card"><canvas id="studyChart" height="200"></canvas></div>
 
         <div class="card">
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
-                <textarea name="content" placeholder="今日は何を学んだ？" required></textarea>
-                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                    <select name="subject" id="subjectSelect" onchange="toggleCustomSubject()" style="flex:1; margin-bottom:0;">
-                        <option value="数学">数学</option>
-                        <option value="英語">英語</option>
-                        <option value="プログラミング">プログラミング</option>
-                        <option value="物理">物理</option>
-                        <option value="その他" selected>その他（自由入力）</option>
+                <textarea name="content" placeholder="今日は何を学んだ？" required style="width:100%; height:80px;"></textarea>
+                <div style="display: flex; gap: 10px; margin: 10px 0;">
+                    <select name="subject" id="subjectSelect" onchange="toggleCustom()" style="flex:1; padding:10px;">
+                        <option value="数学">数学</option><option value="英語">英語</option><option value="プログラミング">プログラミング</option><option value="その他" selected>その他</option>
                     </select>
-                    <input type="text" name="subject_custom" id="subjectCustom" placeholder="科目名を手入力" style="flex:1; margin-bottom:0; display:block;">
+                    <input type="text" name="subject_custom" id="subjectCustom" placeholder="科目名" style="display:none; flex:1; padding:10px;">
                 </div>
-                <input type="number" name="study_minutes" placeholder="時間(分)">
-                <input type="file" name="image" accept="image/*">
-                <button type="submit" class="post-btn">リュイートする</button>
+                <input type="number" name="study_minutes" placeholder="時間(分)" style="width:100%; padding:10px;">
+                <input type="file" name="image" style="margin:10px 0;">
+                <button type="submit" style="width:100%; padding:10px; background:#1877f2; color:white; border:none; border-radius:20px;">リュイートする</button>
             </form>
         </div>
 
         {% for post in posts %}
         <div class="card">
-            {% if post.user == user %}
-            <form method="POST" style="margin: 0;">{% csrf_token %}<input type="hidden" name="delete_post_id" value="{{ post.id }}"><button type="submit" class="post-delete-btn" onclick="return confirm('削除しますか？');"><i class="far fa-trash-alt"></i></button></form>
-            {% endif %}
             <div style="display:flex; align-items:center; margin-bottom:10px;">
-                <div class="avatar-container av-{{ post.avatar_rarity }} {% if '翼' in post.user.profile.current_avatar %}has-wings{% endif %} {% if '眼' in post.user.profile.current_avatar %}has-eye{% endif %}">
-                    {% if post.user.profile.icon %}<img src="{{ post.user.profile.icon }}" class="avatar-img">{% else %}<i class="fas fa-user-circle avatar-placeholder"></i>{% endif %}
-                </div>
-                <div style="display: flex; flex-direction: column; flex-grow: 1;">
-                    <div style="display: flex; align-items: center; width: 100%;">
-                        <span class="title-badge {{ post.current_rarity }}">{% if post.current_rarity == 'SSR' %}👑 {% endif %}【{{ post.user.profile.current_title }}】</span>
-                        <span class="post-time"><i class="far fa-clock"></i> {{ post.formatted_time }}</span>
-                    </div>
-                    <strong style="margin-top: 2px;"><a href="{% url 'user_profile' post.user.username %}" style="color: #050505; text-decoration: none;">{{ post.user.profile.display_name|default:post.user.username }}</a> <span style="font-size:0.7rem; color:#888;">({{ post.user.profile.current_avatar }})</span></strong>
+                {% if post.user.profile.icon %} <img src="{{ post.user.profile.icon }}" class="avatar-img"> {% else %} <i class="fas fa-user-circle" style="font-size:42px; color:#ccc;"></i> {% endif %}
+                <div style="margin-left:10px;">
+                    <a href="{% url 'user_profile' post.user.username %}" style="text-decoration:none; color:#000; font-weight:bold;">{{ post.user.profile.display_name|default:post.user.username }}</a>
+                    <div style="font-size:0.75rem; color:#888;">{{ post.subject }} | {{ post.formatted_time }}</div>
                 </div>
             </div>
-            <div style="margin-bottom: 5px;"><span style="background: #e4e6eb; color: #333; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px;">{{ post.subject }}</span></div>
-
             <p style="line-height:1.5; white-space: pre-wrap;">{{ post.content|linebreaksbr }}</p>
-
-            {% if post.study_minutes > 0 %} <div style="color:#1877f2; font-weight:bold; font-size:0.9rem; margin-bottom:8px;"><i class="fas fa-clock"></i> {{ post.display_study_time }}</div> {% endif %}
-            {% if post.image %} <img src="{{ post.image }}" style="max-width:100%; border-radius:8px; display: block; margin-top:5px;"> {% endif %}
-
-            <div style="display:flex; gap:15px; border-top:1px solid #eee; padding-top:10px;">
-                <a href="{% url 'like_post' post.id %}" style="text-decoration:none; color: {% if user in post.liked_by.all %}#e0245e{% else %}#65676b{% endif %};"><i class="fa{% if user in post.liked_by.all %}s{% else %}r{% endif %} fa-heart"></i> {{ post.liked_by.count }}</a>
-            </div>
-            <div class="comment-section">
-                {% for comment in post.comments.all %}
-                <div style="margin-bottom: 6px; border-bottom: 1px dashed #eee; padding-bottom:4px;"><strong>{{ comment.user.username }}:</strong> <span style="white-space: pre-wrap;">{{ comment.text|linebreaksbr }}</span></div>
-                {% endfor %}
-                <form method="POST" style="display: flex; gap: 5px; margin-top: 8px;">{% csrf_token %}<input type="hidden" name="post_id" value="{{ post.id }}"><input type="text" name="comment_text" placeholder="コメントを入力..." required style="margin:0; padding:5px 10px; border-radius:15px;"><button type="submit" style="background:none; border:none; color:#1877f2; font-weight:bold; cursor:pointer;">送信</button></form>
-            </div>
+            {% if post.image %} <img src="{{ post.image }}" style="max-width:100%; border-radius:8px;"> {% endif %}
         </div>
         {% endfor %}
 
         <div style="text-align: center; margin: 20px 0;">
-            {% if posts.has_previous %}<a href="?page={{ posts.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" style="padding: 10px 20px; background: white; border-radius: 20px; text-decoration: none; color: #1877f2; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-right: 10px;">前へ</a>{% endif %}
+            {% if posts.has_previous %} <a href="?page={{ posts.previous_page_number }}" style="padding: 10px 20px; background: white; border-radius: 20px; text-decoration: none; color: #1877f2; font-weight: bold;">前へ</a> {% endif %}
             <span style="color: #65676b; font-weight: bold;">{{ posts.number }} / {{ posts.paginator.num_pages }}</span>
-            {% if posts.has_next %}<a href="?page={{ posts.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" style="padding: 10px 20px; background: white; border-radius: 20px; text-decoration: none; color: #1877f2; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-left: 10px;">過去のリュイートを見る</a>{% endif %}
+            {% if posts.has_next %} <a href="?page={{ posts.next_page_number }}" style="padding: 10px 20px; background: white; border-radius: 20px; text-decoration: none; color: #1877f2; font-weight: bold;">過去のリュイート</a> {% endif %}
         </div>
     </div>
 
@@ -144,20 +78,14 @@
         <a href="{% url 'index' %}" class="nav-item active"><i class="fas fa-home"></i></a>
         <a href="{% url 'analytics' %}" class="nav-item"><i class="fas fa-chart-pie"></i></a>
         <a href="{% url 'user_profile' user.username %}" class="nav-item"><i class="fas fa-user"></i></a>
-        <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins" style="color: #fbc02d;"></i></a>
-        <a href="{% url 'notifications' %}" class="nav-item"><i class="fas fa-bell"></i>{% if unread_count > 0 %}<span class="badge">{{ unread_count }}</span>{% endif %}</a>
     </div>
 
     <script>
         function openNav() { document.getElementById("sidebar").style.width = "250px"; document.getElementById("overlay").style.display = "block"; }
         function closeNav() { document.getElementById("sidebar").style.width = "0"; document.getElementById("overlay").style.display = "none"; }
-        function toggleCustomSubject() {
-            const select = document.getElementById('subjectSelect');
-            const input = document.getElementById('subjectCustom');
-            input.style.display = (select.value === 'その他') ? 'block' : 'none';
-        }
+        function toggleCustom() { document.getElementById('subjectCustom').style.display = (document.getElementById('subjectSelect').value === 'その他') ? 'block' : 'none'; }
         const ctx = document.getElementById('studyChart').getContext('2d');
-        new Chart(ctx, { type: 'bar', data: { labels: {{ labels|safe }}, datasets: [{ label: '勉強時間(分)', data: {{ data|safe }}, backgroundColor: '#1877f2', borderRadius: 5 }] }, options: { scales: { y: { beginAtZero: true } } } });
+        new Chart(ctx, { type: 'bar', data: { labels: {{ labels|safe }}, datasets: [{ label: '勉強時間(分)', data: {{ data|safe }}, backgroundColor: '#1877f2', borderRadius: 5 }] } });
     </script>
 </body>
 </html>
