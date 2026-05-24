@@ -11,10 +11,11 @@
         .header { background: #1a1a1a; padding: 15px 20px; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; color: white; }
         .menu-icon { font-size: 1.5rem; cursor: pointer; color: white; }
         .sidebar { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; left: 0; background-color: #1a1a1a; overflow-x: hidden; transition: 0.3s; padding-top: 60px; box-shadow: 2px 0 5px rgba(0,0,0,0.5); }
-        .sidebar a { padding: 15px 25px; text-decoration: none; font-size: 1.2rem; color: #fff; display: block; transition: 0.3s; font-weight: bold; }
+        .sidebar a { padding: 15px 25px; text-decoration: none; font-size: 1.2rem; color: #fff; display: block; font-weight: bold; }
         .sidebar a:hover { color: #fbc02d; background: #333; }
         .sidebar .closebtn { position: absolute; top: 0; right: 20px; font-size: 36px; padding: 0; color: #999; }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1500; display: none; }
+
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
         .nav-item { color: #aaa; text-decoration: none; font-size: 1.5rem; position: relative; }
         .nav-item.active { color: white; }
@@ -23,11 +24,16 @@
         .container { max-width: 600px; margin: auto; padding: 15px; }
         .card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .card-title { font-size: 1.1rem; font-weight: bold; border-bottom: 2px solid #f0f2f5; padding-bottom: 10px; margin-bottom: 15px; color: #333; }
+
         .subject-list { list-style: none; padding: 0; margin: 0; }
         .subject-list li { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 0.95rem; }
         .subject-list li:last-child { border-bottom: none; }
         .subject-name { font-weight: bold; color: #555; }
         .subject-time { font-weight: bold; color: #1877f2; }
+
+        .avatar-container { position: relative; display: inline-block; width: 60px; height: 60px; margin: 0 auto; }
+        .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #fff; }
+        .avatar-placeholder { font-size: 60px; color: #ccc; }
     </style>
 </head>
 <body>
@@ -44,11 +50,11 @@
     <div id="sidebar" class="sidebar">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         <div style="text-align: center; margin-bottom: 20px;">
-            <div style="width:60px; height:60px; margin: 0 auto; position: relative;">
+            <div class="avatar-container">
                 {% if user.profile.icon %}
-                    <img src="{{ user.profile.icon.url }}" style="width:100%; height:100%; border-radius:50%; object-fit:cover; border:2px solid #fff;">
+                    <img src="{{ user.profile.icon }}" class="avatar-img">
                 {% else %}
-                    <i class="fas fa-user-circle" style="font-size:60px; color:#ccc;"></i>
+                    <i class="fas fa-user-circle avatar-placeholder"></i>
                 {% endif %}
             </div>
             <div style="color: white; font-weight: bold; margin-top: 10px;">{{ user.username }}</div>
@@ -99,6 +105,7 @@
         <a href="{% url 'index' %}" class="nav-item"><i class="fas fa-home"></i></a>
         <a href="{% url 'analytics' %}" class="nav-item active"><i class="fas fa-chart-pie"></i></a>
         <a href="{% url 'user_profile' user.username %}" class="nav-item"><i class="fas fa-user"></i></a>
+        <a href="{% url 'edit_profile' %}" class="nav-item"><i class="fas fa-cog"></i></a>
         <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins" style="color: #fbc02d;"></i></a>
         <a href="{% url 'notifications' %}" class="nav-item">
             <i class="fas fa-bell"></i>
@@ -107,23 +114,15 @@
     </div>
 
     <script>
-        function openNav() { document.getElementById("sidebar").style.width = "250px"; document.getElementById("overlay").style.display = "block"; }
-        function closeNav() { document.getElementById("sidebar").style.width = "0"; document.getElementById("overlay").style.display = "none"; }
+        function openNav() {
+            document.getElementById("sidebar").style.width = "250px";
+            document.getElementById("overlay").style.display = "block";
+        }
+        function closeNav() {
+            document.getElementById("sidebar").style.width = "0";
+            document.getElementById("overlay").style.display = "none";
+        }
 
         const pieCtx = document.getElementById('pieChart');
         if (pieCtx) {
-            new Chart(pieCtx.getContext('2d'), {
-                type: 'doughnut', data: { labels: {{ pie_labels|safe }}, datasets: [{ data: {{ pie_data|safe }}, backgroundColor: ['#1877f2', '#e0245e', '#fbc02d', '#17bf63', '#9c27b0', '#ff9800', '#00bcd4'], borderWidth: 1 }] },
-                options: { cutout: '60%', plugins: { legend: { position: 'bottom' } } }
-            });
-        }
-        const barCtx = document.getElementById('barChart');
-        if (barCtx) {
-            new Chart(barCtx.getContext('2d'), {
-                type: 'bar', data: { labels: {{ bar_labels|safe }}, datasets: [{ label: '月間学習時間(分)', data: {{ bar_data|safe }}, backgroundColor: '#1877f2', borderRadius: 5 }] },
-                options: { scales: { y: { beginAtZero: true } } }
-            });
-        }
-    </script>
-</body>
-</html>
+            new Chart(pieCtx.getContext('2d
