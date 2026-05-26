@@ -1,13 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.conf import settings
 from django.utils import timezone
 from django.db.models import Sum
 from django.db.models.functions import TruncDate
 from django.core.paginator import Paginator
 from datetime import timedelta
-from .models import Post, Profile, Comment, GachaItem, Notification
+from .models import Post, Profile, Comment, GachaItem, Notification, UserLoginSession
 import json
 import random
 import base64
@@ -50,6 +51,10 @@ def format_study_time(minutes):
         return f"{h}時間"
     else:
         return f"{m}分"
+
+
+def is_site_admin(user):
+    return user.is_authenticated and (user.is_superuser or user.username == settings.SITE_ADMIN_USERNAME)
 
 
 @login_required
@@ -329,6 +334,15 @@ def edit_profile(request):
 
 
 def logout_view(request):
+    session_id = request.session.get('login_session_id')
+    if session_id and request.user.is_authenticated:
+        now = timezone.now()
+        UserLoginSession.objects.filter(
+            id=session_id,
+            user=request.user,
+            logout_at__isnull=True
+        ).update(logout_at=now, last_seen_at=now)
+        request.session.pop('login_session_id', None)
     logout(request)
     return redirect('login')
 
@@ -482,4 +496,23 @@ def analytics_view(request):
         'subject_list': subject_list,
         'total_all_time_display': format_study_time(total_all_time),
         'unread_count': unread_count,
+    })
+
+
+@login_required
+@user_passes_test(is_site_admin)
+def admin_login_activity(request):
+    active_cutoff = timezone.now() - timedelta(minutes=15)
+    sessions = UserLoginSession.objects.select_related('user').order_by('-login_at')[:100]
+    active_count = 0
+
+    for session in sessions:
+        session.is_active_now = session.logout_at is None and session.last_seen_at >= active_cutoff
+        if session.is_active_now:
+            active_count += 1
+
+    return render(request, 'sns/admin_login_activity.html', {
+        'sessions': sessions,
+        'active_count': active_count,
+        'unread_count': Notification.objects.filter(recipient=request.user, is_read=False).count(),
     })

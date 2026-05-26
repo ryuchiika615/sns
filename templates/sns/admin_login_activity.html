@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Activity</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; margin: 0; color: #1f2937; }
+        .header { background: #111; color: #fff; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header a { color: #fff; text-decoration: none; font-weight: bold; }
+        .container { max-width: 980px; margin: 0 auto; padding: 18px; }
+        .summary { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+        .summary-box { background: #fff; border-radius: 8px; padding: 14px 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.08); min-width: 160px; }
+        .summary-box strong { display: block; font-size: 1.8rem; }
+        .table-wrap { background: #fff; border-radius: 8px; overflow-x: auto; box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+        table { width: 100%; border-collapse: collapse; min-width: 760px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #e5e7eb; font-size: 0.9rem; vertical-align: top; }
+        th { background: #f9fafb; color: #4b5563; font-size: 0.78rem; text-transform: uppercase; }
+        .status { display: inline-block; border-radius: 999px; padding: 4px 9px; font-size: 0.78rem; font-weight: bold; }
+        .active { background: #dcfce7; color: #166534; }
+        .offline { background: #f3f4f6; color: #4b5563; }
+        .muted { color: #6b7280; }
+        .agent { max-width: 260px; overflow-wrap: anywhere; color: #6b7280; font-size: 0.78rem; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <strong>ログイン状況</strong>
+        <a href="{% url 'index' %}">ホームへ</a>
+    </div>
+
+    <main class="container">
+        <div class="summary">
+            <div class="summary-box">
+                <span class="muted">現在オンライン扱い</span>
+                <strong>{{ active_count }}</strong>
+            </div>
+            <div class="summary-box">
+                <span class="muted">表示件数</span>
+                <strong>{{ sessions|length }}</strong>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>状態</th>
+                        <th>ユーザー</th>
+                        <th>ログイン</th>
+                        <th>最後のアクセス</th>
+                        <th>ログアウト</th>
+                        <th>IP</th>
+                        <th>端末</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for session in sessions %}
+                    <tr>
+                        <td>
+                            {% if session.is_active_now %}
+                                <span class="status active">オンライン</span>
+                            {% else %}
+                                <span class="status offline">オフライン</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ session.user.username }}</td>
+                        <td>{{ session.login_at|date:"Y/m/d H:i:s" }}</td>
+                        <td>{{ session.last_seen_at|date:"Y/m/d H:i:s" }}</td>
+                        <td>
+                            {% if session.logout_at %}
+                                {{ session.logout_at|date:"Y/m/d H:i:s" }}
+                            {% else %}
+                                <span class="muted">未ログアウト</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ session.ip_address|default:"-" }}</td>
+                        <td class="agent">{{ session.user_agent|default:"-" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="muted">まだログイン履歴がありません。</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>

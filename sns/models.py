@@ -96,6 +96,25 @@ class Notification(models.Model):
         ]
 
 
+class UserLoginSession(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='login_sessions')
+    login_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    last_seen_at = models.DateTimeField(auto_now=True, db_index=True)
+    logout_at = models.DateTimeField(null=True, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"{self.user.username} {self.login_at:%Y-%m-%d %H:%M}"
+
+    class Meta:
+        ordering = ['-login_at']
+        indexes = [
+            models.Index(fields=['user', '-login_at']),
+            models.Index(fields=['logout_at', '-last_seen_at']),
+        ]
+
+
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):
     if created:

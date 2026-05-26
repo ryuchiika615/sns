@@ -17,4 +17,5 @@ urlpatterns = [
     path('follow/<str:username>/', views.toggle_follow, name='toggle_follow'),
     path('notifications/', views.notifications_view, name='notifications'),
     path('analytics/', views.analytics_view, name='analytics'),
+    path('admin/login-activity/', views.admin_login_activity, name='admin_login_activity'),
 ]
