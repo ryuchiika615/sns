@@ -2,5 +2,5 @@ services:
   - type: web
     name: my-new-sns
     runtime: python
-    buildCommand: pip install -r requirements.txt && python manage.py migrate
-    startCommand: gunicorn study_project.wsgi
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
+    startCommand: gunicorn study_app_new.wsgi:application --log-file -

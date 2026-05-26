@@ -58,6 +58,11 @@ class Post(models.Model):
     def __str__(self):
         return f'{self.user.username}: {self.content[:10]}'
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['user', '-created_at']),
+        ]
+
 
 # 4. コメントモデル
 class Comment(models.Model):
@@ -65,6 +70,11 @@ class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['post', 'created_at']),
+        ]
 
 
 # 5. 通知モデル
@@ -79,6 +89,11 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.sender.username} -> {self.recipient.username} ({self.notification_type})"
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['recipient', 'is_read', '-created_at']),
+        ]
 
 
 @receiver(post_save, sender=User)

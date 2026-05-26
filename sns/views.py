@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.db.models import Sum
+from django.db.models.functions import TruncDate
 from django.core.paginator import Paginator
 from datetime import timedelta
 from .models import Post, Profile, Comment, GachaItem, Notification
@@ -120,14 +121,24 @@ def index(request):
     paginator = Paginator(all_posts, 10)
     page_number = request.GET.get('page')
     posts = paginator.get_page(page_number)
+    posts.object_list = list(posts.object_list)
+
+    gacha_names = set()
+    for post in posts.object_list:
+        if hasattr(post.user, 'profile'):
+            gacha_names.add(post.user.profile.current_title)
+            gacha_names.add(post.user.profile.current_avatar)
+
+    rarity_by_name = {
+        item.name: item.rarity
+        for item in GachaItem.objects.filter(name__in=gacha_names)
+    }
 
     now = timezone.now()
-    for post in posts:
+    for post in posts.object_list:
         if hasattr(post.user, 'profile'):
-            item = GachaItem.objects.filter(name=post.user.profile.current_title).first()
-            post.current_rarity = item.rarity if item else 'N'
-            av_item = GachaItem.objects.filter(name=post.user.profile.current_avatar).first()
-            post.avatar_rarity = av_item.rarity if av_item else 'N'
+            post.current_rarity = rarity_by_name.get(post.user.profile.current_title, 'N')
+            post.avatar_rarity = rarity_by_name.get(post.user.profile.current_avatar, 'N')
         else:
             Profile.objects.get_or_create(user=post.user)
             post.current_rarity = 'N'
@@ -146,14 +157,22 @@ def index(request):
             post.formatted_time = f"{diff.seconds // 3600}時間前"
 
     today = timezone.now().date()
+    chart_start = today - timedelta(days=6)
+    daily_totals = Post.objects.filter(
+        user=request.user,
+        created_at__date__gte=chart_start,
+        created_at__date__lte=today
+    ).annotate(day=TruncDate('created_at')).values('day').annotate(total=Sum('study_minutes'))
+    totals_by_day = {
+        item['day']: item['total'] or 0
+        for item in daily_totals
+    }
     labels = []
     data = []
     for i in range(6, -1, -1):
         day = today - timedelta(days=i)
         labels.append(day.strftime('%m/%d'))
-        day_total = Post.objects.filter(user=request.user, created_at__date=day).aggregate(Sum('study_minutes'))[
-                        'study_minutes__sum'] or 0
-        data.append(day_total)
+        data.append(totals_by_day.get(day, 0))
 
     remaining_minutes = 0
     remaining_display = ""
