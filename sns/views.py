@@ -323,6 +323,15 @@ def edit_profile(request):
 
     if request.method == "POST":
         if "update_profile" in request.POST:
+            requested_username = (request.POST.get("username") or "").strip()
+            username_error = None
+            if requested_username and requested_username != request.user.username:
+                if User.objects.filter(username=requested_username).exclude(id=request.user.id).exists():
+                    username_error = "このIDはすでに使われています。別のIDにしてください。"
+                else:
+                    request.user.username = requested_username
+                    request.user.save(update_fields=["username"])
+
             profile.display_name = request.POST.get("display_name")
             profile.bio = request.POST.get("bio")
             profile.department = request.POST.get("department")
@@ -332,6 +341,19 @@ def edit_profile(request):
             if "icon" in request.FILES:
                 profile.icon = file_to_base64(request.FILES["icon"])
             profile.save()
+            if username_error:
+                current_item = GachaItem.objects.filter(name=profile.current_title).first()
+                av_item = GachaItem.objects.filter(name=profile.current_avatar).first()
+                return render(request, "sns/edit_profile.html", {
+                    "my_items": list(real_owned_titles),
+                    "my_avatars": owned_items.filter(icon_query),
+                    "current_rarity": current_item.rarity if current_item else "N",
+                    "current_av_rarity": av_item.rarity if av_item else "N",
+                    "owned_names": [n for n in NAMES_LIST if any(n in item.name for item in real_owned_titles)],
+                    "owned_words": [w for w in WORDS_LIST if any(w in item.name for item in real_owned_titles)],
+                    "username_error": username_error,
+                    "unread_count": Notification.objects.filter(recipient=request.user, is_read=False).count(),
+                })
             return redirect("edit_profile")
 
         if "new_avatar" in request.POST:

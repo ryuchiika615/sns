@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body{font-family:sans-serif;background:#f0f2f5;margin:0;padding-bottom:80px;color:#111827}.header{background:#1a1a1a;color:#fff;padding:15px 20px;position:sticky;top:0;z-index:10;display:flex;justify-content:space-between}.container{max-width:720px;margin:auto;padding:15px}.card{background:#fff;border-radius:10px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.06)}.filters{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}.filters input,.filters button{padding:10px;border:1px solid #ddd;border-radius:8px}.filters button{background:#1877f2;color:#fff;font-weight:bold;border:none}.hero{background:linear-gradient(135deg,#1877f2,#111827);color:#fff;text-align:center}.hero strong{display:block;font-size:2rem;margin-top:4px}.subject-list{list-style:none;padding:0;margin:0}.subject-list li{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}.rank-link{display:flex;justify-content:space-between;align-items:center;color:#111827;text-decoration:none;border-bottom:1px solid #eee;padding:10px 0}.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;display:flex;justify-content:space-around;padding:12px 0}.nav-item{color:#aaa;text-decoration:none;font-size:1.5rem;position:relative}.nav-item.active{color:#fff}.badge{position:absolute;top:-5px;right:-8px;background:#e0245e;color:#fff;border-radius:50%;padding:2px 6px;font-size:.7rem;font-weight:bold;border:2px solid #1a1a1a}
+        body{font-family:sans-serif;background:#f0f2f5;margin:0;padding-bottom:90px;color:#111827}.header{background:#1a1a1a;color:#fff;padding:15px 20px;position:sticky;top:0;z-index:10;display:flex;justify-content:space-between}.container{max-width:720px;margin:auto;padding:15px}.card{background:#fff;border-radius:10px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.06)}.filters{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}.filters input,.filters button{padding:10px;border:1px solid #ddd;border-radius:8px}.filters button{background:#1877f2;color:#fff;font-weight:bold;border:none}.hero{background:linear-gradient(135deg,#1877f2,#111827);color:#fff;text-align:center}.hero strong{display:block;font-size:2rem;margin-top:4px}.subject-list{list-style:none;padding:0;margin:0}.subject-list li{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}.rank-link{display:flex;justify-content:space-between;align-items:center;color:#111827;text-decoration:none;border-bottom:1px solid #eee;padding:10px 0}.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;display:flex;justify-content:space-around;padding:10px 0}.nav-item,.logout-btn{color:#aaa;text-decoration:none;font-size:1.35rem;position:relative;background:none;border:none;padding:6px}.logout-btn{color:#ff6b6b;cursor:pointer}.nav-item.active{color:#fff}.badge{position:absolute;top:-5px;right:-8px;background:#e0245e;color:#fff;border-radius:50%;padding:2px 6px;font-size:.7rem;font-weight:bold;border:2px solid #1a1a1a}
     </style>
 </head>
 <body>
@@ -46,12 +46,15 @@
             {% empty %}<p style="color:#6b7280;">ランキングはまだありません。</p>{% endfor %}
         </div>
     </main>
+    <form action="{% url 'logout' %}" method="POST" id="bottom-logout-form" style="display:none;">{% csrf_token %}</form>
     <div class="bottom-nav">
         <a href="{% url 'index' %}" class="nav-item"><i class="fas fa-home"></i></a>
         <a href="{% url 'rankings' %}" class="nav-item"><i class="fas fa-ranking-star"></i></a>
         <a href="{% url 'analytics' %}" class="nav-item active"><i class="fas fa-chart-pie"></i></a>
         <a href="{% url 'user_profile' user.username %}" class="nav-item"><i class="fas fa-user"></i></a>
+        <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins"></i></a>
         <a href="{% url 'notifications' %}" class="nav-item"><i class="fas fa-bell"></i>{% if unread_count > 0 %}<span class="badge">{{ unread_count }}</span>{% endif %}</a>
+        <button type="button" class="logout-btn" onclick="document.getElementById('bottom-logout-form').submit();"><i class="fas fa-right-from-bracket"></i></button>
     </div>
     <script>
         const labels = {{ pie_labels|safe }};
