@@ -3,119 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>通知一覧 - リュッター</title>
+    <title>通知</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 80px; }
-        .header { background: #1a1a1a; padding: 15px 20px; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; color: white; }
-        .menu-icon { font-size: 1.5rem; cursor: pointer; color: white; }
-        .sidebar { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; left: 0; background-color: #1a1a1a; overflow-x: hidden; transition: 0.3s; padding-top: 60px; box-shadow: 2px 0 5px rgba(0,0,0,0.5); }
-        .sidebar a { padding: 15px 25px; text-decoration: none; font-size: 1.2rem; color: #fff; display: block; transition: 0.3s; font-weight: bold; }
-        .sidebar a:hover { color: #fbc02d; background: #333; }
-        .sidebar .closebtn { position: absolute; top: 0; right: 20px; font-size: 36px; padding: 0; color: #999; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1500; display: none; }
-
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
-        .nav-item { color: #aaa; text-decoration: none; font-size: 1.5rem; position: relative; }
-        .nav-item.active { color: white; }
-        .badge { position: absolute; top: -5px; right: -8px; background: #e0245e; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; font-weight: bold; border: 2px solid #1a1a1a; }
-
-        .container { max-width: 600px; margin: auto; padding: 15px; }
-        .notification-card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px; }
-        .unread { background: #e7f3ff; border-left: 4px solid #1877f2; }
-        .icon-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; flex-shrink: 0; }
-        .icon-like { background: #e0245e; }
-        .icon-reply { background: #1da1f2; }
-        .icon-follow { background: #17bf63; }
-
-        .avatar-container { position: relative; display: inline-block; width: 60px; height: 60px; margin: 0 auto; }
-        .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #fff; }
-        .avatar-placeholder { font-size: 60px; color: #ccc; }
+        body{font-family:sans-serif;background:#f0f2f5;margin:0;padding-bottom:80px;color:#111827}.header{background:#1a1a1a;color:#fff;padding:15px 20px;position:sticky;top:0;z-index:10}.container{max-width:640px;margin:auto;padding:15px}.notification-card{background:#fff;padding:15px;border-radius:10px;margin-bottom:10px;box-shadow:0 1px 2px rgba(0,0,0,.05);display:flex;align-items:center;gap:14px}.icon-circle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:1.1rem;flex-shrink:0}.icon-like{background:#e0245e}.icon-reply{background:#1da1f2}.icon-follow{background:#17bf63}.name{color:#050505;text-decoration:none;font-weight:bold}.id{font-size:.82rem;color:#6b7280}.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;display:flex;justify-content:space-around;padding:12px 0}.nav-item{color:#aaa;text-decoration:none;font-size:1.5rem}.nav-item.active{color:white}
     </style>
 </head>
 <body>
-    <div class="header">
-        <div style="display:flex; align-items:center; gap:15px;">
-            <i class="fas fa-bars menu-icon" onclick="openNav()"></i>
-            <span style="font-weight:bold; font-size:1.2rem;"><i class="fas fa-layer-group"></i> リュッター</span>
-        </div>
-    </div>
-
-    <div id="sidebar" class="sidebar">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-        <div style="text-align: center; margin-bottom: 20px;">
-            <div class="avatar-container">
-                {% if user.profile.icon %}
-                    <img src="{{ user.profile.icon }}" class="avatar-img">
-                {% else %}
-                    <i class="fas fa-user-circle avatar-placeholder"></i>
-                {% endif %}
-            </div>
-            <div style="color: white; font-weight: bold; margin-top: 10px;">{{ user.username }}</div>
-        </div>
-        <a href="{% url 'index' %}"><i class="fas fa-home" style="width:25px;"></i> ホーム</a>
-        <a href="{% url 'analytics' %}"><i class="fas fa-chart-pie" style="width:25px;"></i> 分析レポート</a>
-        <a href="{% url 'user_profile' user.username %}"><i class="fas fa-user" style="width:25px;"></i> プロフィール</a>
-        <a href="{% url 'edit_profile' %}"><i class="fas fa-cog" style="width:25px;"></i> 設定 / 編集</a>
-        <a href="{% url 'gacha' %}"><i class="fas fa-coins" style="width:25px;"></i> ガチャポン</a>
-        <hr style="border-color: #333; margin: 20px;">
-        <form action="{% url 'logout' %}" method="POST" id="logout-form" style="display:none;">{% csrf_token %}</form>
-        <a href="javascript:void(0);" onclick="document.getElementById('logout-form').submit();" style="color:#ff4757;"><i class="fas fa-sign-out-alt" style="width:25px;"></i> ログアウト</a>
-    </div>
-    <div id="overlay" class="overlay" onclick="closeNav()"></div>
-
-    <div class="container">
+    <div class="header"><strong><i class="fas fa-bell"></i> 通知</strong></div>
+    <main class="container">
         {% for notif in notifications %}
-        <div class="notification-card {% if not notif.is_read %}unread{% endif %}">
+        <div class="notification-card">
             {% if notif.notification_type == 'like' %}
                 <div class="icon-circle icon-like"><i class="fas fa-heart"></i></div>
-                <div>
-                    <strong><a href="{% url 'user_profile' notif.sender.username %}" style="color: #050505; text-decoration: none;">{{ notif.sender.username }}</a></strong>さんがあなたの投稿にいいねしました。
-                    <div style="font-size: 0.8rem; color: #999;">{{ notif.created_at|date:"n月j日 H:i" }}</div>
-                </div>
+                <div><a class="name" href="{% url 'user_profile' notif.sender.username %}">{{ notif.sender_label }}</a> があなたの投稿にいいねしました。<div class="id">{{ notif.created_at|date:"n月j日 H:i" }}</div></div>
             {% elif notif.notification_type == 'reply' %}
                 <div class="icon-circle icon-reply"><i class="fas fa-comment"></i></div>
-                <div>
-                    <strong><a href="{% url 'user_profile' notif.sender.username %}" style="color: #050505; text-decoration: none;">{{ notif.sender.username }}</a></strong>さんがあなたの投稿にコメントしました。
-                    <div style="font-size: 0.8rem; color: #999;">{{ notif.created_at|date:"n月j日 H:i" }}</div>
-                </div>
+                <div><a class="name" href="{% url 'user_profile' notif.sender.username %}">{{ notif.sender_label }}</a> があなたの投稿にコメントしました。<div class="id">{{ notif.created_at|date:"n月j日 H:i" }}</div></div>
             {% elif notif.notification_type == 'follow' %}
                 <div class="icon-circle icon-follow"><i class="fas fa-user-plus"></i></div>
-                <div>
-                    <strong><a href="{% url 'user_profile' notif.sender.username %}" style="color: #050505; text-decoration: none;">{{ notif.sender.username }}</a></strong>さんにフォローされました！
-                    <div style="font-size: 0.8rem; color: #999;">{{ notif.created_at|date:"n月j日 H:i" }}</div>
-                </div>
+                <div><a class="name" href="{% url 'user_profile' notif.sender.username %}">{{ notif.sender_label }}</a> があなたをフォローしました。<div class="id">{{ notif.created_at|date:"n月j日 H:i" }}</div></div>
             {% endif %}
         </div>
         {% empty %}
-        <div style="text-align: center; color: #999; margin-top: 50px;">
-            <i class="far fa-bell-slash" style="font-size: 3rem; margin-bottom: 10px;"></i><br>
-            通知はまだありません。
-        </div>
+        <div style="text-align:center;color:#999;margin-top:50px;"><i class="far fa-bell-slash" style="font-size:3rem;margin-bottom:10px;"></i><br>通知はまだありません。</div>
         {% endfor %}
-    </div>
-
+    </main>
     <div class="bottom-nav">
         <a href="{% url 'index' %}" class="nav-item"><i class="fas fa-home"></i></a>
+        <a href="{% url 'rankings' %}" class="nav-item"><i class="fas fa-ranking-star"></i></a>
         <a href="{% url 'analytics' %}" class="nav-item"><i class="fas fa-chart-pie"></i></a>
         <a href="{% url 'user_profile' user.username %}" class="nav-item"><i class="fas fa-user"></i></a>
-        <a href="{% url 'edit_profile' %}" class="nav-item"><i class="fas fa-cog"></i></a>
-        <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins" style="color: #fbc02d;"></i></a>
-        <a href="{% url 'notifications' %}" class="nav-item active">
-            <i class="fas fa-bell"></i>
-            {% if unread_count > 0 %}<span class="badge">{{ unread_count }}</span>{% endif %}
-        </a>
+        <a href="{% url 'notifications' %}" class="nav-item active"><i class="fas fa-bell"></i></a>
     </div>
-
-    <script>
-        function openNav() {
-            document.getElementById("sidebar").style.width = "250px";
-            document.getElementById("overlay").style.display = "block";
-        }
-        function closeNav() {
-            document.getElementById("sidebar").style.width = "0";
-            document.getElementById("overlay").style.display = "none";
-        }
-    </script>
 </body>
 </html>

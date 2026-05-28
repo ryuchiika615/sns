@@ -3,126 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>分析レポート - リュッター</title>
+    <title>勉強分析</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 80px; }
-        .header { background: #1a1a1a; padding: 15px 20px; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; color: white; }
-        .menu-icon { font-size: 1.5rem; cursor: pointer; color: white; }
-        .sidebar { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; left: 0; background-color: #1a1a1a; overflow-x: hidden; transition: 0.3s; padding-top: 60px; box-shadow: 2px 0 5px rgba(0,0,0,0.5); }
-        .sidebar a { padding: 15px 25px; text-decoration: none; font-size: 1.2rem; color: #fff; display: block; font-weight: bold; }
-        .sidebar a:hover { color: #fbc02d; background: #333; }
-        .sidebar .closebtn { position: absolute; top: 0; right: 20px; font-size: 36px; padding: 0; color: #999; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1500; display: none; }
-
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
-        .nav-item { color: #aaa; text-decoration: none; font-size: 1.5rem; position: relative; }
-        .nav-item.active { color: white; }
-        .badge { position: absolute; top: -5px; right: -8px; background: #e0245e; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; font-weight: bold; border: 2px solid #1a1a1a; }
-
-        .container { max-width: 600px; margin: auto; padding: 15px; }
-        .card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .card-title { font-size: 1.1rem; font-weight: bold; border-bottom: 2px solid #f0f2f5; padding-bottom: 10px; margin-bottom: 15px; color: #333; }
-
-        .subject-list { list-style: none; padding: 0; margin: 0; }
-        .subject-list li { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 0.95rem; }
-        .subject-list li:last-child { border-bottom: none; }
-        .subject-name { font-weight: bold; color: #555; }
-        .subject-time { font-weight: bold; color: #1877f2; }
-
-        .avatar-container { position: relative; display: inline-block; width: 60px; height: 60px; margin: 0 auto; }
-        .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #fff; }
-        .avatar-placeholder { font-size: 60px; color: #ccc; }
+        body{font-family:sans-serif;background:#f0f2f5;margin:0;padding-bottom:80px;color:#111827}.header{background:#1a1a1a;color:#fff;padding:15px 20px;position:sticky;top:0;z-index:10;display:flex;justify-content:space-between}.container{max-width:720px;margin:auto;padding:15px}.card{background:#fff;border-radius:10px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.06)}.filters{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}.filters input,.filters button{padding:10px;border:1px solid #ddd;border-radius:8px}.filters button{background:#1877f2;color:#fff;font-weight:bold;border:none}.hero{background:linear-gradient(135deg,#1877f2,#111827);color:#fff;text-align:center}.hero strong{display:block;font-size:2rem;margin-top:4px}.subject-list{list-style:none;padding:0;margin:0}.subject-list li{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}.rank-link{display:flex;justify-content:space-between;align-items:center;color:#111827;text-decoration:none;border-bottom:1px solid #eee;padding:10px 0}.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;display:flex;justify-content:space-around;padding:12px 0}.nav-item{color:#aaa;text-decoration:none;font-size:1.5rem;position:relative}.nav-item.active{color:#fff}.badge{position:absolute;top:-5px;right:-8px;background:#e0245e;color:#fff;border-radius:50%;padding:2px 6px;font-size:.7rem;font-weight:bold;border:2px solid #1a1a1a}
     </style>
 </head>
 <body>
-    <div class="header">
-        <div style="display:flex; align-items:center; gap:15px;">
-            <i class="fas fa-bars menu-icon" onclick="openNav()"></i>
-            <span style="font-weight:bold; font-size:1.2rem;"><i class="fas fa-layer-group"></i> リュッター</span>
-        </div>
-        <div style="background: #333; padding: 5px 12px; border-radius: 15px; font-weight: bold; font-size: 0.8rem; color: #fbc02d;">
-            <i class="fas fa-gem"></i> {{ user.profile.points }} pt
-        </div>
-    </div>
-
-    <div id="sidebar" class="sidebar">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-        <div style="text-align: center; margin-bottom: 20px;">
-            <div class="avatar-container">
-                {% if user.profile.icon %}
-                    <img src="{{ user.profile.icon }}" class="avatar-img">
-                {% else %}
-                    <i class="fas fa-user-circle avatar-placeholder"></i>
-                {% endif %}
-            </div>
-            <div style="color: white; font-weight: bold; margin-top: 10px;">{{ user.username }}</div>
-        </div>
-        <a href="{% url 'index' %}"><i class="fas fa-home" style="width:25px;"></i> ホーム</a>
-        <a href="{% url 'analytics' %}"><i class="fas fa-chart-pie" style="width:25px;"></i> 分析レポート</a>
-        <a href="{% url 'user_profile' user.username %}"><i class="fas fa-user" style="width:25px;"></i> プロフィール</a>
-        <a href="{% url 'edit_profile' %}"><i class="fas fa-cog" style="width:25px;"></i> 設定 / 編集</a>
-        <a href="{% url 'gacha' %}"><i class="fas fa-coins" style="width:25px;"></i> ガチャポン</a>
-        <hr style="border-color: #333; margin: 20px;">
-        <form action="{% url 'logout' %}" method="POST" id="logout-form" style="display:none;">{% csrf_token %}</form>
-        <a href="javascript:void(0);" onclick="document.getElementById('logout-form').submit();" style="color:#ff4757;"><i class="fas fa-sign-out-alt" style="width:25px;"></i> ログアウト</a>
-    </div>
-    <div id="overlay" class="overlay" onclick="closeNav()"></div>
-
-    <div class="container">
-        <div class="card" style="text-align: center; background: linear-gradient(135deg, #1877f2, #0d47a1); color: white;">
-            <div style="font-size: 0.9rem; margin-bottom: 5px;">これまでの累計学習時間</div>
-            <div style="font-size: 2rem; font-weight: bold;">{{ total_all_time_display }}</div>
-        </div>
-
+    <div class="header"><strong><i class="fas fa-chart-pie"></i> 勉強分析</strong><a href="{% url 'index' %}" style="color:#fff;text-decoration:none;">ホーム</a></div>
+    <main class="container">
         <div class="card">
-            <div class="card-title">📚 科目別の割合</div>
+            <form method="GET" class="filters">
+                <input type="date" name="start" value="{{ start|date:'Y-m-d' }}">
+                <input type="date" name="end" value="{{ end|date:'Y-m-d' }}">
+                <button type="submit">集計</button>
+            </form>
+        </div>
+        <div class="card hero">
+            <div>{{ start|date:"Y/m/d" }} から {{ end|date:"Y/m/d" }} まで</div>
+            <strong>{{ total_all_time_display }}</strong>
+        </div>
+        <div class="card">
+            <h3>科目別の割合</h3>
             {% if subject_list %}
-                <div style="width: 100%; max-width: 300px; margin: 0 auto 20px;">
-                    <canvas id="pieChart"></canvas>
-                </div>
-                <ul class="subject-list">
-                    {% for subject in subject_list %}
-                    <li>
-                        <span class="subject-name"><i class="fas fa-book"></i> {{ subject.name }}</span>
-                        <span class="subject-time">{{ subject.display_time }}</span>
-                    </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p style="text-align: center; color: #999;">まだ学習記録がありません。</p>
-            {% endif %}
+            <canvas id="pieChart" height="220"></canvas>
+            <ul class="subject-list">
+                {% for subject in subject_list %}
+                <li><span><span class="dot" style="background:{{ subject.color }}"></span>{{ subject.subject }}</span><strong>{{ subject.display_time }}</strong></li>
+                {% endfor %}
+            </ul>
+            {% else %}<p style="text-align:center;color:#6b7280;">この期間の記録はありません。</p>{% endif %}
         </div>
-
         <div class="card">
-            <div class="card-title">📅 月別の学習推移</div>
-            <canvas id="barChart" height="200"></canvas>
+            <h3>日別の推移</h3>
+            <canvas id="barChart" height="210"></canvas>
         </div>
-    </div>
-
+        <div class="card">
+            <h3>同じ期間の上位</h3>
+            {% for row in ranking %}
+            <a class="rank-link" href="{% url 'user_profile' row.user.username %}"><span>{{ row.rank }}. {{ row.label }}</span><strong>{{ row.display_time }}</strong></a>
+            {% empty %}<p style="color:#6b7280;">ランキングはまだありません。</p>{% endfor %}
+        </div>
+    </main>
     <div class="bottom-nav">
         <a href="{% url 'index' %}" class="nav-item"><i class="fas fa-home"></i></a>
+        <a href="{% url 'rankings' %}" class="nav-item"><i class="fas fa-ranking-star"></i></a>
         <a href="{% url 'analytics' %}" class="nav-item active"><i class="fas fa-chart-pie"></i></a>
         <a href="{% url 'user_profile' user.username %}" class="nav-item"><i class="fas fa-user"></i></a>
-        <a href="{% url 'edit_profile' %}" class="nav-item"><i class="fas fa-cog"></i></a>
-        <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins" style="color: #fbc02d;"></i></a>
-        <a href="{% url 'notifications' %}" class="nav-item">
-            <i class="fas fa-bell"></i>
-            {% if unread_count > 0 %}<span class="badge">{{ unread_count }}</span>{% endif %}
-        </a>
+        <a href="{% url 'notifications' %}" class="nav-item"><i class="fas fa-bell"></i>{% if unread_count > 0 %}<span class="badge">{{ unread_count }}</span>{% endif %}</a>
     </div>
-
     <script>
-        function openNav() {
-            document.getElementById("sidebar").style.width = "250px";
-            document.getElementById("overlay").style.display = "block";
+        const labels = {{ pie_labels|safe }};
+        if (labels.length) {
+            new Chart(document.getElementById('pieChart').getContext('2d'), { type:'doughnut', data:{ labels, datasets:[{ data:{{ pie_data|safe }}, backgroundColor:{{ pie_colors|safe }} }] }, options:{ plugins:{ legend:{ position:'bottom' } } } });
         }
-        function closeNav() {
-            document.getElementById("sidebar").style.width = "0";
-            document.getElementById("overlay").style.display = "none";
-        }
-
-        const pieCtx = document.getElementById('pieChart');
-        if (pieCtx) {
-            new Chart(pieCtx.getContext('2d
+        new Chart(document.getElementById('barChart').getContext('2d'), { type:'bar', data:{ labels:{{ bar_labels|safe }}, datasets:[{ label:'勉強時間（分）', data:{{ bar_data|safe }}, backgroundColor:'#1877f2', borderRadius:5 }] }, options:{ scales:{ y:{ beginAtZero:true } }, plugins:{ legend:{ display:false } } } });
+    </script>
+</body>
+</html>

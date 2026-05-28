@@ -3,131 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ガチャポン - リュッター</title>
+    <title>ガチャ</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: sans-serif; background: #1a1a1a; color: white; margin: 0; padding-bottom: 80px; }
-        .header { background: #1a1a1a; padding: 15px 20px; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; color: white; border-bottom: 1px solid #333; }
-        .menu-icon { font-size: 1.5rem; cursor: pointer; color: white; }
-        .sidebar { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; left: 0; background-color: #1a1a1a; overflow-x: hidden; transition: 0.3s; padding-top: 60px; box-shadow: 2px 0 5px rgba(0,0,0,0.5); }
-        .sidebar a { padding: 15px 25px; text-decoration: none; font-size: 1.2rem; color: #fff; display: block; transition: 0.3s; font-weight: bold; }
-        .sidebar a:hover { color: #fbc02d; background: #333; }
-        .sidebar .closebtn { position: absolute; top: 0; right: 20px; font-size: 36px; padding: 0; color: #999; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1500; display: none; }
-
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; border-top: 1px solid #333; }
-        .nav-item { color: #aaa; text-decoration: none; font-size: 1.5rem; position: relative; }
-        .nav-item.active { color: white; }
-        .badge { position: absolute; top: -5px; right: -8px; background: #e0245e; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; font-weight: bold; border: 2px solid #1a1a1a; }
-
-        .gacha-container { background: #2a2a2a; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 500px; margin: 30px auto; border: 2px solid #fbc02d; text-align: center; }
-        .points-badge { background: #fbc02d; color: #000; padding: 5px 15px; border-radius: 20px; font-weight: bold; display: inline-block; margin-bottom: 20px; }
-        .result-box { min-height: 150px; margin: 20px 0; padding: 20px; background: #333; border-radius: 15px; border: 1px dashed #555; display: flex; flex-direction: column; justify-content: center; align-items: center; max-height: 400px; overflow-y: auto; }
-        .result-grid { display: grid; grid-template-columns: 1fr; gap: 10px; width: 100%; }
-        .result-item-card { background: #222; border-radius: 10px; padding: 15px; border: 1px solid #444; }
-        .rarity-badge { font-size: 1rem; font-weight: bold; margin-bottom: 5px; display: inline-block; padding: 2px 8px; border-radius: 4px; }
-        .SSR { background: linear-gradient(45deg, #ffe259, #ffa751); color: #fff; box-shadow: 0 0 15px #ff9800; animation: bounce 0.5s ease alternate infinite; }
-        .SR { background: #9c27b0; color: #fff; }
-        .R { background: #2196f3; color: #fff; }
-        .N { background: #666; color: #fff; }
-        .btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
-        .spin-btn { background: #fbc02d; color: #000; border: none; padding: 15px; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; flex: 1; transition: transform 0.1s; box-shadow: 0 4px 0 #c49000; }
-        .spin-btn-10 { background: #ff4757; color: #fff; box-shadow: 0 4px 0 #ff1e33; }
-        .spin-btn:active { transform: translateY(4px); box-shadow: none; }
-        .spin-btn:disabled { background: #555; color: #888; box-shadow: none; cursor: not-allowed; }
-        .error-msg { color: #ff5252; font-size: 0.9rem; margin-top: 10px; font-weight: bold; }
-
-        .avatar-container { position: relative; display: inline-block; width: 60px; height: 60px; margin: 0 auto; }
-        .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #fff; }
-        .avatar-placeholder { font-size: 60px; color: #ccc; }
-
-        @keyframes bounce { 0% { transform: scale(0.95); } 100% { transform: scale(1.05); } }
+        body{font-family:sans-serif;background:#151515;color:white;margin:0;padding-bottom:80px}.header{background:#111;padding:15px 20px;position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;border-bottom:1px solid #333}.container{max-width:560px;margin:28px auto;padding:0 15px}.gacha-container{background:#242424;padding:26px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.45);border:1px solid #fbc02d;text-align:center;overflow:hidden;position:relative}.gacha-container:before{content:"";position:absolute;inset:-60px;background:conic-gradient(from 90deg,transparent,#fbc02d22,transparent,#38bdf822,transparent);animation:spin-bg 12s linear infinite;pointer-events:none}.gacha-inner{position:relative}.points{background:#fbc02d;color:#000;padding:5px 15px;border-radius:20px;font-weight:bold;display:inline-block;margin-bottom:10px}.rates{color:#aaa;font-size:.82rem;line-height:1.6}.result-box{min-height:150px;margin:18px 0;padding:16px;background:#333;border-radius:12px;border:1px dashed #555;max-height:440px;overflow-y:auto}.result-grid{display:grid;gap:10px}.result-item-card{background:#1f1f1f;border-radius:10px;padding:14px;border:1px solid #444;position:relative;overflow:hidden}.rarity-badge{font-size:1rem;font-weight:bold;margin-bottom:5px;display:inline-block;padding:3px 9px;border-radius:5px}.LR{background:linear-gradient(45deg,#111,#f43f5e,#fde047);color:#fff;box-shadow:0 0 22px #f43f5e;animation:pulse 1.1s ease-in-out infinite alternate}.UR{background:linear-gradient(45deg,#00d2ff,#7b2ff7);color:#fff;box-shadow:0 0 18px #7b2ff7;animation:pulse 1.3s ease-in-out infinite alternate}.SSR{background:linear-gradient(45deg,#ffe259,#ffa751);color:#fff;box-shadow:0 0 15px #ff9800}.SR{background:#9c27b0;color:#fff}.R{background:#2196f3;color:#fff}.N{background:#666;color:#fff}.result-item-card.has-aura:after{content:"";position:absolute;inset:-30%;background:radial-gradient(circle,rgba(255,255,255,.22),transparent 55%);animation:shine 2.5s linear infinite;pointer-events:none}.btn-group{display:flex;gap:10px;justify-content:center;margin-top:15px}.spin-btn{background:#fbc02d;color:#000;border:none;padding:15px;border-radius:12px;font-size:1.05rem;font-weight:bold;cursor:pointer;flex:1;box-shadow:0 4px 0 #c49000}.spin-btn-10{background:#ff4757;color:#fff;box-shadow:0 4px 0 #bf1f2f}.spin-btn:disabled{background:#555;color:#888;box-shadow:none;cursor:not-allowed}.error-msg{color:#ff6b6b;font-weight:bold}.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#111;display:flex;justify-content:space-around;padding:12px 0}.nav-item{color:#aaa;text-decoration:none;font-size:1.5rem}.nav-item.active{color:#fff}@keyframes pulse{from{transform:scale(.98)}to{transform:scale(1.03)}}@keyframes shine{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}@keyframes spin-bg{to{transform:rotate(360deg)}}@media(max-width:520px){.btn-group{flex-direction:column}}
     </style>
 </head>
 <body>
-    <div class="header">
-        <div style="display:flex; align-items:center; gap:15px;">
-            <i class="fas fa-bars menu-icon" onclick="openNav()"></i>
-            <span style="font-weight:bold; font-size:1.2rem;"><i class="fas fa-layer-group"></i> リュッター</span>
-        </div>
-        <div style="background: #333; padding: 5px 12px; border-radius: 15px; font-weight: bold; font-size: 0.8rem; color: #fbc02d;">
-            <i class="fas fa-gem"></i> {{ points }} pt
-        </div>
-    </div>
-
-    <div id="sidebar" class="sidebar">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-        <div style="text-align: center; margin-bottom: 20px;">
-            <div class="avatar-container">
-                {% if user.profile.icon %}
-                    <img src="{{ user.profile.icon }}" class="avatar-img">
-                {% else %}
-                    <i class="fas fa-user-circle avatar-placeholder"></i>
-                {% endif %}
-            </div>
-            <div style="color: white; font-weight: bold; margin-top: 10px;">{{ user.username }}</div>
-        </div>
-        <a href="{% url 'index' %}"><i class="fas fa-home" style="width:25px;"></i> ホーム</a>
-        <a href="{% url 'analytics' %}"><i class="fas fa-chart-pie" style="width:25px;"></i> 分析レポート</a>
-        <a href="{% url 'user_profile' user.username %}"><i class="fas fa-user" style="width:25px;"></i> プロフィール</a>
-        <a href="{% url 'edit_profile' %}"><i class="fas fa-cog" style="width:25px;"></i> 設定 / 編集</a>
-        <a href="{% url 'gacha' %}"><i class="fas fa-coins" style="width:25px;"></i> ガチャポン</a>
-        <hr style="border-color: #333; margin: 20px;">
-        <form action="{% url 'logout' %}" method="POST" id="logout-form" style="display:none;">{% csrf_token %}</form>
-        <a href="javascript:void(0);" onclick="document.getElementById('logout-form').submit();" style="color:#ff4757;"><i class="fas fa-sign-out-alt" style="width:25px;"></i> ログアウト</a>
-    </div>
-    <div id="overlay" class="overlay" onclick="closeNav()"></div>
-
-    <div class="gacha-container">
-        <h2><i class="fas fa-capsules"></i> ガチャポン</h2>
-        <p style="font-size:0.8rem; color:#aaa; margin-top:-10px;">SSR排出率: 0.00001%</p>
-        <div class="result-box">
-            {% if result_items %}
-                <div class="result-grid">
-                {% for item in result_items %}
-                    <div class="result-item-card">
-                        <div class="rarity-badge {{ item.rarity }}">{{ item.rarity }}</div>
-                        <div style="font-size: 1.1rem; font-weight:bold; margin-top:5px;">{% if item.rarity == 'SSR' %}👑 {% endif %}{{ item.name }}</div>
+    <div class="header"><strong><i class="fas fa-wand-magic-sparkles"></i> ガチャ</strong><span style="color:#fbc02d;font-weight:bold;"><i class="fas fa-gem"></i> {{ points }} pt</span></div>
+    <main class="container">
+        <div class="gacha-container">
+            <div class="gacha-inner">
+                <h2>称号・アバターガチャ</h2>
+                <div class="points">{{ points }} pt</div>
+                <div class="rates">LR: 奇跡級 / UR: 超激レア / SSR: 激レア<br>かわいい系・動物系・中二病系も追加</div>
+                <div class="result-box">
+                    {% if result_items %}
+                    <div class="result-grid">
+                        {% for item in result_items %}
+                        <div class="result-item-card {% if item.rarity == 'LR' or item.rarity == 'UR' %}has-aura{% endif %}">
+                            <div class="rarity-badge {{ item.rarity }}">{{ item.rarity }}</div>
+                            <div style="font-size:1.1rem;font-weight:bold;margin-top:5px;">{{ item.name }}</div>
+                        </div>
+                        {% endfor %}
                     </div>
-                {% endfor %}
+                    {% else %}
+                    <div style="color:#999;"><i class="fas fa-box-open fa-3x"></i><br>ポイントを使って景品を引こう</div>
+                    {% endif %}
                 </div>
-            {% else %}
-                <div style="color: #666;"><i class="fas fa-box-open fa-3x"></i><br>何が出るかな？</div>
-            {% endif %}
+                {% if error %}<div class="error-msg">{{ error }}</div>{% endif %}
+                <form method="POST" class="btn-group">
+                    {% csrf_token %}
+                    <button type="submit" name="gacha_1" class="spin-btn" {% if points < 10 %}disabled{% endif %}>単発 10pt</button>
+                    <button type="submit" name="gacha_10" class="spin-btn spin-btn-10" {% if points < 100 %}disabled{% endif %}>10連 100pt</button>
+                </form>
+            </div>
         </div>
-
-        {% if error %}
-            <div class="error-msg">{{ error }}</div>
-        {% endif %}
-
-        <form method="POST" class="btn-group">
-            {% csrf_token %}
-            <button type="submit" name="gacha_1" class="spin-btn" {% if points < 10 %}disabled{% endif %}>単発 (10pt)</button>
-            <button type="submit" name="gacha_10" class="spin-btn spin-btn-10" {% if points < 100 %}disabled{% endif %}>10連 (100pt)</button>
-        </form>
-    </div>
-
+    </main>
     <div class="bottom-nav">
         <a href="{% url 'index' %}" class="nav-item"><i class="fas fa-home"></i></a>
+        <a href="{% url 'rankings' %}" class="nav-item"><i class="fas fa-ranking-star"></i></a>
         <a href="{% url 'analytics' %}" class="nav-item"><i class="fas fa-chart-pie"></i></a>
         <a href="{% url 'user_profile' user.username %}" class="nav-item"><i class="fas fa-user"></i></a>
-        <a href="{% url 'edit_profile' %}" class="nav-item"><i class="fas fa-cog"></i></a>
-        <a href="{% url 'gacha' %}" class="nav-item active"><i class="fas fa-coins" style="color: #fbc02d;"></i></a>
-        <a href="{% url 'notifications' %}" class="nav-item">
-            <i class="fas fa-bell"></i>
-            {% if unread_count > 0 %}<span class="badge">{{ unread_count }}</span>{% endif %}
-        </a>
+        <a href="{% url 'gacha' %}" class="nav-item active"><i class="fas fa-coins"></i></a>
     </div>
-
-    <script>
-        function openNav() {
-            document.getElementById("sidebar").style.width = "250px";
-            document.getElementById("overlay").style.display = "block";
-        }
-        function closeNav() {
-            document.getElementById("sidebar").style.width = "0";
-            document.getElementById("overlay").style.display = "none";
-        }
-    </script>
 </body>
 </html>
