@@ -37,11 +37,18 @@
         .SR { background: #f3e5f5; color: #9c27b0; border: 1px solid #e1bee7; }
         .R { background: #e3f2fd; color: #2196f3; border: 1px solid #bbdefb; }
         .N { background: #f5f5f5; color: #424242; border: 1px solid #ccc; }
-        .avatar-container { position: relative; display: inline-block; width: 42px; height: 42px; margin-right: 15px; flex-shrink: 0; }
-        .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; position: relative; z-index: 5; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); background: white; box-sizing: border-box; }
-        .avatar-placeholder { font-size: 42px; color: #ccc; position: relative; z-index: 5; background: white; border-radius: 50%; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-sizing: border-box; }
-        .avatar-container.av-UR .avatar-img, .avatar-container.av-UR .avatar-placeholder { border-color: #38bdf8 !important; box-shadow: 0 0 12px #38bdf8; }
-        .avatar-container.av-LR .avatar-img, .avatar-container.av-LR .avatar-placeholder { border-color: #f43f5e !important; box-shadow: 0 0 16px #f43f5e, 0 0 22px #fde047; }
+        .avatar-container { position: relative; display: inline-grid; place-items:center; width: 48px; height: 48px; margin-right: 15px; flex-shrink: 0; }
+        .avatar-img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; position: relative; z-index: 5; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); background: white; box-sizing: border-box; }
+        .avatar-placeholder { font-size: 42px; color: #ccc; position: relative; z-index: 5; background: white; border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-sizing: border-box; }
+        .avatar-container:before { content:""; position:absolute; inset:1px; border-radius:50%; border:2px solid transparent; z-index:3; pointer-events:none; }
+        .avatar-container:after { content:""; position:absolute; width:54px; height:22px; top:13px; left:-3px; z-index:1; opacity:0; pointer-events:none; }
+        .avatar-container.av-SSR:before { border-color:#ffd84d; border-style:dashed; box-shadow:0 0 10px rgba(255,216,77,.75); }
+        .avatar-container.av-SSR:after { opacity:1; background:linear-gradient(90deg,#ff4f94 0 24%,transparent 24% 76%,#ff4f94 76%); clip-path:polygon(0 50%,24% 0,24% 100%,76% 100%,76% 0,100% 50%,76% 100%,24% 100%); }
+        .avatar-container.av-UR:before { border-color:#38bdf8; box-shadow:0 0 14px #38bdf8; }
+        .avatar-container.av-UR:after { opacity:1; background:linear-gradient(90deg,#7b2ff7 0 24%,transparent 24% 76%,#00d2ff 76%); clip-path:polygon(0 50%,24% 0,24% 100%,76% 100%,76% 0,100% 50%,76% 100%,24% 100%); }
+        .avatar-container.av-LR:before { border-color:#f43f5e; border-style:dashed; box-shadow:0 0 16px #f43f5e,0 0 22px #fde047; animation:avatarPulse 1.8s ease-in-out infinite alternate; }
+        .avatar-container.av-LR:after { opacity:1; background:linear-gradient(90deg,#111 0 24%,transparent 24% 76%,#fde047 76%); clip-path:polygon(0 50%,24% 0,24% 100%,76% 100%,76% 0,100% 50%,76% 100%,24% 100%); }
+        @keyframes avatarPulse { from{transform:scale(.96)} to{transform:scale(1.05)} }
         .subject-chip { color: #fff; font-size: .75rem; font-weight: bold; padding: 3px 7px; border-radius: 999px; }
         .post-time { margin-left: auto; font-size: .75rem; color: #6b7280; }
         @media (max-width: 520px) { .quick-grid { grid-template-columns: 1fr; } .row { grid-template-columns: 1fr; } }
