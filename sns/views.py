@@ -201,6 +201,14 @@ def owned_title_parts(items):
     }
 
 
+def refined_part_rarity(part, items):
+    value = 1
+    for item in items:
+        if part and part in item_display_name(item):
+            value = max(value, RARITY_ORDER.get(item.rarity, 1))
+    return value
+
+
 def shop_item_name(rarity):
     if rarity in ["UR", "LR"]:
         return f"{random.choice(LEGENDARY_PREFIXES)}{random.choice(LEGENDARY_NOUNS)}"
@@ -209,6 +217,20 @@ def shop_item_name(rarity):
     if random.choice([True, False]):
         return f"{random.choice(NAMES_LIST)}{random.choice(WORDS_LIST)}"
     return f"{random.choice(WORDS_LIST)}{random.choice(NAMES_LIST)}"
+
+
+def gacha_title_name(rarity):
+    if rarity == "N":
+        return random.choice(NAMES_LIST + NOUNS_LIST[:10] + WORDS_LIST[:20])
+    if rarity == "R":
+        return random.choice(WORDS_LIST[20:65] + NOUNS_LIST[10:18])
+    if rarity == "SR":
+        return random.choice(WORDS_LIST[65:100] + NOUNS_LIST[18:26])
+    if rarity == "SSR":
+        return random.choice(WORDS_LIST[100:125] + NOUNS_LIST[26:] + [f"{random.choice(WORDS_LIST[:60])}{random.choice(NAMES_LIST)}"])
+    if rarity == "UR":
+        return random.choice(WORDS_LIST[125:] + ["終焉を照らす観測者", "天空を統べる学習賢者", "不可視の時間術師"])
+    return random.choice(["黒炎の記憶の王冠", "星海を裂く答案破壊者", "終焉を照らす時間術師"] + WORDS_LIST[-20:])
 
 
 def sell_items(profile, items):
@@ -417,18 +439,12 @@ def gacha(request):
                 else:
                     rarity = "N"
 
-                if rarity in ["LR", "UR"]:
-                    generated_name = f"{random.choice(LEGENDARY_PREFIXES)}{random.choice(LEGENDARY_NOUNS)}"
-                elif random.random() < 0.25:
-                    generated_name = f"{random.choice(CUTE_PREFIXES)}{random.choice(CUTE_NOUNS)}"
-                elif random.random() < 0.45:
+                if random.random() < 0.38:
                     generated_name = f"【アイコン】{random.choice(ANIMAL_PREFIXES)}{random.choice(ANIMAL_NOUNS)}"
-                elif random.choice([True, False]):
+                elif random.random() < 0.38:
                     generated_name = f"【アイコン】{random.choice(AVATAR_PREFIXES)}{random.choice(AVATAR_NOUNS)}"
-                elif random.choice([True, False]):
-                    generated_name = f"{random.choice(NAMES_LIST)}{random.choice(WORDS_LIST)}"
                 else:
-                    generated_name = f"{random.choice(WORDS_LIST)}{random.choice(NAMES_LIST)}"
+                    generated_name = gacha_title_name(rarity)
 
                 result_item, created_item = GachaItem.objects.get_or_create(
                     name=generated_name, defaults={"rarity": rarity}
@@ -644,7 +660,7 @@ def edit_profile(request):
                 profile.save(update_fields=["current_title"])
             return redirect("edit_profile")
 
-        if "create_custom_title" in request.POST:
+        if "refine_parts" in request.POST:
             word = (request.POST.get("title_word") or "").strip()[:30]
             noun = (request.POST.get("title_noun") or "").strip()[:30]
             name = (request.POST.get("title_name") or "").strip()[:30]
@@ -660,8 +676,13 @@ def edit_profile(request):
                     full_title = f"{noun}{word}{name}"
                 else:
                     full_title = f"{word}{noun}{name}"
+                rarity_value = max(
+                    refined_part_rarity(word, real_owned_titles),
+                    refined_part_rarity(noun, real_owned_titles),
+                    refined_part_rarity(name, real_owned_titles),
+                )
                 new_item, created_item = GachaItem.objects.get_or_create(
-                    name=full_title[:50], defaults={"rarity": "N"}
+                    name=f"精錬:{full_title[:47]}", defaults={"rarity": RARITY_BY_VALUE[rarity_value]}
                 )
                 profile.items.add(new_item)
                 profile.current_title = new_item.name

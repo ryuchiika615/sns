@@ -39,8 +39,8 @@
         </section>
 
         <section class="card">
-            <h3>称号を自作</h3>
-            <p class="muted">今持っている称号から取り出せる素材だけ使えます。売却して手元にない素材は選べません。</p>
+            <h3>称号を精錬</h3>
+            <p class="muted">ガチャや交換で手に入れた称号素材だけ使えます。売却して手元にない素材は選べません。</p>
             <form method="POST">
                 {% csrf_token %}
                 <div class="grid">
@@ -62,7 +62,7 @@
                         <option value="noun_first">名詞 + フレーズ + 人物名</option>
                     </select>
                 </div>
-                <button class="btn btn-dark" name="create_custom_title" value="1" style="width:100%;" {% if not title_words and not title_nouns and not title_names %}disabled{% endif %}>自作称号を作る</button>
+                <button class="btn btn-dark" name="refine_parts" value="1" style="width:100%;" {% if not title_words and not title_nouns and not title_names %}disabled{% endif %}>精錬する</button>
             </form>
         </section>
 
@@ -107,19 +107,6 @@
             </form>
         </section>
 
-        <section class="card">
-            <h3>称号を精錬</h3>
-            <p class="muted">2つの称号を合体できます。高い方のレア度のエフェクトになり、作った称号は売却不可です。</p>
-            <form method="POST">
-                {% csrf_token %}
-                <div class="refine-grid">
-                    <select name="title_a" class="form-control">{% for row in title_rows %}<option value="{{ row.item.name }}">{{ row.item.rarity }} {{ row.display_name }}</option>{% endfor %}</select>
-                    <select name="title_b" class="form-control">{% for row in title_rows %}<option value="{{ row.item.name }}">{{ row.item.rarity }} {{ row.display_name }}</option>{% endfor %}</select>
-                </div>
-                <select name="order" class="form-control" style="margin-top:8px;"><option value="normal">前後そのまま</option><option value="reverse">前後を入れ替え</option></select>
-                <button class="btn btn-dark" name="combine_titles" value="1" style="width:100%;margin-top:8px;">精錬する</button>
-            </form>
-        </section>
 
         <section class="card">
             <h3>アイコン</h3>
