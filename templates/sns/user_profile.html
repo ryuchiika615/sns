@@ -66,7 +66,7 @@
     <form action="{% url 'logout' %}" method="POST" id="bottom-logout-form" style="display:none;">{% csrf_token %}</form>
     <div class="bottom-nav">
         <a href="{% url 'index' %}" class="nav-item"><i class="fas fa-home"></i></a>
-        <a href="{% url 'rankings' %}" class="nav-item"><i class="fas fa-ranking-star"></i></a>
+        <a href="{% url 'rankings' %}" class="nav-item"><i class="fas fa-trophy"></i></a>
         <a href="{% url 'analytics' %}" class="nav-item"><i class="fas fa-chart-pie"></i></a>
         <a href="{% url 'user_profile' user.username %}" class="nav-item active"><i class="fas fa-user"></i></a>
         <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins"></i></a>
@@ -81,3 +81,4 @@
     </script>
 </body>
 </html>
+

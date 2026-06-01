@@ -3,82 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>プロフィール編集</title>
+    <title>プロフィール編集 - リュッター</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body{font-family:sans-serif;background:#f0f2f5;margin:0;padding-bottom:92px;color:#111827}.header{background:#1a1a1a;color:#fff;padding:15px 20px;position:sticky;top:0;z-index:10;display:flex;justify-content:space-between}.card{background:#fff;padding:20px;border-radius:12px;max-width:560px;margin:18px auto;box-shadow:0 1px 3px rgba(0,0,0,.1)}h2,h3{text-align:center;margin-top:0}.form-group{margin-bottom:14px}.form-group label{display:block;font-size:.9rem;font-weight:bold;color:#333;margin-bottom:5px}.form-control{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:.95rem;box-sizing:border-box}textarea.form-control{height:100px;resize:none}.btn-primary{background:#1877f2;color:#fff;border:none;padding:12px;border-radius:8px;width:100%;cursor:pointer;font-weight:bold;font-size:1rem}.error{background:#fee2e2;color:#991b1b;border:1px solid #fecaca;padding:10px;border-radius:8px;margin-bottom:12px}.item-list{display:grid;grid-template-columns:1fr 1fr;gap:10px}.item-card{border:1px solid #ddd;border-radius:8px;padding:10px;text-align:center}.rarity{font-size:.72rem;font-weight:bold;padding:2px 7px;border-radius:4px;display:inline-block;margin-bottom:5px}.SSR{background:linear-gradient(45deg,#ffe259,#ffa751);color:#fff}.UR{background:linear-gradient(45deg,#00d2ff,#7b2ff7);color:#fff}.LR{background:linear-gradient(45deg,#111,#f43f5e,#fde047);color:#fff}.SR{background:#9c27b0;color:#fff}.R{background:#2196f3;color:#fff}.N{background:#757575;color:#fff}.equip-btn{width:100%;background:#f0f2f5;border:1px solid #ddd;padding:7px;border-radius:6px;font-size:.8rem;cursor:pointer;margin-top:8px;font-weight:bold}.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;display:flex;justify-content:space-around;align-items:center;padding:10px 0;z-index:1000}.nav-item,.logout-btn{color:#aaa;text-decoration:none;font-size:1.35rem;background:none;border:none;padding:6px;position:relative}.nav-item.active{color:white}.logout-btn{color:#ff6b6b;cursor:pointer}.badge{position:absolute;top:-3px;right:-6px;background:#e0245e;color:#fff;border-radius:50%;padding:2px 6px;font-size:.7rem;font-weight:bold;border:2px solid #1a1a1a}@media(max-width:540px){.item-list{grid-template-columns:1fr}.card{margin:12px 10px}}
+        body{font-family:sans-serif;background:#f0f2f5;margin:0;padding-bottom:92px;color:#111827}.header{background:#1a1a1a;color:#fff;padding:15px 20px;position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center}.wrap{max-width:620px;margin:0 auto;padding:14px}.card{background:#fff;padding:18px;border-radius:10px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.08)}h2,h3{margin:0 0 12px}.muted{color:#6b7280;font-size:.84rem}.form-group{margin-bottom:12px}.form-group label{display:block;font-size:.9rem;font-weight:bold;margin-bottom:5px}.form-control{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:.95rem;box-sizing:border-box}textarea.form-control{height:96px;resize:none}.btn{border:none;border-radius:8px;padding:10px 12px;font-weight:bold;cursor:pointer}.btn-primary{background:#1877f2;color:#fff;width:100%}.btn-soft{background:#eef2ff;color:#1d4ed8}.btn-danger{background:#fee2e2;color:#b91c1c}.btn-dark{background:#111827;color:#fff}.error{background:#fee2e2;color:#991b1b;border:1px solid #fecaca;padding:10px;border-radius:8px;margin-bottom:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.item-card{border:1px solid #e5e7eb;border-radius:8px;padding:10px;background:#fff}.item-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}.item-name{font-size:.86rem;font-weight:bold;line-height:1.35;word-break:break-word}.rarity{font-size:.72rem;font-weight:bold;padding:2px 7px;border-radius:4px;display:inline-block;white-space:nowrap}.SSR{background:linear-gradient(45deg,#ffe259,#ffa751);color:#fff}.UR{background:linear-gradient(45deg,#00d2ff,#7b2ff7);color:#fff}.LR{background:linear-gradient(45deg,#111,#f43f5e,#fde047);color:#fff}.SR{background:#9c27b0;color:#fff}.R{background:#2196f3;color:#fff}.N{background:#757575;color:#fff}.item-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}.item-actions form{margin:0}.item-actions button{width:100%;font-size:.78rem}.shop-row{display:grid;grid-template-columns:58px 1fr auto;gap:10px;align-items:center;border-top:1px solid #eee;padding:10px 0}.shop-row:first-child{border-top:none}.shop-actions{display:flex;gap:6px}.bulk-actions{display:flex;gap:8px;flex-wrap:wrap}.refine-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;display:flex;justify-content:space-around;align-items:center;padding:10px 0;z-index:1000}.nav-item,.logout-btn{color:#aaa;text-decoration:none;font-size:1.35rem;background:none;border:none;padding:6px;position:relative}.nav-item.active{color:white}.logout-btn{color:#ff6b6b;cursor:pointer}.badge{position:absolute;top:-3px;right:-6px;background:#e0245e;color:#fff;border-radius:50%;padding:2px 6px;font-size:.7rem;font-weight:bold;border:2px solid #1a1a1a}@media(max-width:540px){.grid,.refine-grid{grid-template-columns:1fr}.card{padding:15px}.shop-row{grid-template-columns:48px 1fr}.shop-actions{grid-column:1/3}.shop-actions .btn{flex:1}}
     </style>
 </head>
 <body>
-    <div class="header"><strong><i class="fas fa-cog"></i> プロフィール編集</strong><a href="{% url 'index' %}" style="color:#fff;text-decoration:none;">ホーム</a></div>
-    <main class="card">
-        {% if username_error %}<div class="error">{{ username_error }}</div>{% endif %}
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <input type="hidden" name="update_profile" value="1">
-            <div class="form-group">
-                <label>ID（@の後ろに出る名前）</label>
-                <input type="text" name="username" class="form-control" value="{{ user.username }}" required>
+    <div class="header"><strong><i class="fas fa-cog"></i> プロフィール編集</strong><span style="color:#fbc02d;font-weight:bold;"><i class="fas fa-gem"></i> {{ points }} pt</span></div>
+    <main class="wrap">
+        <section class="card">
+            <h2>基本設定</h2>
+            {% if username_error %}<div class="error">{{ username_error }}</div>{% endif %}
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="update_profile" value="1">
+                <div class="form-group"><label>ID</label><input type="text" name="username" class="form-control" value="{{ user.username }}" required></div>
+                <div class="form-group"><label>表示名</label><input type="text" name="display_name" class="form-control" value="{{ user.profile.display_name|default:'' }}"></div>
+                <div class="form-group"><label>自己紹介</label><textarea name="bio" class="form-control">{{ user.profile.bio|default:'' }}</textarea></div>
+                <div class="form-group"><label>プロフィール画像</label><input type="file" name="icon" class="form-control" accept="image/*"></div>
+                <div class="grid">
+                    <div class="form-group"><label>目標日</label><input type="date" name="target_date" class="form-control" value="{{ user.profile.target_date|date:'Y-m-d' }}"></div>
+                    <div class="form-group"><label>目標勉強時間（分）</label><input type="number" name="target_minutes" class="form-control" value="{{ user.profile.target_minutes }}"></div>
+                </div>
+                <div class="form-group"><label>所属</label><input type="text" name="department" class="form-control" value="{{ user.profile.department|default:'' }}"></div>
+                <input type="hidden" name="theme_color" value="{{ user.profile.theme_color|default:'dark' }}">
+                <button type="submit" class="btn btn-primary">保存する</button>
+            </form>
+        </section>
+
+        <section class="card">
+            <h3>交換ショップ</h3>
+            <p class="muted">売るより買う方が高いです。SSRはSSRを4つ売るくらいのポイントが必要です。</p>
+            {% for row in buy_rows %}
+            <div class="shop-row">
+                <span class="rarity {{ row.rarity }}">{{ row.rarity }}</span>
+                <div><strong>{{ row.cost }} pt</strong><div class="muted">売却 {{ row.sell }} pt</div></div>
+                <div class="shop-actions">
+                    <form method="POST">{% csrf_token %}<input type="hidden" name="buy_rarity" value="{{ row.rarity }}"><input type="hidden" name="item_type" value="title"><button class="btn btn-soft" {% if points < row.cost %}disabled{% endif %}>称号</button></form>
+                    <form method="POST">{% csrf_token %}<input type="hidden" name="buy_rarity" value="{{ row.rarity }}"><input type="hidden" name="item_type" value="icon"><button class="btn btn-soft" {% if points < row.cost %}disabled{% endif %}>アイコン</button></form>
+                </div>
             </div>
-            <div class="form-group">
-                <label>表示名</label>
-                <input type="text" name="display_name" class="form-control" value="{{ user.profile.display_name|default:'' }}">
+            {% endfor %}
+        </section>
+
+        <section class="card">
+            <h3>一括売却</h3>
+            <p class="muted">装備中と精錬称号は売却されません。</p>
+            <form method="POST" class="bulk-actions">
+                {% csrf_token %}
+                <button class="btn btn-danger" name="bulk_sell" value="N">N以下を売却</button>
+                <button class="btn btn-danger" name="bulk_sell" value="R">R以下を売却</button>
+                <button class="btn btn-danger" name="bulk_sell" value="SR">SR以下を売却</button>
+            </form>
+        </section>
+
+        <section class="card">
+            <h3>称号を精錬</h3>
+            <p class="muted">2つの称号を合体できます。高い方のレア度のエフェクトになり、作った称号は売却不可です。</p>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="refine-grid">
+                    <select name="title_a" class="form-control">{% for row in title_rows %}<option value="{{ row.item.name }}">{{ row.item.rarity }} {{ row.item.name }}</option>{% endfor %}</select>
+                    <select name="title_b" class="form-control">{% for row in title_rows %}<option value="{{ row.item.name }}">{{ row.item.rarity }} {{ row.item.name }}</option>{% endfor %}</select>
+                </div>
+                <select name="order" class="form-control" style="margin-top:8px;"><option value="normal">前後そのまま</option><option value="reverse">前後を入れ替え</option></select>
+                <button class="btn btn-dark" name="combine_titles" value="1" style="width:100%;margin-top:8px;">精錬する</button>
+            </form>
+        </section>
+
+        <section class="card">
+            <h3>アイコン</h3>
+            <div class="grid">
+                {% for row in avatar_rows %}
+                <div class="item-card">
+                    <div class="item-head"><span class="rarity {{ row.item.rarity }}">{{ row.item.rarity }}</span><span class="item-name">{{ row.item.name }}</span></div>
+                    <div class="item-actions">
+                        <form method="POST">{% csrf_token %}<input type="hidden" name="new_avatar" value="{{ row.item.name }}"><button class="btn btn-soft">{% if user.profile.current_avatar == row.item.name %}装備中{% else %}装備{% endif %}</button></form>
+                        <form method="POST">{% csrf_token %}<input type="hidden" name="sell_items" value="{{ row.item.id }}"><button class="btn btn-danger" name="sell_selected" value="1" {% if not row.can_sell %}disabled{% endif %}>売却 {{ row.sell_value }}pt</button></form>
+                    </div>
+                </div>
+                {% empty %}<p class="muted">アイコンはまだありません。</p>{% endfor %}
             </div>
-            <div class="form-group">
-                <label>自己紹介</label>
-                <textarea name="bio" class="form-control">{{ user.profile.bio|default:'' }}</textarea>
+        </section>
+
+        <section class="card">
+            <h3>称号</h3>
+            <div class="grid">
+                {% for row in title_rows %}
+                <div class="item-card">
+                    <div class="item-head"><span class="rarity {{ row.item.rarity }}">{{ row.item.rarity }}</span><span class="item-name">{{ row.item.name }}</span></div>
+                    {% if row.is_refined %}<div class="muted">精錬称号・売却不可</div>{% endif %}
+                    <div class="item-actions">
+                        <form method="POST">{% csrf_token %}<input type="hidden" name="equip_title" value="{{ row.item.name }}"><button class="btn btn-soft">{% if user.profile.current_title == row.item.name %}装備中{% else %}装備{% endif %}</button></form>
+                        <form method="POST">{% csrf_token %}<input type="hidden" name="sell_items" value="{{ row.item.id }}"><button class="btn btn-danger" name="sell_selected" value="1" {% if not row.can_sell %}disabled{% endif %}>売却 {{ row.sell_value }}pt</button></form>
+                    </div>
+                </div>
+                {% empty %}<p class="muted">称号はまだありません。</p>{% endfor %}
             </div>
-            <div class="form-group">
-                <label>アイコン画像</label>
-                <input type="file" name="icon" class="form-control" accept="image/*">
-            </div>
-            <div class="form-group">
-                <label>目標日</label>
-                <input type="date" name="target_date" class="form-control" value="{{ user.profile.target_date|date:'Y-m-d' }}">
-            </div>
-            <div class="form-group">
-                <label>目標勉強時間（分）</label>
-                <input type="number" name="target_minutes" class="form-control" value="{{ user.profile.target_minutes }}">
-            </div>
-            <div class="form-group">
-                <label>学科・所属</label>
-                <input type="text" name="department" class="form-control" value="{{ user.profile.department|default:'' }}">
-            </div>
-            <input type="hidden" name="theme_color" value="{{ user.profile.theme_color|default:'dark' }}">
-            <button type="submit" class="btn-primary">保存する</button>
-        </form>
-        <hr>
-        <h3>アバター</h3>
-        <div class="item-list">
-            {% for item in my_avatars %}
-            <div class="item-card">
-                <span class="rarity {{ item.rarity }}">{{ item.rarity }}</span>
-                <div style="font-size:.85rem;font-weight:bold;">{{ item.name }}</div>
-                <form method="POST">{% csrf_token %}<input type="hidden" name="new_avatar" value="{{ item.name }}"><button class="equip-btn">{% if user.profile.current_avatar == item.name %}装備中{% else %}装備する{% endif %}</button></form>
-            </div>
-            {% empty %}<p style="grid-column:1/3;color:#777;text-align:center;">アバター景品はまだありません。</p>{% endfor %}
-        </div>
-        <hr>
-        <h3>称号</h3>
-        <div class="item-list">
-            {% for item in my_items %}
-            <div class="item-card">
-                <span class="rarity {{ item.rarity }}">{{ item.rarity }}</span>
-                <div style="font-size:.85rem;font-weight:bold;">{{ item.name }}</div>
-                <form method="POST" action="{% url 'index' %}">{% csrf_token %}<input type="hidden" name="new_title" value="{{ item.name }}"><button class="equip-btn">{% if user.profile.current_title == item.name %}装備中{% else %}装備する{% endif %}</button></form>
-            </div>
-            {% empty %}<p style="grid-column:1/3;color:#777;text-align:center;">称号はまだありません。</p>{% endfor %}
-        </div>
+        </section>
     </main>
     <form action="{% url 'logout' %}" method="POST" id="bottom-logout-form" style="display:none;">{% csrf_token %}</form>
     <div class="bottom-nav">
         <a href="{% url 'index' %}" class="nav-item"><i class="fas fa-home"></i></a>
-        <a href="{% url 'rankings' %}" class="nav-item"><i class="fas fa-ranking-star"></i></a>
+        <a href="{% url 'rankings' %}" class="nav-item"><i class="fas fa-trophy"></i></a>
         <a href="{% url 'analytics' %}" class="nav-item"><i class="fas fa-chart-pie"></i></a>
-        <a href="{% url 'user_profile' user.username %}" class="nav-item"><i class="fas fa-user"></i></a>
+        <a href="{% url 'user_profile' user.username %}" class="nav-item active"><i class="fas fa-user"></i></a>
         <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins"></i></a>
         <a href="{% url 'notifications' %}" class="nav-item"><i class="fas fa-bell"></i>{% if unread_count > 0 %}<span class="badge">{{ unread_count }}</span>{% endif %}</a>
         <button type="button" class="logout-btn" onclick="document.getElementById('bottom-logout-form').submit();"><i class="fas fa-right-from-bracket"></i></button>
     </div>
 </body>
 </html>
+

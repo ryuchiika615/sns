@@ -37,6 +37,10 @@ SUBJECT_COLORS = [
     "#e64980", "#15aabf", "#fd7e14", "#5c7cfa", "#82c91e", "#be4bdb",
 ]
 RARITY_ORDER = {"N": 1, "R": 2, "SR": 3, "SSR": 4, "UR": 5, "LR": 6}
+RARITY_BY_VALUE = {value: key for key, value in RARITY_ORDER.items()}
+SELL_VALUES = {"N": 1, "R": 4, "SR": 15, "SSR": 60, "UR": 180, "LR": 650}
+BUY_COSTS = {"N": 5, "R": 15, "SR": 60, "SSR": 240, "UR": 720, "LR": 2600}
+RARITY_LABELS = {"N": "N", "R": "R", "SR": "SR", "SSR": "SSR", "UR": "UR", "LR": "LR"}
 
 
 def file_to_base64(file):
@@ -90,9 +94,49 @@ def selected_date_range(request, default_days=30, max_days=366):
 
 
 def set_post_date(post, study_date):
-    dt = timezone.make_aware(datetime.combine(study_date, time(hour=12)))
+    today = timezone.localdate()
+    if study_date == today:
+        dt = timezone.now()
+    else:
+        dt = timezone.make_aware(datetime.combine(study_date, time(hour=12)), timezone.get_current_timezone())
     Post.objects.filter(id=post.id).update(created_at=dt)
     post.created_at = dt
+
+
+def local_post_time(post):
+    return timezone.localtime(post.created_at)
+
+
+def is_icon_item(item):
+    return "【アイコン】" in item.name or "アイコン" in item.name or "繧｢繧､繧ｳ繝ｳ" in item.name
+
+
+def is_refined_item(item):
+    return item.name.startswith("精錬:")
+
+
+def shop_item_name(rarity):
+    if rarity in ["UR", "LR"]:
+        return f"{random.choice(LEGENDARY_PREFIXES)}{random.choice(LEGENDARY_NOUNS)}"
+    if rarity == "SSR":
+        return f"{random.choice(CUTE_PREFIXES + ANIMAL_PREFIXES)}{random.choice(CUTE_NOUNS + ANIMAL_NOUNS)}"
+    if random.choice([True, False]):
+        return f"{random.choice(NAMES_LIST)}{random.choice(WORDS_LIST)}"
+    return f"{random.choice(WORDS_LIST)}{random.choice(NAMES_LIST)}"
+
+
+def sell_items(profile, items):
+    total = 0
+    protected = {profile.current_title, profile.current_avatar}
+    for item in items:
+        if item.name in protected or is_refined_item(item):
+            continue
+        total += SELL_VALUES.get(item.rarity, 0)
+        profile.items.remove(item)
+    if total:
+        profile.points += total
+        profile.save(update_fields=["points"])
+    return total
 
 
 def build_subject_rows(queryset):
@@ -223,9 +267,10 @@ def index(request):
         post.display_study_time = format_study_time(post.study_minutes)
         post.subject_color = subject_color(post.subject)
         post.author_label = account_label(post.user)
+        post_local_time = local_post_time(post)
         diff = now - post.created_at
         if diff.days > 0:
-            post.formatted_time = post.created_at.strftime("%m/%d %H:%M")
+            post.formatted_time = post_local_time.strftime("%m/%d %H:%M")
         elif diff.seconds < 60:
             post.formatted_time = "たった今"
         elif diff.seconds < 3600:
@@ -398,6 +443,140 @@ def edit_profile(request):
         "owned_words": owned_words,
         "unread_count": Notification.objects.filter(recipient=request.user, is_read=False).count(),
     })
+
+
+@login_required
+def edit_profile(request):
+    profile, created = Profile.objects.get_or_create(user=request.user)
+    owned_items = profile.items.all().order_by("-rarity", "name")
+    icon_query = Q(name__contains="【アイコン】") | Q(name__contains="アイコン") | Q(name__contains="繧｢繧､繧ｳ繝ｳ")
+    real_owned_titles = owned_items.exclude(icon_query)
+
+    def render_profile(username_error=None):
+        current_item = GachaItem.objects.filter(name=profile.current_title).first()
+        av_item = GachaItem.objects.filter(name=profile.current_avatar).first()
+        title_rows = [
+            {
+                "item": item,
+                "sell_value": SELL_VALUES.get(item.rarity, 0),
+                "can_sell": item.name != profile.current_title and not is_refined_item(item),
+                "is_refined": is_refined_item(item),
+            }
+            for item in real_owned_titles
+        ]
+        avatar_rows = [
+            {
+                "item": item,
+                "sell_value": SELL_VALUES.get(item.rarity, 0),
+                "can_sell": item.name != profile.current_avatar and not is_refined_item(item),
+                "is_refined": is_refined_item(item),
+            }
+            for item in owned_items.filter(icon_query)
+        ]
+        return render(request, "sns/edit_profile.html", {
+            "my_items": list(real_owned_titles),
+            "my_avatars": owned_items.filter(icon_query),
+            "title_rows": title_rows,
+            "avatar_rows": avatar_rows,
+            "buy_rows": [
+                {"rarity": rarity, "cost": BUY_COSTS[rarity], "sell": SELL_VALUES[rarity]}
+                for rarity in ["N", "R", "SR", "SSR", "UR", "LR"]
+            ],
+            "sell_values": SELL_VALUES,
+            "rarity_labels": RARITY_LABELS,
+            "points": profile.points,
+            "current_rarity": current_item.rarity if current_item else "N",
+            "current_av_rarity": av_item.rarity if av_item else "N",
+            "username_error": username_error,
+            "unread_count": Notification.objects.filter(recipient=request.user, is_read=False).count(),
+        })
+
+    if request.method == "POST":
+        if "update_profile" in request.POST:
+            requested_username = (request.POST.get("username") or "").strip()
+            username_error = None
+            if requested_username and requested_username != request.user.username:
+                if User.objects.filter(username=requested_username).exclude(id=request.user.id).exists():
+                    username_error = "このIDはすでに使われています。別のIDにしてください。"
+                else:
+                    request.user.username = requested_username
+                    request.user.save(update_fields=["username"])
+
+            profile.display_name = request.POST.get("display_name")
+            profile.bio = request.POST.get("bio")
+            profile.department = request.POST.get("department")
+            profile.theme_color = request.POST.get("theme_color", "dark")
+            profile.target_date = request.POST.get("target_date") or None
+            profile.target_minutes = int(request.POST.get("target_minutes") or 0)
+            if "icon" in request.FILES:
+                profile.icon = file_to_base64(request.FILES["icon"])
+            profile.save()
+            if username_error:
+                return render_profile(username_error)
+            return redirect("edit_profile")
+
+        if "new_avatar" in request.POST:
+            new_avatar = request.POST.get("new_avatar")
+            if owned_items.filter(name=new_avatar).exists():
+                profile.current_avatar = new_avatar
+                profile.save(update_fields=["current_avatar"])
+            return redirect("edit_profile")
+
+        if "equip_title" in request.POST:
+            new_title = request.POST.get("equip_title")
+            if real_owned_titles.filter(name=new_title).exists():
+                profile.current_title = new_title
+                profile.save(update_fields=["current_title"])
+            return redirect("edit_profile")
+
+        if "combine_titles" in request.POST:
+            title_a = request.POST.get("title_a")
+            title_b = request.POST.get("title_b")
+            order = request.POST.get("order")
+            item_a = real_owned_titles.filter(name=title_a).first()
+            item_b = real_owned_titles.filter(name=title_b).first()
+            if item_a and item_b and item_a.id != item_b.id:
+                left, right = (item_b.name, item_a.name) if order == "reverse" else (item_a.name, item_b.name)
+                base_name = f"{left}{right}".replace("精錬:", "")
+                full_title = f"精錬:{base_name[:95]}"
+                max_rarity_val = max(RARITY_ORDER.get(item_a.rarity, 1), RARITY_ORDER.get(item_b.rarity, 1))
+                new_item, created_item = GachaItem.objects.get_or_create(
+                    name=full_title, defaults={"rarity": RARITY_BY_VALUE[max_rarity_val]}
+                )
+                profile.items.add(new_item)
+                profile.current_title = full_title
+                profile.save(update_fields=["current_title"])
+            return redirect("edit_profile")
+
+        if "sell_selected" in request.POST:
+            sell_items(profile, profile.items.filter(id__in=request.POST.getlist("sell_items")))
+            return redirect("edit_profile")
+
+        if "bulk_sell" in request.POST:
+            max_rarity = request.POST.get("bulk_sell")
+            max_value = RARITY_ORDER.get(max_rarity, 0)
+            targets = [
+                item for item in profile.items.all()
+                if RARITY_ORDER.get(item.rarity, 0) <= max_value
+            ]
+            sell_items(profile, targets)
+            return redirect("edit_profile")
+
+        if "buy_rarity" in request.POST:
+            rarity = request.POST.get("buy_rarity")
+            cost = BUY_COSTS.get(rarity)
+            if cost and profile.points >= cost:
+                profile.points -= cost
+                item_type = request.POST.get("item_type", "title")
+                item, created_item = GachaItem.objects.get_or_create(
+                    name=shop_item_name(rarity) if item_type == "title" else f"【アイコン】{shop_item_name(rarity)}",
+                    defaults={"rarity": rarity}
+                )
+                profile.items.add(item)
+                profile.save(update_fields=["points"])
+            return redirect("edit_profile")
+
+    return render_profile()
 
 
 def logout_view(request):

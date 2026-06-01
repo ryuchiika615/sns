@@ -11,7 +11,7 @@
     </style>
 </head>
 <body>
-    <div class="header"><strong><i class="fas fa-ranking-star"></i> 勉強ランキング</strong><a href="{% url 'index' %}" style="color:#fff;text-decoration:none;">ホーム</a></div>
+    <div class="header"><strong><i class="fas fa-trophy"></i> 勉強ランキング</strong><a href="{% url 'index' %}" style="color:#fff;text-decoration:none;">ホーム</a></div>
     <main class="container">
         <div class="card">
             <form method="GET" class="filters">
@@ -39,7 +39,7 @@
     <form action="{% url 'logout' %}" method="POST" id="bottom-logout-form" style="display:none;">{% csrf_token %}</form>
     <div class="bottom-nav">
         <a href="{% url 'index' %}" class="nav-item"><i class="fas fa-home"></i></a>
-        <a href="{% url 'rankings' %}" class="nav-item active"><i class="fas fa-ranking-star"></i></a>
+        <a href="{% url 'rankings' %}" class="nav-item active"><i class="fas fa-trophy"></i></a>
         <a href="{% url 'analytics' %}" class="nav-item"><i class="fas fa-chart-pie"></i></a>
         <a href="{% url 'user_profile' user.username %}" class="nav-item"><i class="fas fa-user"></i></a>
         <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins"></i></a>
@@ -48,3 +48,4 @@
     </div>
 </body>
 </html>
+

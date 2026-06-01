@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Study SNS</title>
+    <title>リュッター</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -58,7 +58,7 @@
     <div class="header">
         <div style="display:flex; align-items:center; gap:15px;">
             <i class="fas fa-bars menu-icon" onclick="openNav()"></i>
-            <span style="font-weight:bold; font-size:1.2rem;"><i class="fas fa-layer-group"></i> Study SNS</span>
+            <span style="font-weight:bold; font-size:1.2rem;"><i class="fas fa-layer-group"></i> リュッター</span>
         </div>
         <div style="background:#333; padding:5px 12px; border-radius:15px; font-weight:bold; font-size:.8rem; color:#fbc02d;">
             <i class="fas fa-gem"></i> {{ user.profile.points }} pt
@@ -68,7 +68,7 @@
     <div id="sidebar" class="sidebar">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         <a href="{% url 'index' %}"><i class="fas fa-home" style="width:25px;"></i> ホーム</a>
-        <a href="{% url 'rankings' %}"><i class="fas fa-ranking-star" style="width:25px;"></i> ランキング</a>
+        <a href="{% url 'rankings' %}"><i class="fas fa-trophy" style="width:25px;"></i> ランキング</a>
         <a href="{% url 'analytics' %}"><i class="fas fa-chart-pie" style="width:25px;"></i> 分析</a>
         <a href="{% url 'user_profile' user.username %}"><i class="fas fa-user" style="width:25px;"></i> プロフィール</a>
         <a href="{% url 'edit_profile' %}"><i class="fas fa-cog" style="width:25px;"></i> 設定</a>
@@ -81,7 +81,7 @@
 
     <div class="container">
         <div class="quick-grid">
-            <a class="quick-link" href="{% url 'rankings' %}"><i class="fas fa-ranking-star"></i>ランキング</a>
+            <a class="quick-link" href="{% url 'rankings' %}"><i class="fas fa-trophy"></i>ランキング</a>
             <a class="quick-link" href="{% url 'analytics' %}"><i class="fas fa-chart-simple"></i>期間集計</a>
             <a class="quick-link" href="{% url 'gacha' %}"><i class="fas fa-wand-magic-sparkles"></i>ガチャ</a>
         </div>
@@ -182,7 +182,7 @@
     <form action="{% url 'logout' %}" method="POST" id="bottom-logout-form" style="display:none;">{% csrf_token %}</form>
     <div class="bottom-nav">
         <a href="{% url 'index' %}" class="nav-item active"><i class="fas fa-home"></i></a>
-        <a href="{% url 'rankings' %}" class="nav-item"><i class="fas fa-ranking-star"></i></a>
+        <a href="{% url 'rankings' %}" class="nav-item"><i class="fas fa-trophy"></i></a>
         <a href="{% url 'analytics' %}" class="nav-item"><i class="fas fa-chart-pie"></i></a>
         <a href="{% url 'user_profile' user.username %}" class="nav-item"><i class="fas fa-user"></i></a>
         <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins" style="color:#fbc02d;"></i></a>
@@ -201,3 +201,5 @@
     </script>
 </body>
 </html>
+
+
