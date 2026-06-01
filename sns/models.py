@@ -31,6 +31,7 @@ class Profile(models.Model):
     target_minutes = models.IntegerField(default=0)
 
     points = models.IntegerField(default=0)
+    exchange_points = models.IntegerField(default=0)
     items = models.ManyToManyField(GachaItem, blank=True)
     current_title = models.CharField(max_length=100, default="新人エンジニア", blank=True)
     current_avatar = models.CharField(max_length=100, default="初期アバター", blank=True)
