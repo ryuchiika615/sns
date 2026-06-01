@@ -40,23 +40,29 @@
 
         <section class="card">
             <h3>称号を自作</h3>
-            <p class="muted">フレーズ、名詞/肩書き、人物名を分けて選ぶか、自分で入力できます。</p>
+            <p class="muted">今持っている称号から取り出せる素材だけ使えます。売却して手元にない素材は選べません。</p>
             <form method="POST">
                 {% csrf_token %}
                 <div class="grid">
-                    <input class="form-control" name="title_word" list="titleWords" placeholder="動詞/フレーズ 例: 闇落ちした">
-                    <input class="form-control" name="title_noun" list="titleNouns" placeholder="名詞/肩書き 例: 支配者">
-                    <input class="form-control" name="title_name" list="titleNames" placeholder="人物名 例: たいき">
+                    <select class="form-control" name="title_word">
+                        <option value="">フレーズなし</option>
+                        {% for word in title_words %}<option value="{{ word }}">{{ word }}</option>{% endfor %}
+                    </select>
+                    <select class="form-control" name="title_noun">
+                        <option value="">名詞なし</option>
+                        {% for noun in title_nouns %}<option value="{{ noun }}">{{ noun }}</option>{% endfor %}
+                    </select>
+                    <select class="form-control" name="title_name">
+                        <option value="">人物名なし</option>
+                        {% for name in title_names %}<option value="{{ name }}">{{ name }}</option>{% endfor %}
+                    </select>
                     <select class="form-control" name="custom_order">
                         <option value="word_first">フレーズ + 名詞 + 人物名</option>
                         <option value="name_first">人物名 + フレーズ + 名詞</option>
                         <option value="noun_first">名詞 + フレーズ + 人物名</option>
                     </select>
                 </div>
-                <datalist id="titleWords">{% for word in title_words %}<option value="{{ word }}"></option>{% endfor %}</datalist>
-                <datalist id="titleNouns">{% for noun in title_nouns %}<option value="{{ noun }}"></option>{% endfor %}</datalist>
-                <datalist id="titleNames">{% for name in title_names %}<option value="{{ name }}"></option>{% endfor %}</datalist>
-                <button class="btn btn-dark" name="create_custom_title" value="1" style="width:100%;">自作称号を作る</button>
+                <button class="btn btn-dark" name="create_custom_title" value="1" style="width:100%;" {% if not title_words and not title_nouns and not title_names %}disabled{% endif %}>自作称号を作る</button>
             </form>
         </section>
 

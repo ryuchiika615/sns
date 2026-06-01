@@ -87,12 +87,12 @@ ANIMAL_NOUNS = ["きつね先生", "ふくろう騎士", "こぐま隊長", "し
 
 SHOP_CATALOG = {
     "title": {
-        "N": ["努力するゆいちゃん", "図書館のたいき", "集中のりゅう"],
-        "R": ["闇落ちしたたいき", "夜明けのゆいちゃん", "計算爆走はる"],
-        "SR": ["覚醒したそら", "知識を喰らうれん", "眠気討伐なぎ"],
-        "SSR": ["限界突破のゆいちゃん", "黒炎のたいき", "星海を裂くりゅう"],
-        "UR": ["終焉を照らす観測者", "天空を統べる学習賢者", "不可視の時間術師"],
-        "LR": ["黒炎の記憶の王冠", "星海を裂く答案破壊者", "終焉を照らす時間術師"],
+        "N": NAMES_LIST + NOUNS_LIST[:10] + WORDS_LIST[:12],
+        "R": WORDS_LIST[12:45] + NOUNS_LIST[10:18],
+        "SR": WORDS_LIST[45:75] + NOUNS_LIST[18:26],
+        "SSR": WORDS_LIST[75:105] + NOUNS_LIST[26:],
+        "UR": WORDS_LIST[105:130] + ["終焉を照らす観測者", "天空を統べる学習賢者", "不可視の時間術師"],
+        "LR": WORDS_LIST[130:] + ["黒炎の記憶の王冠", "星海を裂く答案破壊者", "終焉を照らす時間術師"],
     },
     "icon": {
         "N": ["【アイコン】努力の羽根", "【アイコン】ノートの星", "【アイコン】集中リング"],
@@ -190,6 +190,15 @@ def is_refined_item(item):
 def item_display_name(item_or_name):
     name = item_or_name.name if hasattr(item_or_name, "name") else str(item_or_name)
     return name.replace("精錬:", "").replace("邊ｾ骭ｬ:", "")
+
+
+def owned_title_parts(items):
+    display_names = [item_display_name(item) for item in items]
+    return {
+        "words": [word for word in WORDS_LIST if any(word in name for name in display_names)],
+        "nouns": [noun for noun in NOUNS_LIST if any(noun in name for name in display_names)],
+        "names": [name for name in NAMES_LIST if any(name in title for title in display_names)],
+    }
 
 
 def shop_item_name(rarity):
@@ -534,6 +543,7 @@ def edit_profile(request):
     def render_profile(username_error=None):
         current_item = GachaItem.objects.filter(name=profile.current_title).first()
         av_item = GachaItem.objects.filter(name=profile.current_avatar).first()
+        owned_parts = owned_title_parts(real_owned_titles)
         title_rows = [
             {
                 "item": item,
@@ -567,9 +577,9 @@ def edit_profile(request):
             "rarity_labels": RARITY_LABELS,
             "points": profile.points,
             "exchange_points": profile.exchange_points,
-            "title_words": WORDS_LIST,
-            "title_names": NAMES_LIST,
-            "title_nouns": NOUNS_LIST,
+            "title_words": owned_parts["words"],
+            "title_names": owned_parts["names"],
+            "title_nouns": owned_parts["nouns"],
             "shop_catalog": SHOP_CATALOG,
             "current_rarity": current_item.rarity if current_item else "N",
             "current_av_rarity": av_item.rarity if av_item else "N",
@@ -639,7 +649,11 @@ def edit_profile(request):
             noun = (request.POST.get("title_noun") or "").strip()[:30]
             name = (request.POST.get("title_name") or "").strip()[:30]
             order = request.POST.get("custom_order")
-            if word or noun or name:
+            owned_parts = owned_title_parts(real_owned_titles)
+            valid_word = not word or word in owned_parts["words"]
+            valid_noun = not noun or noun in owned_parts["nouns"]
+            valid_name = not name or name in owned_parts["names"]
+            if (word or noun or name) and valid_word and valid_noun and valid_name:
                 if order == "name_first":
                     full_title = f"{name}{word}{noun}"
                 elif order == "noun_first":
