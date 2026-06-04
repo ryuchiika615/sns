@@ -118,6 +118,8 @@ RARITY_BY_VALUE = {value: key for key, value in RARITY_ORDER.items()}
 SELL_VALUES = {"N": 1, "R": 4, "SR": 15, "SSR": 60, "UR": 180, "LR": 650}
 BUY_COSTS = {"N": 5, "R": 15, "SR": 60, "SSR": 240, "UR": 720, "LR": 2600}
 RARITY_LABELS = {"N": "N", "R": "R", "SR": "SR", "SSR": "SSR", "UR": "UR", "LR": "LR"}
+GACHA_COST_PER_PULL = 10
+GACHA_COOLDOWN_SECONDS = 2
 
 
 def file_to_base64(file):
@@ -236,6 +238,31 @@ def gacha_title_name(rarity):
     if rarity == "UR":
         return random.choice(WORDS_LIST[125:] + ["終焉を照らす観測者", "天空を統べる学習賢者", "不可視の時間術師"])
     return random.choice(["黒炎の記憶の王冠", "星海を裂く答案破壊者", "終焉を照らす時間術師"] + WORDS_LIST[-20:])
+
+
+def roll_gacha_item():
+    rand = random.randint(1, 10000000)
+    if rand == 1:
+        rarity = "LR"
+    elif rand <= 1200:
+        rarity = "UR"
+    elif rand <= 70000:
+        rarity = "SSR"
+    elif rand <= 450000:
+        rarity = "SR"
+    elif rand <= 2000000:
+        rarity = "R"
+    else:
+        rarity = "N"
+
+    if random.random() < 0.38:
+        generated_name = f"【アイコン】{random.choice(ANIMAL_PREFIXES)}{random.choice(ANIMAL_NOUNS)}"
+    elif random.random() < 0.38:
+        generated_name = f"【アイコン】{random.choice(AVATAR_PREFIXES)}{random.choice(AVATAR_NOUNS)}"
+    else:
+        generated_name = gacha_title_name(rarity)
+
+    return GachaItem.objects.get_or_create(name=generated_name, defaults={"rarity": rarity})[0]
 
 
 def sell_items(profile, items):
@@ -423,47 +450,53 @@ def gacha(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
     result_items = []
     error = None
+    summary = None
 
     if request.method == "POST":
-        pull_count = 10 if "gacha_10" in request.POST else 1
-        cost = pull_count * 10
-        if profile.points >= cost:
-            profile.points -= cost
-            for _ in range(pull_count):
-                rand = random.randint(1, 10000000)
-                if rand == 1:
-                    rarity = "LR"
-                elif rand <= 1200:
-                    rarity = "UR"
-                elif rand <= 70000:
-                    rarity = "SSR"
-                elif rand <= 450000:
-                    rarity = "SR"
-                elif rand <= 2000000:
-                    rarity = "R"
-                else:
-                    rarity = "N"
+        now_ts = timezone.now().timestamp()
+        last_gacha_ts = request.session.get("last_gacha_ts", 0)
+        if now_ts - last_gacha_ts < GACHA_COOLDOWN_SECONDS:
+            error = "?????????????????????????????"
+            return render(request, "sns/gacha.html", {
+                "result_items": result_items,
+                "points": profile.points,
+                "error": error,
+                "summary": summary,
+                "unread_count": Notification.objects.filter(recipient=request.user, is_read=False).count(),
+            })
 
-                if random.random() < 0.38:
-                    generated_name = f"【アイコン】{random.choice(ANIMAL_PREFIXES)}{random.choice(ANIMAL_NOUNS)}"
-                elif random.random() < 0.38:
-                    generated_name = f"【アイコン】{random.choice(AVATAR_PREFIXES)}{random.choice(AVATAR_NOUNS)}"
-                else:
-                    generated_name = gacha_title_name(rarity)
-
-                result_item, created_item = GachaItem.objects.get_or_create(
-                    name=generated_name, defaults={"rarity": rarity}
-                )
-                result_items.append(result_item)
-                profile.items.add(result_item)
-            profile.save(update_fields=["points"])
+        if "gacha_100" in request.POST:
+            pull_count = 100
+        elif "gacha_10" in request.POST:
+            pull_count = 10
         else:
-            error = "ポイントが足りません。勉強してポイントを貯めよう。"
+            pull_count = 1
+
+        cost = pull_count * GACHA_COST_PER_PULL
+        if profile.points >= cost:
+            request.session["last_gacha_ts"] = now_ts
+            profile.points -= cost
+            rarity_counts = {rarity: 0 for rarity in ["N", "R", "SR", "SSR", "UR", "LR"]}
+            for _ in range(pull_count):
+                result_item = roll_gacha_item()
+                result_items.append(result_item)
+                rarity_counts[result_item.rarity] = rarity_counts.get(result_item.rarity, 0) + 1
+            if result_items:
+                profile.items.add(*result_items)
+            profile.save(update_fields=["points"])
+            summary = [
+                {"rarity": rarity, "count": rarity_counts[rarity]}
+                for rarity in ["LR", "UR", "SSR", "SR", "R", "N"]
+                if rarity_counts[rarity]
+            ]
+        else:
+            error = "????????????????????????????"
 
     return render(request, "sns/gacha.html", {
         "result_items": result_items,
         "points": profile.points,
         "error": error,
+        "summary": summary,
         "unread_count": Notification.objects.filter(recipient=request.user, is_read=False).count(),
     })
 
