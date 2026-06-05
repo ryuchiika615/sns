@@ -63,10 +63,14 @@
         const form = document.getElementById("gacha-form");
         if (form) {
             form.addEventListener("submit", () => {
-                form.querySelectorAll("button").forEach((button) => {
-                    button.disabled = true;
-                    button.textContent = "処理中...";
-                });
+                // ほんの少し（10ミリ秒）だけ無効化を遅らせる魔法！
+                // これでデータが送信された直後にボタンがロックされます。
+                setTimeout(() => {
+                    form.querySelectorAll("button").forEach((button) => {
+                        button.disabled = true;
+                        button.textContent = "処理中...";
+                    });
+                }, 10);
             });
         }
     </script>

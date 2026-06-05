@@ -9,8 +9,8 @@ urlpatterns = [
     path('profile/edit/', views.edit_profile, name='edit_profile'),
     path('signup/', views.signup, name='signup'),
 
-    # ★ 新規追加：ログイン画面への道
-    path('login/', auth_views.LoginView.as_view(template_name='sns/login.html'), name='login'),
+    # ★ 管理者は自動で管理画面に飛ぶカスタムログイン
+    path('login/', views.CustomLoginView.as_view(template_name='sns/login.html'), name='login'),
 
     path('logout/', views.logout_view, name='logout'),
     path('like/<int:post_id>/', views.like_post, name='like_post'),

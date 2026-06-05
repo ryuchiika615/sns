@@ -15,6 +15,8 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.dateparse import parse_date
+from django.contrib.auth.views import LoginView
+from django.urls import reverse_lazy
 
 from .models import Comment, GachaItem, Notification, Post, Profile, UserLoginSession
 
@@ -956,3 +958,11 @@ def admin_login_activity(request):
         "active_count": active_count,
         "unread_count": Notification.objects.filter(recipient=request.user, is_read=False).count(),
     })
+
+class CustomLoginView(LoginView):
+    def get_success_url(self):
+        # もしログインした人がスーパーユーザー（管理者）なら管理画面へ！
+        if self.request.user.is_superuser:
+            return '/admin/'
+        # 一般ユーザーならいつものホーム画面へ！
+        return reverse_lazy('index')
