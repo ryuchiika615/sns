@@ -26,7 +26,7 @@
 
         @keyframes avatarPulse { from { transform: scale(0.96); } to { transform: scale(1.05); } }
 
-        /* 🟢 画像3枚目再現：豪華なトップバナー */
+        /* 🟢 豪華なトップバナー */
         .lytter-home-banner {
             position: relative;
             background: linear-gradient(to bottom, #0f172a, #1e3a8a);
@@ -50,41 +50,48 @@
             display: flex; justify-content: center; align-items: center;
         }
 
-        /* 🟢 画像3枚目再現：投稿カードと称号の帯 */
-        .post-card { background: #fff; border-radius: 12px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #f0f2f5; }
-        .post-title-band { padding: 6px 15px; font-weight: bold; text-align: center; font-size: 0.95rem; letter-spacing: 1px; }
-        .post-title-band.SSR { background: linear-gradient(90deg, #d4af37, #fde047, #d4af37); color: #111; text-shadow: 0 1px 1px rgba(255,255,255,0.5); }
-        .post-title-band.UR { background: linear-gradient(90deg, #00d2ff, #7b2ff7); color: #fff; }
-        .post-title-band.LR { background: linear-gradient(90deg, #111, #f43f5e, #111); color: #fde047; }
-        .post-title-band.SR { background: linear-gradient(90deg, #a855f7, #c084fc); color: #fff; }
-        .post-title-band.R { background: linear-gradient(90deg, #3b82f6, #60a5fa); color: #fff; }
-        .post-title-band.N { background: #cbd5e1; color: #333; }
+        /* 🟢 称号バッジ */
+        .title-badge { font-size: 0.75rem; font-weight: bold; margin-bottom: 2px; display: inline-block; padding: 2px 6px; border-radius: 4px; }
+        .LR { background: linear-gradient(135deg, #09090b, #f43f5e, #fde047, #09090b); color: #fff; box-shadow: 0 0 15px rgba(244,63,94,.8), 0 0 20px rgba(253,224,71,.45); animation: lrBeat 1.5s ease-in-out infinite alternate; }
+        .UR { background: linear-gradient(135deg, #00d2ff, #7b2ff7, #ff4fd8); color: #fff; box-shadow: 0 0 12px rgba(123,47,247,.7); animation: urShift 2.2s linear infinite; }
+        .SSR { background: linear-gradient(135deg, #ffe259, #ff7a18, #facc15); color: #fff; box-shadow: 0 0 10px rgba(250,204,21,.65); animation: ssrPulse 1.8s ease-in-out infinite alternate; }
+        .SR { background: #9c27b0; color: #fff; }
+        .R { background: #2196f3; color: #fff; }
+        .N { background: #666; color: #fff; }
 
-        .post-header { display: flex; padding: 12px 16px 8px; position: relative; }
-        .post-meta { flex: 1; }
-        .post-user-info { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px; }
-        .post-user-info strong a { color: #111; text-decoration: none; font-size: 1.15rem; }
-        .post-meta-text { color: #65676b; font-size: 0.9rem; }
+        @keyframes ssrPulse { from { filter: saturate(1); } to { filter: saturate(1.35) brightness(1.08); } }
+        @keyframes urShift { to { filter: hue-rotate(360deg); } }
+        @keyframes lrBeat { from { transform: scale(0.98); } to { transform: scale(1.04); } }
 
-        .post-body { padding: 0 16px 12px; color: #111; font-size: 1rem; line-height: 1.6; word-wrap: break-word; }
-        .post-body-img { max-width: 100%; border-radius: 12px; margin-top: 10px; border: 1px solid #f0f2f5; }
+        /* 🟢 X（Twitter）風 投稿カードデザイン */
+        .post-card { background: #fff; border-radius: 0; margin-bottom: 0; border-bottom: 1px solid #e5e7eb; padding-top: 12px; }
+        .post-header { display: flex; padding: 0 16px; position: relative; }
+        .post-meta { flex: 1; min-width: 0; }
+        .post-user-info { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px; line-height: 1.2; }
+        .post-user-info strong a { color: #0f1419; text-decoration: none; font-size: 1.05rem; font-weight: 700; }
+        .post-meta-text { color: #536471; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .post-actions { display: flex; border-top: 1px solid #f0f2f5; padding: 4px 16px; }
-        .action-btn { flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; background: none; border: none; padding: 10px 0; color: #65676b; font-size: 0.95rem; font-weight: bold; cursor: pointer; border-radius: 6px; transition: background 0.2s; }
-        .action-btn:hover { background: #f0f2f5; }
+        .post-body { padding: 4px 16px 12px; color: #0f1419; font-size: 0.95rem; line-height: 1.5; word-wrap: break-word; }
+        .post-body-img { max-width: 100%; border-radius: 16px; margin-top: 12px; border: 1px solid #cfd9de; }
 
-        .comment-section { display: none; padding: 16px; background: #f8fafc; border-top: 1px solid #f0f2f5; }
-        .comment-item { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #e2e8f0; font-size: 0.9rem; }
+        .post-actions { display: flex; justify-content: space-between; padding: 4px 32px 12px 16px; max-width: 300px; }
+        .action-btn { display: flex; align-items: center; gap: 6px; background: none; border: none; padding: 0; color: #536471; font-size: 0.85rem; font-weight: normal; cursor: pointer; transition: color 0.2s; }
+        .action-btn:hover { color: #1d9bf0; }
+        .action-btn.like-btn:hover { color: #f91880; }
+
+        .comment-section { display: none; padding: 0 16px 16px; background: #fff; }
+        .comment-item { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #eff3f4; font-size: 0.9rem; }
         .comment-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .comment-input-wrapper { display: flex; gap: 8px; margin-top: 10px; }
-        .comment-input { flex: 1; border-radius: 20px; border: 1px solid #cbd5e1; padding: 10px 14px; font-size: 0.95rem; outline: none; }
-        .comment-submit { background: #1877f2; color: white; border: none; border-radius: 20px; padding: 0 16px; font-weight: bold; cursor: pointer; }
+        .comment-input-wrapper { display: flex; gap: 8px; margin-top: 8px; }
+        .comment-input { flex: 1; border-radius: 9999px; border: 1px solid #cfd9de; padding: 8px 16px; font-size: 0.95rem; outline: none; background: #eff3f4; }
+        .comment-input:focus { background: #fff; border-color: #1d9bf0; }
+        .comment-submit { background: #1d9bf0; color: white; border: none; border-radius: 9999px; padding: 0 16px; font-weight: bold; cursor: pointer; }
 
-        .post-delete-btn { position: absolute; top: 12px; right: 12px; background: none; border: none; color: #cbd5e1; cursor: pointer; font-size: 1.1rem; }
-        .post-delete-btn:hover { color: #ff4757; }
+        .post-delete-btn { position: absolute; top: 0; right: 16px; background: none; border: none; color: #536471; cursor: pointer; font-size: 1rem; }
+        .post-delete-btn:hover { color: #f91880; }
 
         /* 🟢 黒統一の固定ボトムナビゲーションバー */
-        body { padding-bottom: 75px; }
+        body { padding-bottom: 75px; background: #fff; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #111; display: flex; justify-content: space-around; align-items: center; padding: 12px 0 20px 0; border-top: 1px solid #333; z-index: 9999; }
         .bottom-nav .nav-item { color: #fff; text-decoration: none; font-size: 1.5rem; position: relative; }
         .bottom-nav .nav-item.active { color: #1877f2; }
@@ -123,14 +130,14 @@
 
     <div class="container">
         {% if has_target %}
-        <div class="card" style="background:linear-gradient(45deg,#111,#222); color:white; text-align:center; border:1px solid #fbc02d;">
+        <div class="card" style="background:linear-gradient(45deg,#111,#222); color:white; text-align:center; border:1px solid #fbc02d; margin: 15px; border-radius: 8px; padding: 15px;">
             <h4 style="margin:0 0 8px; color:#fbc02d;"><i class="fas fa-bullseye"></i> {{ target_date|date:"Y年m月d日" }} までの目標</h4>
             <div style="font-size:.9rem; color:#ccc;">目標合計 {{ target_total_display }}</div>
             <div style="font-size:1.1rem; font-weight:bold; margin-top:5px;">あと <span style="color:#ff4757; font-size:1.4rem;">{{ remaining_display }}</span></div>
         </div>
         {% endif %}
 
-        <div class="card">
+        <div class="card" style="margin: 15px; padding: 15px; background: #fff; border-radius: 8px; border: 1px solid #eff3f4;">
             <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:8px;">
                 <strong>直近7日 科目別</strong>
                 <span style="font-size:.85rem; color:#1877f2; font-weight:bold;">合計 {{ total_this_week_display }}</span>
@@ -138,110 +145,115 @@
             <canvas id="studyChart" height="210"></canvas>
         </div>
 
-        <!-- 🟢 フィード見出しを追加 -->
-        <div style="font-size: 1.3rem; font-weight: bold; margin: 25px 0 15px; padding-bottom: 8px; border-bottom: 1px solid #ccc; letter-spacing: 2px;">
-            フィード (FEED)
-        </div>
-
-        <form action="{% url 'index' %}" method="GET" style="margin-bottom:15px;">
-            <input type="text" name="search" value="{{ search_query }}" placeholder="投稿を検索" style="border-radius:20px; padding:10px; width:100%; border:1px solid #ddd;">
-        </form>
-
-        <div class="card" id="post-form">
+        <!-- 投稿フォーム -->
+        <div class="card" id="post-form" style="margin: 0 0 10px 0; padding: 16px; border-bottom: 1px solid #eff3f4; border-top: 1px solid #eff3f4;">
+            <form action="{% url 'index' %}" method="GET" style="margin-bottom:15px;">
+                <input type="text" name="search" value="{{ search_query }}" placeholder="投稿を検索" style="border-radius:9999px; padding:10px 16px; width:100%; border:1px solid #cfd9de; background: #eff3f4;">
+            </form>
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
-                <textarea name="content" placeholder="今日の学びを書こう" required style="height:82px; width:100%; border:1px solid #ddd; border-radius:8px; padding:10px;"></textarea>
-                <input type="text" name="subject" list="subjectList" placeholder="科目名 例: 数学, 英語, プログラミング" required style="width:100%; margin-top:10px; padding:10px; border:1px solid #ddd; border-radius:8px;">
+                <textarea name="content" placeholder="今日の学びを書こう" required style="height:82px; width:100%; border:none; outline:none; font-size: 1.1rem; resize:none;"></textarea>
+                <input type="text" name="subject" list="subjectList" placeholder="科目名 例: 数学, 英語" required style="width:100%; margin-top:10px; padding:10px; border:1px solid #cfd9de; border-radius:8px;">
                 <datalist id="subjectList">
                     <option value="数学"></option><option value="英語"></option><option value="プログラミング"></option><option value="物理"></option><option value="基本情報"></option>
                 </datalist>
                 <div class="row" style="margin-top:10px; display:flex; gap:10px;">
-                    <input type="number" name="study_minutes" min="0" placeholder="勉強時間（分）" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px;">
-                    <input type="date" name="study_date" value="{{ today|date:'Y-m-d' }}" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px;">
+                    <input type="number" name="study_minutes" min="0" placeholder="勉強時間（分）" style="flex:1; padding:10px; border:1px solid #cfd9de; border-radius:8px;">
+                    <input type="date" name="study_date" value="{{ today|date:'Y-m-d' }}" style="flex:1; padding:10px; border:1px solid #cfd9de; border-radius:8px;">
                 </div>
-                <input type="file" name="image" accept="image/*" style="margin-top:10px;">
-                <button type="submit" class="post-btn" style="margin-top:10px; width:100%; background-color:#1877f2; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; font-size:1.05rem;">投稿する</button>
+                <input type="file" name="image" accept="image/*" style="margin-top:10px; font-size: 0.9rem;">
+                <div style="text-align: right; margin-top: 10px;">
+                    <button type="submit" class="post-btn" style="background-color:#1d9bf0; color:white; border:none; padding:8px 20px; border-radius:9999px; font-weight:bold; font-size:1rem; cursor: pointer;">ポストする</button>
+                </div>
             </form>
         </div>
 
-        <!-- 🟢 投稿一覧（帯付き・@重複なし・綺麗なレイアウト） -->
+        <!-- 🟢 X（Twitter）風スマート投稿一覧 -->
         {% for post in posts %}
         <div class="post-card">
-            <!-- 称号の帯 -->
-            <div class="post-title-band {{ post.current_rarity }}">
-                {{ post.current_rarity }} {{ post.current_title_display }}
-            </div>
-
             <div class="post-header">
-                <!-- まん丸アイコン -->
-                <div class="avatar-container av-{{ post.avatar_rarity }}">
-                    {% if post.user.profile.icon %}<img src="{{ post.user.profile.icon }}" class="avatar-img">{% elif post.user.profile.icon_file %}<img src="{{ post.user.profile.icon_file.url }}" class="avatar-img">{% else %}<i class="fas fa-user-circle avatar-placeholder"></i>{% endif %}
-                </div>
-                <!-- ユーザー情報と時間 -->
+                <!-- アイコンにプロフへのリンク -->
+                <a href="{% url 'user_profile' post.user.username %}" style="text-decoration: none;">
+                    <div class="avatar-container av-{{ post.avatar_rarity }}">
+                        {% if post.user.profile.icon %}<img src="{{ post.user.profile.icon }}" class="avatar-img">{% elif post.user.profile.icon_file %}<img src="{{ post.user.profile.icon_file.url }}" class="avatar-img">{% else %}<i class="fas fa-user-circle avatar-placeholder"></i>{% endif %}
+                    </div>
+                </a>
+
                 <div class="post-meta">
+                    <!-- 🟢 称号バッジを一番上に配置！ -->
+                    <div style="margin-bottom: 3px;">
+                        <span class="title-badge {{ post.current_rarity }}">{{ post.current_rarity }} {{ post.current_title_display }}</span>
+                    </div>
+
+                    <!-- 名前、@ID、時間を1行に集約 -->
                     <div class="post-user-info">
                         <strong><a href="{% url 'user_profile' post.user.username %}">{{ post.author_label }}</a></strong>
                         <span class="post-meta-text">@{{ post.user.username }}</span>
-                    </div>
-                    <div style="margin-top: 5px; display: flex; align-items: center; gap: 8px;">
-                        <span class="post-meta-text"><i class="far fa-clock"></i> {{ post.formatted_time }}</span>
-                        <span class="subject-chip" style="background:{{ post.subject_color }}; color:white; padding:2px 8px; border-radius:12px; font-size:0.8rem;">{{ post.subject }}</span>
+                        <span class="post-meta-text">·</span>
+                        <span class="post-meta-text">{{ post.formatted_time }}</span>
                     </div>
                 </div>
+
                 {% if post.user == user %}
                 <form method="POST" style="margin:0;">
                     {% csrf_token %}
                     <input type="hidden" name="delete_post_id" value="{{ post.id }}">
-                    <button type="submit" class="post-delete-btn" onclick="return confirm('削除しますか？');"><i class="fas fa-times"></i></button>
+                    <button type="submit" class="post-delete-btn" onclick="return confirm('削除しますか？');"><i class="fas fa-ellipsis-h"></i></button>
                 </form>
                 {% endif %}
             </div>
 
             <div class="post-body">
                 {{ post.content|linebreaksbr }}
-                {% if post.study_minutes > 0 %}
-                <div style="color:#1877f2; font-weight:bold; font-size:.9rem; margin-top:10px;"><i class="fas fa-book-open"></i> 勉強時間：{{ post.display_study_time }}</div>
-                {% endif %}
+
+                <!-- 勉強データ（科目と時間）をタグのようにさりげなく配置 -->
+                <div style="margin-top: 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <span class="subject-chip" style="background:{{ post.subject_color }}; color:white; padding:3px 12px; border-radius:9999px; font-size:0.8rem; font-weight:bold;">{{ post.subject }}</span>
+                    {% if post.study_minutes > 0 %}
+                    <span style="color:#1d9bf0; font-weight:bold; font-size:0.9rem;"><i class="fas fa-book-open"></i> {{ post.display_study_time }}</span>
+                    {% endif %}
+                </div>
+
                 {% if post.image %}<img src="{{ post.image }}" class="post-body-img">{% elif post.image_file %}<img src="{{ post.image_file.url }}" class="post-body-img">{% endif %}
             </div>
 
             <!-- アクションバー（いいね・コメントボタン） -->
             <div class="post-actions">
-                <button class="action-btn like-btn" data-post-id="{{ post.id }}" style="color:{% if user in post.liked_by.all %}#e0245e{% else %}#65676b{% endif %};">
-                    <i class="fa{% if user in post.liked_by.all %}s{% else %}r{% endif %} fa-heart"></i> いいね <span class="like-count">{{ post.liked_by.count }}</span>
-                </button>
                 <button class="action-btn" onclick="toggleComment({{ post.id }})">
-                    <i class="far fa-comment"></i> コメント <span>{{ post.comments.count }}</span>
+                    <i class="far fa-comment"></i> <span>{{ post.comments.count }}</span>
+                </button>
+                <button class="action-btn like-btn" data-post-id="{{ post.id }}" style="color:{% if user in post.liked_by.all %}#f91880{% endif %};">
+                    <i class="fa{% if user in post.liked_by.all %}s{% else %}r{% endif %} fa-heart"></i> <span class="like-count">{{ post.liked_by.count }}</span>
                 </button>
             </div>
 
-            <!-- 隠しコメントセクション（ボタンを押すと開く） -->
+            <!-- 隠しコメントセクション -->
             <div class="comment-section" id="comment-section-{{ post.id }}">
                 <div class="comments-list" data-post-id="{{ post.id }}">
                     {% for comment in post.comments.all %}
                     <div class="comment-item">
-                        <strong>{{ comment.user.profile.display_name|default:comment.user.username }}</strong> <span style="font-size:.8rem; color:#64748b;">@{{ comment.user.username }}</span><br>
-                        <span style="white-space:pre-wrap; margin-top:4px; display:block;">{{ comment.text }}</span>
+                        <strong>{{ comment.user.profile.display_name|default:comment.user.username }}</strong> <span style="font-size:.8rem; color:#536471;">@{{ comment.user.username }}</span><br>
+                        <span style="white-space:pre-wrap; margin-top:4px; display:block; color: #0f1419;">{{ comment.text }}</span>
                     </div>
                     {% endfor %}
                 </div>
                 <div class="comment-input-wrapper">
-                    <input type="text" class="comment-input" data-post-id="{{ post.id }}" placeholder="コメントを書く..." required>
-                    <button type="button" class="comment-submit" data-post-id="{{ post.id }}">送信</button>
+                    <input type="text" class="comment-input" data-post-id="{{ post.id }}" placeholder="返信をポスト" required>
+                    <button type="button" class="comment-submit" data-post-id="{{ post.id }}">返信</button>
                 </div>
             </div>
         </div>
         {% empty %}
-        <div class="card" style="text-align:center; color:#666; padding:40px 20px;">まだ投稿がありません。</div>
+        <div style="text-align:center; color:#536471; padding:40px 20px;">まだポストがありません。</div>
         {% endfor %}
 
         <div style="display:flex; justify-content:center; gap:10px; margin:20px 0;">
             {% if posts.has_previous %}
-            <a href="?page={{ posts.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="btn btn-soft">&laquo; 前のページ</a>
+            <a href="?page={{ posts.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="btn btn-soft">&laquo; 前へ</a>
             {% endif %}
-            <span style="padding:10px; color:#65676b; font-weight:bold;">{{ posts.number }} / {{ posts.paginator.num_pages }}</span>
+            <span style="padding:10px; color:#536471; font-weight:bold;">{{ posts.number }} / {{ posts.paginator.num_pages }}</span>
             {% if posts.has_next %}
-            <a href="?page={{ posts.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="btn btn-soft">次のページ &raquo;</a>
+            <a href="?page={{ posts.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="btn btn-soft">次へ &raquo;</a>
             {% endif %}
         </div>
     </div>
@@ -287,10 +299,10 @@
 
         document.addEventListener('click', function(e){
             const likeBtn = e.target.closest('.like-btn');
-            if(likeBtn){e.preventDefault();const id=likeBtn.dataset.postId;fetch('/like/'+id+'/ajax/',{method:'POST',headers:{'X-CSRFToken':getCookie('csrftoken')}}).then(r=>r.json()).then(d=>{likeBtn.style.color=d.liked?'#e0245e':'#65676b';likeBtn.querySelector('.like-count').textContent=d.count;likeBtn.querySelector('i').className=d.liked?'fas fa-heart':'far fa-heart'});return}
+            if(likeBtn){e.preventDefault();const id=likeBtn.dataset.postId;fetch('/like/'+id+'/ajax/',{method:'POST',headers:{'X-CSRFToken':getCookie('csrftoken')}}).then(r=>r.json()).then(d=>{likeBtn.style.color=d.liked?'#f91880':'#536471';likeBtn.querySelector('.like-count').textContent=d.count;likeBtn.querySelector('i').className=d.liked?'fas fa-heart':'far fa-heart'});return}
 
             const cmtBtn = e.target.closest('.comment-submit');
-            if(cmtBtn){const id=cmtBtn.dataset.postId;const input=document.querySelector('.comment-input[data-post-id="'+id+'"]');const text=input.value.trim();if(!text)return;fetch('/comment/'+id+'/ajax/',{method:'POST',headers:{'X-CSRFToken':getCookie('csrftoken'),'Content-Type':'application/x-www-form-urlencoded'},body:'text='+encodeURIComponent(text)}).then(r=>r.json()).then(d=>{if(d.error)return;const list=document.querySelector('.comments-list[data-post-id="'+id+'"]');const div=document.createElement('div');div.className='comment-item';div.innerHTML='<strong>'+d.display_name+'</strong> <span style="font-size:.8rem;color:#64748b;">@'+d.username+'</span><br><span style="white-space:pre-wrap;margin-top:4px;display:block;">'+d.text+'</span>';list.appendChild(div);input.value=''});return}
+            if(cmtBtn){const id=cmtBtn.dataset.postId;const input=document.querySelector('.comment-input[data-post-id="'+id+'"]');const text=input.value.trim();if(!text)return;fetch('/comment/'+id+'/ajax/',{method:'POST',headers:{'X-CSRFToken':getCookie('csrftoken'),'Content-Type':'application/x-www-form-urlencoded'},body:'text='+encodeURIComponent(text)}).then(r=>r.json()).then(d=>{if(d.error)return;const list=document.querySelector('.comments-list[data-post-id="'+id+'"]');const div=document.createElement('div');div.className='comment-item';div.innerHTML='<strong>'+d.display_name+'</strong> <span style="font-size:.8rem;color:#536471;">@'+d.username+'</span><br><span style="white-space:pre-wrap;margin-top:4px;display:block;color:#0f1419;">'+d.text+'</span>';list.appendChild(div);input.value=''});return}
         });
     </script>
 </body>
