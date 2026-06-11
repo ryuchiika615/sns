@@ -2,3 +2,8 @@
 __pycache__/
 db.sqlite3
 .DS_Store
+*.pyc
+.env
+staticfiles/
+media/
+.idea/

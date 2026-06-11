@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -6,55 +7,9 @@
     <title>リュッター</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'sns/css/ryutter.css' %}">
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 80px; color: #111827; }
-        .header { background: #1a1a1a; padding: 15px 20px; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; color: white; }
         .menu-icon { font-size: 1.5rem; cursor: pointer; color: white; }
-        .sidebar { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; left: 0; background-color: #1a1a1a; overflow-x: hidden; transition: 0.3s; padding-top: 60px; box-shadow: 2px 0 5px rgba(0,0,0,0.5); }
-        .sidebar a { padding: 15px 25px; text-decoration: none; font-size: 1.1rem; color: #fff; display: block; font-weight: bold; }
-        .sidebar a:hover { color: #fbc02d; background: #333; }
-        .sidebar .closebtn { position: absolute; top: 0; right: 20px; font-size: 36px; padding: 0; color: #999; }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1500; display: none; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; border-top: 1px solid #333; }
-        .nav-item, .logout-btn { color: #aaa; text-decoration: none; font-size: 1.35rem; position: relative; background:none; border:none; padding:6px; }
-        .logout-btn { color:#ff6b6b; cursor:pointer; }
-        .nav-item.active { color: white; }
-        .badge { position: absolute; top: -5px; right: -8px; background: #e0245e; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; font-weight: bold; border: 2px solid #1a1a1a; }
-        .container { max-width: 680px; margin: auto; padding: 15px; }
-        .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); position: relative; }
-        .quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
-        .quick-link { background: #fff; border-radius: 10px; padding: 12px 8px; text-align: center; color: #111827; text-decoration: none; font-weight: bold; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
-        .quick-link i { display: block; color: #1877f2; font-size: 1.25rem; margin-bottom: 6px; }
-        .post-btn { background: #1877f2; color: white; border: none; padding: 11px 20px; border-radius: 20px; font-weight: bold; width: 100%; margin-top: 8px; cursor: pointer; }
-        input, textarea, select { width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box; }
-        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .comment-section { background: #f8f9fa; border-radius: 8px; padding: 10px; margin-top: 10px; font-size: 0.85rem; }
-        .post-delete-btn { position: absolute; top: 15px; right: 15px; font-size: 1.1rem; background: none; border: none; color: #ff4757; cursor: pointer; }
-        .title-badge, .rarity-badge { font-size: 0.72rem; font-weight: bold; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 3px; }
-        .SSR { background: linear-gradient(135deg, #ffe259, #ff7a18, #facc15) !important; color: #fff !important; border: 1px solid #ffd700 !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.4); box-shadow:0 0 14px rgba(250,204,21,.7); animation:ssrPulse 1.8s ease-in-out infinite alternate; }
-        .UR { background: linear-gradient(135deg, #00d2ff, #7b2ff7, #ff4fd8) !important; color: #fff !important; box-shadow: 0 0 18px rgba(123,47,247,.65); animation:urShift 2.4s linear infinite; }
-        .LR { background: linear-gradient(135deg, #09090b, #f43f5e, #fde047, #09090b) !important; color: #fff !important; box-shadow: 0 0 20px rgba(244,63,94,.75),0 0 34px rgba(253,224,71,.45); animation:lrBeat 1.5s ease-in-out infinite alternate; }
-        .SR { background: #f3e5f5; color: #9c27b0; border: 1px solid #e1bee7; }
-        .R { background: #e3f2fd; color: #2196f3; border: 1px solid #bbdefb; }
-        .N { background: #f5f5f5; color: #424242; border: 1px solid #ccc; }
-        .avatar-container { position: relative; display: inline-grid; place-items:center; width: 48px; height: 48px; margin-right: 15px; flex-shrink: 0; }
-        .avatar-img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; position: relative; z-index: 5; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); background: white; box-sizing: border-box; }
-        .avatar-placeholder { font-size: 42px; color: #ccc; position: relative; z-index: 5; background: white; border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-sizing: border-box; }
-        .avatar-container:before { content:""; position:absolute; inset:1px; border-radius:50%; border:2px solid transparent; z-index:3; pointer-events:none; }
-        .avatar-container:after { content:""; position:absolute; width:54px; height:22px; top:13px; left:-3px; z-index:1; opacity:0; pointer-events:none; }
-        .avatar-container.av-SSR:before { border-color:#ffd84d; border-style:dashed; box-shadow:0 0 10px rgba(255,216,77,.75); }
-        .avatar-container.av-SSR:after { opacity:1; background:linear-gradient(90deg,#ff4f94 0 24%,transparent 24% 76%,#ff4f94 76%); clip-path:polygon(0 50%,24% 0,24% 100%,76% 100%,76% 0,100% 50%,76% 100%,24% 100%); }
-        .avatar-container.av-UR:before { border-color:#38bdf8; box-shadow:0 0 14px #38bdf8; }
-        .avatar-container.av-UR:after { opacity:1; background:linear-gradient(90deg,#7b2ff7 0 24%,transparent 24% 76%,#00d2ff 76%); clip-path:polygon(0 50%,24% 0,24% 100%,76% 100%,76% 0,100% 50%,76% 100%,24% 100%); }
-        .avatar-container.av-LR:before { border-color:#f43f5e; border-style:dashed; box-shadow:0 0 16px #f43f5e,0 0 22px #fde047; animation:avatarPulse 1.8s ease-in-out infinite alternate; }
-        .avatar-container.av-LR:after { opacity:1; background:linear-gradient(90deg,#111 0 24%,transparent 24% 76%,#fde047 76%); clip-path:polygon(0 50%,24% 0,24% 100%,76% 100%,76% 0,100% 50%,76% 100%,24% 100%); }
-        @keyframes avatarPulse { from{transform:scale(.96)} to{transform:scale(1.05)} }
-        @keyframes ssrPulse { from{filter:saturate(1)} to{filter:saturate(1.35) brightness(1.08)} }
-        @keyframes urShift { to{filter:hue-rotate(360deg)} }
-        @keyframes lrBeat { from{transform:scale(.98)} to{transform:scale(1.04)} }
-        .subject-chip { color: #fff; font-size: .75rem; font-weight: bold; padding: 3px 7px; border-radius: 999px; }
-        .post-time { margin-left: auto; font-size: .75rem; color: #6b7280; }
-        @media (max-width: 520px) { .quick-grid { grid-template-columns: 1fr; } .row { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -138,7 +93,7 @@
             {% endif %}
             <div style="display:flex; align-items:center; margin-bottom:10px;">
                 <div class="avatar-container av-{{ post.avatar_rarity }}">
-                    {% if post.user.profile.icon %}<img src="{{ post.user.profile.icon }}" class="avatar-img">{% else %}<i class="fas fa-user-circle avatar-placeholder"></i>{% endif %}
+                    {% if post.user.profile.icon_file %}<img src="{{ post.user.profile.icon_file.url }}" class="avatar-img">{% elif post.user.profile.icon %}<img src="{{ post.user.profile.icon }}" class="avatar-img">{% else %}<i class="fas fa-user-circle avatar-placeholder"></i>{% endif %}
                 </div>
                 <div style="flex:1;">
                     <div style="display:flex; align-items:center; gap:6px;">
@@ -151,36 +106,35 @@
             <div style="margin-bottom:8px;"><span class="subject-chip" style="background:{{ post.subject_color }};">{{ post.subject }}</span></div>
             <p style="line-height:1.5; white-space:pre-wrap;">{{ post.content|linebreaksbr }}</p>
             {% if post.study_minutes > 0 %}<div style="color:#1877f2; font-weight:bold; font-size:.9rem; margin-bottom:8px;"><i class="fas fa-clock"></i> {{ post.display_study_time }}</div>{% endif %}
-            {% if post.image %}<img src="{{ post.image }}" style="max-width:100%; border-radius:8px; margin:5px 0 10px; display:block;">{% endif %}
+            {% if post.image_file %}<img src="{{ post.image_file.url }}" style="max-width:100%; border-radius:8px; margin:5px 0 10px; display:block;">{% elif post.image %}<img src="{{ post.image }}" style="max-width:100%; border-radius:8px; margin:5px 0 10px; display:block;">{% endif %}
             <div style="display:flex; gap:15px; border-top:1px solid #eee; padding-top:10px;">
-                <a href="{% url 'like_post' post.id %}" style="text-decoration:none; color:{% if user in post.liked_by.all %}#e0245e{% else %}#65676b{% endif %};">
-                    <i class="fa{% if user in post.liked_by.all %}s{% else %}r{% endif %} fa-heart"></i> {{ post.liked_by.count }}
-                </a>
+                <button class="like-btn" data-post-id="{{ post.id }}" style="background:none; border:none; cursor:pointer; font-size:1rem; color:{% if user in post.liked_by.all %}#e0245e{% else %}#65676b{% endif %}; padding:0;">
+                    <i class="fa{% if user in post.liked_by.all %}s{% else %}r{% endif %} fa-heart"></i> <span class="like-count">{{ post.liked_by.count }}</span>
+                </button>
             </div>
             <div class="comment-section">
-                {% for comment in post.comments.all %}
-                <div style="margin-bottom:6px; padding-bottom:6px; border-bottom:1px dashed #eee;">
-                    <strong>{{ comment.user.profile.display_name|default:comment.user.username }}</strong> <span style="font-size:.78rem; color:#777;">@{{ comment.user.username }}</span>:
-                    <span style="white-space:pre-wrap;">{{ comment.text|linebreaksbr }}</span>
+                <div class="comments-list" data-post-id="{{ post.id }}">
+                    {% for comment in post.comments.all %}
+                    <div class="comment-item" style="margin-bottom:6px; padding-bottom:6px; border-bottom:1px dashed #eee;">
+                        <strong>{{ comment.user.profile.display_name|default:comment.user.username }}</strong> <span style="font-size:.78rem; color:#777;">@{{ comment.user.username }}</span>:
+                        <span style="white-space:pre-wrap;">{{ comment.text|linebreaksbr }}</span>
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-                <form method="POST" style="display:flex; gap:5px; margin-top:8px;">
-                    {% csrf_token %}
-                    <input type="hidden" name="post_id" value="{{ post.id }}">
-                    <input type="text" name="comment_text" placeholder="コメントを書く" required style="margin:0; border-radius:15px;">
-                    <button type="submit" style="background:none; border:none; color:#1877f2; font-weight:bold; cursor:pointer;">送信</button>
-                </form>
+                <div style="display:flex; gap:5px; margin-top:8px;">
+                    <input type="text" class="comment-input" data-post-id="{{ post.id }}" placeholder="コメントを書く" required style="flex:1; margin:0; border-radius:15px; padding:8px 12px; border:1px solid #ddd;">
+                    <button type="button" class="comment-submit" data-post-id="{{ post.id }}" style="background:none; border:none; color:#1877f2; font-weight:bold; cursor:pointer;">送信</button>
+                </div>
             </div>
         </div>
         {% empty %}
         <div class="card" style="text-align:center; color:#666; padding:40px 20px;">まだ投稿がありません。</div>
         {% endfor %}
 
-        <div style="text-align:center; margin:20px 0;">
-            {% if posts.has_previous %}<a href="?page={{ posts.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" style="padding:10px 20px; background:white; border-radius:20px; text-decoration:none; color:#1877f2; font-weight:bold;">前へ</a>{% endif %}
-            <span style="color:#65676b; font-weight:bold; font-size:.9rem; margin:0 10px;">{{ posts.number }} / {{ posts.paginator.num_pages }}</span>
-            {% if posts.has_next %}<a href="?page={{ posts.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" style="padding:10px 20px; background:white; border-radius:20px; text-decoration:none; color:#1877f2; font-weight:bold;">次へ</a>{% endif %}
+        <div id="page-indicator" style="text-align:center; margin:20px 0; color:#65676b; font-weight:bold; font-size:.9rem;">
+            {{ posts.number }} / {{ posts.paginator.num_pages }}
         </div>
+        <div id="scroll-sentinel" style="height:1px;"></div>
     </div>
 
     <form action="{% url 'logout' %}" method="POST" id="bottom-logout-form" style="display:none;">{% csrf_token %}</form>
@@ -202,7 +156,46 @@
             data: { labels: {{ labels|safe }}, datasets: {{ chart_datasets|safe }} },
             options: { responsive:true, scales:{ x:{ stacked:true }, y:{ stacked:true, beginAtZero:true } }, plugins:{ legend:{ position:'bottom' } } }
         });
+
+        function getCookie(name){let c=document.cookie.match(new RegExp('(^| )'+name+'=([^;]+)'));return c?c[2]:null}
+
+        document.addEventListener('click', function(e){
+            const likeBtn = e.target.closest('.like-btn');
+            if(likeBtn){e.preventDefault();const id=likeBtn.dataset.postId;fetch('/like/'+id+'/ajax/',{method:'POST',headers:{'X-CSRFToken':getCookie('csrftoken')}}).then(r=>r.json()).then(d=>{likeBtn.style.color=d.liked?'#e0245e':'#65676b';likeBtn.querySelector('.like-count').textContent=d.count;likeBtn.querySelector('i').className=d.liked?'fas fa-heart':'far fa-heart'});return}
+
+            const cmtBtn = e.target.closest('.comment-submit');
+            if(cmtBtn){const id=cmtBtn.dataset.postId;const input=document.querySelector('.comment-input[data-post-id="'+id+'"]');const text=input.value.trim();if(!text)return;fetch('/comment/'+id+'/ajax/',{method:'POST',headers:{'X-CSRFToken':getCookie('csrftoken'),'Content-Type':'application/x-www-form-urlencoded'},body:'text='+encodeURIComponent(text)}).then(r=>r.json()).then(d=>{if(d.error)return;const list=document.querySelector('.comments-list[data-post-id="'+id+'"]');const div=document.createElement('div');div.style='margin-bottom:6px;padding-bottom:6px;border-bottom:1px dashed #eee';div.innerHTML='<strong>'+d.display_name+'</strong> <span style="font-size:.78rem;color:#777;">@'+d.username+'</span>: <span style="white-space:pre-wrap;">'+d.text+'</span>';list.appendChild(div);input.value=''});return}
+        });
+
+        // Infinite scroll
+        let isLoading = false;
+        let currentPage = {{ posts.number }};
+        const totalPages = {{ posts.paginator.num_pages }};
+        const sentinel = document.getElementById('scroll-sentinel');
+        if (sentinel && currentPage < totalPages) {
+            const observer = new IntersectionObserver(async (entries) => {
+                if (entries[0].isIntersecting && !isLoading) {
+                    isLoading = true;
+                    currentPage++;
+                    try {
+                        const res = await fetch('?page=' + currentPage + '{% if search_query %}&search={{ search_query }}{% endif %}', { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                        const html = await res.text();
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newCards = doc.querySelectorAll('.card:not(:first-child):not(:nth-child(2))');
+                        const container = sentinel.parentNode;
+                        newCards.forEach(card => {
+                            const clone = document.importNode(card, true);
+                            container.insertBefore(clone, sentinel);
+                        });
+                        document.getElementById('page-indicator').textContent = currentPage + ' / ' + totalPages;
+                    } catch(e) {}
+                    isLoading = false;
+                    if (currentPage >= totalPages) observer.unobserve(sentinel);
+                }
+            }, { threshold: 0.1 });
+            observer.observe(sentinel);
+        }
     </script>
 </body>
 </html>
-
