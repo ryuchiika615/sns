@@ -3,17 +3,49 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ガチャ - リュッター</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'sns/css/ryutter.css' %}">
     <style>
-        body{font-family:sans-serif;background:#151515;color:white;margin:0;padding-bottom:90px}.header{background:#111;padding:15px 20px;position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;border-bottom:1px solid #333}.container{max-width:620px;margin:28px auto;padding:0 15px}.gacha-container{background:#242424;padding:24px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.45);border:1px solid #fbc02d;text-align:center;overflow:hidden;position:relative}.gacha-container:before{content:"";position:absolute;inset:-60px;background:conic-gradient(from 90deg,transparent,#fbc02d22,transparent,#38bdf822,transparent);animation:spin-bg 12s linear infinite;pointer-events:none}.gacha-inner{position:relative}.points{background:#fbc02d;color:#000;padding:5px 15px;border-radius:20px;font-weight:bold;display:inline-block;margin-bottom:10px}.rates{color:#bbb;font-size:.82rem;line-height:1.6}.result-box{margin:18px 0;padding:14px;background:#333;border-radius:10px;border:1px dashed #555;max-height:300px;overflow-y:auto}.summary{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:12px}.summary-chip{background:#111;border:1px solid #444;border-radius:999px;padding:6px 10px;font-weight:bold}.result-grid{display:grid;gap:10px}.result-item-card{background:#1f1f1f;border-radius:8px;padding:12px;border:1px solid #444;position:relative;overflow:hidden}.rarity-badge{font-size:.9rem;font-weight:bold;margin-bottom:5px;display:inline-block;padding:3px 9px;border-radius:5px}.LR{background:linear-gradient(135deg,#09090b,#f43f5e,#fde047,#09090b);color:#fff;box-shadow:0 0 22px rgba(244,63,94,.8),0 0 36px rgba(253,224,71,.45);animation:lrBeat 1.5s ease-in-out infinite alternate}.UR{background:linear-gradient(135deg,#00d2ff,#7b2ff7,#ff4fd8);color:#fff;box-shadow:0 0 18px rgba(123,47,247,.7);animation:urShift 2.2s linear infinite}.SSR{background:linear-gradient(135deg,#ffe259,#ff7a18,#facc15);color:#fff;box-shadow:0 0 16px rgba(250,204,21,.65);animation:ssrPulse 1.8s ease-in-out infinite alternate}.SR{background:#9c27b0;color:#fff}.R{background:#2196f3;color:#fff}.N{background:#666;color:#fff}.result-item-card.has-aura:after{content:"";position:absolute;inset:-30%;background:radial-gradient(circle,rgba(255,255,255,.22),transparent 55%);animation:shine 2.5s linear infinite;pointer-events:none}.btn-group{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:15px}.spin-btn{background:#fbc02d;color:#000;border:none;padding:15px;border-radius:10px;font-size:1rem;font-weight:bold;cursor:pointer;box-shadow:0 4px 0 #c49000}.spin-btn-10{background:#ff4757;color:#fff;box-shadow:0 4px 0 #bf1f2f}.spin-btn-100{background:#38bdf8;color:#04111d;box-shadow:0 4px 0 #0e7490}.spin-btn:disabled{background:#555;color:#888;box-shadow:none;cursor:not-allowed}.link-btn{display:inline-flex;align-items:center;gap:6px;margin-top:14px;color:#111;background:#fff;text-decoration:none;padding:10px 14px;border-radius:8px;font-weight:bold}.error-msg{color:#ff6b6b;font-weight:bold}.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#111;display:flex;justify-content:space-around;padding:10px 0}.nav-item,.logout-btn{color:#aaa;text-decoration:none;font-size:1.35rem;background:none;border:none;padding:6px;position:relative}.logout-btn{color:#ff6b6b;cursor:pointer}.nav-item.active{color:#fff}.badge{position:absolute;top:-5px;right:-8px;background:#e0245e;color:white;border-radius:50%;padding:2px 6px;font-size:.7rem;font-weight:bold;border:2px solid #111}@keyframes shine{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}@keyframes spin-bg{to{transform:rotate(360deg)}}@keyframes ssrPulse{from{filter:saturate(1)}to{filter:saturate(1.35) brightness(1.08)}}@keyframes urShift{to{filter:hue-rotate(360deg)}}@keyframes lrBeat{from{transform:scale(.98)}to{transform:scale(1.04)}}@media(max-width:520px){.btn-group{grid-template-columns:1fr}}
+        body{font-family:sans-serif;background:#151515;color:white;margin:0;padding-bottom:90px}.header{background:#111;padding:15px 20px;position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;border-bottom:1px solid #333}.container{max-width:620px;margin:28px auto;padding:0 15px}.gacha-container{background:#242424;padding:24px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.45);border:1px solid #fbc02d;text-align:center;overflow:hidden;position:relative}.gacha-container:before{content:"";position:absolute;inset:-60px;background:conic-gradient(from 90deg,transparent,#fbc02d22,transparent,#38bdf822,transparent);animation:spin-bg 12s linear infinite;pointer-events:none}.gacha-inner{position:relative}.points{background:#fbc02d;color:#000;padding:5px 15px;border-radius:20px;font-weight:bold;display:inline-block;margin-bottom:10px}.rates{color:#bbb;font-size:.82rem;line-height:1.6}.result-box{margin:18px 0;padding:14px;background:#333;border-radius:10px;border:1px dashed #555;max-height:300px;overflow-y:auto}.summary{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:12px}.summary-chip{background:#111;border:1px solid #444;border-radius:999px;padding:6px 10px;font-weight:bold}.result-grid{display:grid;gap:10px}.result-item-card{background:#1f1f1f;border-radius:8px;padding:12px;border:1px solid #444;position:relative;overflow:hidden}.rarity-badge{font-size:.9rem;font-weight:bold;margin-bottom:5px;display:inline-block;padding:3px 9px;border-radius:5px}.LR{background:linear-gradient(135deg,#09090b,#f43f5e,#fde047,#09090b);color:#fff;box-shadow:0 0 22px rgba(244,63,94,.8),0 0 36px rgba(253,224,71,.45);animation:lrBeat 1.5s ease-in-out infinite alternate}.UR{background:linear-gradient(135deg,#00d2ff,#7b2ff7,#ff4fd8);color:#fff;box-shadow:0 0 18px rgba(123,47,247,.7);animation:urShift 2.2s linear infinite}.SSR{background:linear-gradient(135deg,#ffe259,#ff7a18,#facc15);color:#fff;box-shadow:0 0 16px rgba(250,204,21,.65);animation:ssrPulse 1.8s ease-in-out infinite alternate}.SR{background:#9c27b0;color:#fff}.R{background:#2196f3;color:#fff}.N{background:#666;color:#fff}.result-item-card.has-aura:after{content:"";position:absolute;inset:-30%;background:radial-gradient(circle,rgba(255,255,255,.22),transparent 55%);animation:shine 2.5s linear infinite;pointer-events:none}.btn-group{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:15px}.spin-btn{background:#fbc02d;color:#000;border:none;padding:15px;border-radius:10px;font-size:1rem;font-weight:bold;cursor:pointer;box-shadow:0 4px 0 #c49000}.spin-btn-10{background:#ff4757;color:#fff;box-shadow:0 4px 0 #bf1f2f}.spin-btn-100{background:#38bdf8;color:#04111d;box-shadow:0 4px 0 #0e7490}.spin-btn:disabled{background:#555;color:#888;box-shadow:none;cursor:not-allowed}.link-btn{display:inline-flex;align-items:center;gap:6px;margin-top:14px;color:#111;background:#fff;text-decoration:none;padding:10px 14px;border-radius:8px;font-weight:bold}.error-msg{color:#ff6b6b;font-weight:bold}
+        @keyframes shine{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}@keyframes spin-bg{to{transform:rotate(360deg)}}@keyframes ssrPulse{from{filter:saturate(1)}to{filter:saturate(1.35) brightness(1.08)}}@keyframes urShift{to{filter:hue-rotate(360deg)}}@keyframes lrBeat{from{transform:scale(.98)}to{transform:scale(1.04)}}@media(max-width:520px){.btn-group{grid-template-columns:1fr}}
+
+        /* 🟢 新ナビゲーションシステム */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #111; display: flex; justify-content: space-around; align-items: center; padding: 12px 0 20px 0; border-top: 1px solid #333; z-index: 9999; }
+        .bottom-nav .nav-item { color: #fff; text-decoration: none; font-size: 1.5rem; position: relative; }
+        .bottom-nav .nav-item.active { color: #1877f2; }
+        .nav-avatar img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #fff; }
+        .sidebar { height: 100%; width: 0; position: fixed; z-index: 10000; top: 0; left: 0; background-color: #111; overflow-x: hidden; transition: 0.3s; padding-top: 60px; box-shadow: 2px 0 5px rgba(0,0,0,0.5); }
+        .sidebar a { padding: 15px 25px; text-decoration: none; font-size: 1.2rem; color: #ddd; display: block; transition: 0.3s; font-weight: bold; }
+        .sidebar a i { margin-right: 15px; width: 25px; text-align: center; }
+        .sidebar a:hover { color: #fff; background-color: #333; }
+        .sidebar .closebtn { position: absolute; top: 0; right: 15px; font-size: 36px; margin-left: 50px; padding: 10px; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 9999; }
+        .top-hamburger { position: fixed; top: 15px; left: 15px; font-size: 1.5rem; color: #333; z-index: 9000; cursor: pointer; background: rgba(255,255,255,0.9); border: none; width: 45px; height: 45px; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; justify-content: center; align-items: center; }
+        header, .top-nav { display: none !important; }
     </style>
 </head>
 <body>
+    <!-- 🟢 左上のハンバーガーボタン -->
+    <button type="button" class="top-hamburger" onclick="openNav()"><i class="fas fa-bars"></i></button>
 
-    <main class="container">
+    <!-- 🟢 スライド式メニューバー -->
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="{% url 'index' %}"><i class="fas fa-home"></i> ホーム</a>
+        <a href="{% url 'rankings' %}"><i class="fas fa-trophy"></i> ランキング</a>
+        <a href="{% url 'analytics' %}"><i class="fas fa-chart-pie"></i> 分析</a>
+        <a href="{% url 'gacha' %}"><i class="fas fa-coins" style="color:#fbc02d;"></i> ガチャ</a>
+        <a href="{% url 'edit_profile' %}"><i class="fas fa-user-gear"></i> 設定</a>
+        <hr style="border-color:#333; margin:20px;">
+        <form action="{% url 'logout' %}" method="POST" id="logout-form" style="display:none;">{% csrf_token %}</form>
+        <a href="javascript:void(0);" onclick="document.getElementById('logout-form').submit();" style="color:#ff4757;"><i class="fas fa-sign-out-alt"></i> ログアウト</a>
+    </div>
+    <div id="overlay" class="overlay" onclick="closeNav()"></div>
+
+    <!-- 🟢 余白追加 -->
+    <main class="container" style="padding-top: 60px;">
         <div class="gacha-container">
             <div class="gacha-inner">
                 <h2>称号・アイコンガチャ</h2>
@@ -51,25 +83,30 @@
             </div>
         </div>
     </main>
-    <form action="{% url 'logout' %}" method="POST" id="bottom-logout-form" style="display:none;">{% csrf_token %}</form>
+
+    <!-- 🟢 スッキリした黒統一のボトムナビゲーション -->
     <nav class="bottom-nav">
         <a href="{% url 'index' %}" class="nav-item"><i class="fas fa-home"></i></a>
         <a href="{% url 'rankings' %}" class="nav-item"><i class="fas fa-trophy"></i></a>
         <a href="{% url 'analytics' %}" class="nav-item"><i class="fas fa-chart-pie"></i></a>
         <a href="{% url 'gacha' %}" class="nav-item active"><i class="fas fa-coins" style="color:#fbc02d;"></i></a>
-        <a href="{% url 'notifications' %}" class="nav-item"><i class="fas fa-bell"></i>{% if unread_count > 0 %}<span class="badge">{{ unread_count }}</span>{% endif %}</a>
-        <a href="{% url 'index' %}#post-form" class="nav-item"><i class="fas fa-pen" style="color:#1877f2;"></i></a>
-        <a href="{% url 'edit_profile' %}" class="nav-item"><i class="fas fa-user-gear"></i></a>
+        <a href="{% url 'notifications' %}" class="nav-item" style="position:relative;">
+            <i class="fas fa-bell"></i>
+            {% if unread_count > 0 %}
+            <span class="badge" style="background:#ff4757; color:white; border-radius:50%; padding:2px 6px; font-size:0.7rem; position:absolute; top:-5px; right:-10px;">{{ unread_count }}</span>
+            {% endif %}
+        </a>
         <a href="{% url 'user_profile' user.username %}" class="nav-item nav-avatar">
             {% if user.profile.icon %}<img src="{{ user.profile.icon }}" alt="icon">{% elif user.profile.icon_file %}<img src="{{ user.profile.icon_file.url }}" alt="icon">{% else %}<i class="fas fa-user-circle" style="font-size:32px;color:#ccc;"></i>{% endif %}
         </a>
     </nav>
     <script>
+        function openNav(){document.getElementById("sidebar").style.width="250px";document.getElementById("overlay").style.display="block";}
+        function closeNav(){document.getElementById("sidebar").style.width="0";document.getElementById("overlay").style.display="none";}
+
         const form = document.getElementById("gacha-form");
         if (form) {
             form.addEventListener("submit", () => {
-                // ほんの少し（10ミリ秒）だけ無効化を遅らせる魔法！
-                // これでデータが送信された直後にボタンがロックされます。
                 setTimeout(() => {
                     form.querySelectorAll("button").forEach((button) => {
                         button.disabled = true;

@@ -3,17 +3,49 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>プロフィール編集 - リュッター</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'sns/css/ryutter.css' %}">
     <style>
-        body{font-family:sans-serif;background:#f0f2f5;margin:0;padding-bottom:92px;color:#111827}.wrap{max-width:680px;margin:0 auto;padding:14px}.card{background:#fff;padding:18px;border-radius:10px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.08)}h2,h3{margin:0 0 12px}.muted{color:#6b7280;font-size:.84rem}.wallet{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.pill{background:#333;padding:5px 10px;border-radius:999px;font-weight:bold;font-size:.82rem}.study{color:#60a5fa}.exchange{color:#fbc02d}.form-group{margin-bottom:12px}.form-group label{display:block;font-size:.9rem;font-weight:bold;margin-bottom:5px}.form-control{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:.95rem;box-sizing:border-box}textarea.form-control{height:96px;resize:none}.btn{border:none;border-radius:8px;padding:10px 12px;font-weight:bold;cursor:pointer}.btn-primary{background:#1877f2;color:#fff;width:100%}.btn-soft{background:#eef2ff;color:#1d4ed8}.btn-danger{background:#fee2e2;color:#b91c1c}.btn-dark{background:#111827;color:#fff}.error{background:#fee2e2;color:#991b1b;border:1px solid #fecaca;padding:10px;border-radius:8px;margin-bottom:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.item-card{border:1px solid #e5e7eb;border-radius:8px;padding:12px;background:#fff;overflow:hidden}.item-head{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}.item-name{font-size:.9rem;font-weight:bold;line-height:1.35;word-break:break-word}.rarity{font-size:.72rem;font-weight:900;padding:3px 8px;border-radius:5px;display:inline-block;white-space:nowrap;letter-spacing:.02em}.SSR{background:linear-gradient(135deg,#ffe259,#ff7a18,#facc15);color:#fff;box-shadow:0 0 16px rgba(250,204,21,.65);animation:ssrPulse 1.8s ease-in-out infinite alternate}.UR{background:linear-gradient(135deg,#00d2ff,#7b2ff7,#ff4fd8);color:#fff;box-shadow:0 0 18px rgba(123,47,247,.7);animation:urShift 2.2s linear infinite}.LR{background:linear-gradient(135deg,#09090b,#f43f5e,#fde047,#09090b);color:#fff;box-shadow:0 0 22px rgba(244,63,94,.8),0 0 36px rgba(253,224,71,.45);animation:lrBeat 1.5s ease-in-out infinite alternate}.SR{background:#7e22ce;color:#fff;box-shadow:0 0 10px rgba(126,34,206,.35)}.R{background:#2563eb;color:#fff}.N{background:#666;color:#fff}.item-card:has(.SSR),.item-card:has(.UR),.item-card:has(.LR){position:relative}.item-card:has(.SSR):before,.item-card:has(.UR):before,.item-card:has(.LR):before{content:"";position:absolute;inset:-60%;background:conic-gradient(transparent,rgba(255,255,255,.28),transparent 30%);animation:spin 4s linear infinite;pointer-events:none}.item-card>*{position:relative}.item-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}.item-actions form{margin:0}.item-actions button{width:100%;font-size:.78rem}.shop-block{border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin-top:10px}.shop-title{display:flex;align-items:center;gap:8px;margin-bottom:8px}.shop-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.bulk-actions{display:flex;gap:8px;flex-wrap:wrap}.refine-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;display:flex;justify-content:space-around;align-items:center;padding:10px 0;z-index:1000}.nav-item,.logout-btn{color:#aaa;text-decoration:none;font-size:1.35rem;background:none;border:none;padding:6px;position:relative}.nav-item.active{color:white}.logout-btn{color:#ff6b6b;cursor:pointer}.badge{position:absolute;top:-3px;right:-6px;background:#e0245e;color:#fff;border-radius:50%;padding:2px 6px;font-size:.7rem;font-weight:bold;border:2px solid #1a1a1a}@keyframes spin{to{transform:rotate(360deg)}}@keyframes ssrPulse{from{filter:saturate(1)}to{filter:saturate(1.35) brightness(1.08)}}@keyframes urShift{to{filter:hue-rotate(360deg)}}@keyframes lrBeat{from{transform:scale(.98)}to{transform:scale(1.04)}}@media(max-width:560px){.grid,.refine-grid,.shop-actions{grid-template-columns:1fr}.card{padding:15px}.header{align-items:flex-start;gap:8px}.wallet{justify-content:flex-start}}
+        body{font-family:sans-serif;background:#f0f2f5;margin:0;padding-bottom:92px;color:#111827}.wrap{max-width:680px;margin:0 auto;padding:14px}.card{background:#fff;padding:18px;border-radius:10px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.08)}h2,h3{margin:0 0 12px}.muted{color:#6b7280;font-size:.84rem}.wallet{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.pill{background:#333;padding:5px 10px;border-radius:999px;font-weight:bold;font-size:.82rem}.study{color:#60a5fa}.exchange{color:#fbc02d}.form-group{margin-bottom:12px}.form-group label{display:block;font-size:.9rem;font-weight:bold;margin-bottom:5px}.form-control{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:.95rem;box-sizing:border-box}textarea.form-control{height:96px;resize:none}.btn{border:none;border-radius:8px;padding:10px 12px;font-weight:bold;cursor:pointer}.btn-primary{background:#1877f2;color:#fff;width:100%}.btn-soft{background:#eef2ff;color:#1d4ed8}.btn-danger{background:#fee2e2;color:#b91c1c}.btn-dark{background:#111827;color:#fff}.error{background:#fee2e2;color:#991b1b;border:1px solid #fecaca;padding:10px;border-radius:8px;margin-bottom:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.item-card{border:1px solid #e5e7eb;border-radius:8px;padding:12px;background:#fff;overflow:hidden}.item-head{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}.item-name{font-size:.9rem;font-weight:bold;line-height:1.35;word-break:break-word}.rarity{font-size:.72rem;font-weight:900;padding:3px 8px;border-radius:5px;display:inline-block;white-space:nowrap;letter-spacing:.02em}.SSR{background:linear-gradient(135deg,#ffe259,#ff7a18,#facc15);color:#fff;box-shadow:0 0 16px rgba(250,204,21,.65);animation:ssrPulse 1.8s ease-in-out infinite alternate}.UR{background:linear-gradient(135deg,#00d2ff,#7b2ff7,#ff4fd8);color:#fff;box-shadow:0 0 18px rgba(123,47,247,.7);animation:urShift 2.2s linear infinite}.LR{background:linear-gradient(135deg,#09090b,#f43f5e,#fde047,#09090b);color:#fff;box-shadow:0 0 22px rgba(244,63,94,.8),0 0 36px rgba(253,224,71,.45);animation:lrBeat 1.5s ease-in-out infinite alternate}.SR{background:#7e22ce;color:#fff;box-shadow:0 0 10px rgba(126,34,206,.35)}.R{background:#2563eb;color:#fff}.N{background:#666;color:#fff}.item-card:has(.SSR),.item-card:has(.UR),.item-card:has(.LR){position:relative}.item-card:has(.SSR):before,.item-card:has(.UR):before,.item-card:has(.LR):before{content:"";position:absolute;inset:-60%;background:conic-gradient(transparent,rgba(255,255,255,.28),transparent 30%);animation:spin 4s linear infinite;pointer-events:none}.item-card>*{position:relative}.item-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}.item-actions form{margin:0}.item-actions button{width:100%;font-size:.78rem}.shop-block{border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin-top:10px}.shop-title{display:flex;align-items:center;gap:8px;margin-bottom:8px}.shop-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.bulk-actions{display:flex;gap:8px;flex-wrap:wrap}.refine-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+        @keyframes spin{to{transform:rotate(360deg)}}@keyframes ssrPulse{from{filter:saturate(1)}to{filter:saturate(1.35) brightness(1.08)}}@keyframes urShift{to{filter:hue-rotate(360deg)}}@keyframes lrBeat{from{transform:scale(.98)}to{transform:scale(1.04)}}@media(max-width:560px){.grid,.refine-grid,.shop-actions{grid-template-columns:1fr}.card{padding:15px}.header{align-items:flex-start;gap:8px}.wallet{justify-content:flex-start}}
+
+        /* 🟢 新ナビゲーションシステム */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #111; display: flex; justify-content: space-around; align-items: center; padding: 12px 0 20px 0; border-top: 1px solid #333; z-index: 9999; }
+        .bottom-nav .nav-item { color: #fff; text-decoration: none; font-size: 1.5rem; position: relative; }
+        .bottom-nav .nav-item.active { color: #1877f2; }
+        .nav-avatar img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #fff; }
+        .sidebar { height: 100%; width: 0; position: fixed; z-index: 10000; top: 0; left: 0; background-color: #111; overflow-x: hidden; transition: 0.3s; padding-top: 60px; box-shadow: 2px 0 5px rgba(0,0,0,0.5); }
+        .sidebar a { padding: 15px 25px; text-decoration: none; font-size: 1.2rem; color: #ddd; display: block; transition: 0.3s; font-weight: bold; }
+        .sidebar a i { margin-right: 15px; width: 25px; text-align: center; }
+        .sidebar a:hover { color: #fff; background-color: #333; }
+        .sidebar .closebtn { position: absolute; top: 0; right: 15px; font-size: 36px; margin-left: 50px; padding: 10px; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 9999; }
+        .top-hamburger { position: fixed; top: 15px; left: 15px; font-size: 1.5rem; color: #333; z-index: 9000; cursor: pointer; background: rgba(255,255,255,0.9); border: none; width: 45px; height: 45px; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; justify-content: center; align-items: center; }
+        header, .top-nav { display: none !important; }
     </style>
 </head>
 <body>
+    <!-- 🟢 左上のハンバーガーボタン -->
+    <button type="button" class="top-hamburger" onclick="openNav()"><i class="fas fa-bars"></i></button>
 
-    <main class="wrap">
+    <!-- 🟢 スライド式メニューバー -->
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="{% url 'index' %}"><i class="fas fa-home"></i> ホーム</a>
+        <a href="{% url 'rankings' %}"><i class="fas fa-trophy"></i> ランキング</a>
+        <a href="{% url 'analytics' %}"><i class="fas fa-chart-pie"></i> 分析</a>
+        <a href="{% url 'gacha' %}"><i class="fas fa-coins" style="color:#fbc02d;"></i> ガチャ</a>
+        <a href="{% url 'edit_profile' %}"><i class="fas fa-user-gear"></i> 設定</a>
+        <hr style="border-color:#333; margin:20px;">
+        <form action="{% url 'logout' %}" method="POST" id="logout-form" style="display:none;">{% csrf_token %}</form>
+        <a href="javascript:void(0);" onclick="document.getElementById('logout-form').submit();" style="color:#ff4757;"><i class="fas fa-sign-out-alt"></i> ログアウト</a>
+    </div>
+    <div id="overlay" class="overlay" onclick="closeNav()"></div>
+
+    <!-- 🟢 余白追加 -->
+    <main class="wrap" style="padding-top: 60px;">
         <section class="card">
             <h2>基本設定</h2>
             {% if username_error %}<div class="error">{{ username_error }}</div>{% endif %}
@@ -58,7 +90,7 @@
                         <option value="noun_first">名詞 + フレーズ + 人物名</option>
                     </select>
                 </div>
-                <button class="btn btn-dark" name="refine_parts" value="1" style="width:100%;" {% if not title_words and not title_nouns and not title_names %}disabled{% endif %}>精錬する</button>
+                <button class="btn btn-dark" name="refine_parts" value="1" style="width:100%;margin-top:10px;" {% if not title_words and not title_nouns and not title_names %}disabled{% endif %}>精錬する</button>
             </form>
         </section>
 
@@ -76,7 +108,7 @@
                         <select class="form-control" name="shop_item_name">
                             {% for rarity, names in shop_catalog.title.items %}{% if rarity == row.rarity %}{% for name in names %}<option value="{{ name }}">{{ name }}</option>{% endfor %}{% endif %}{% endfor %}
                         </select>
-                        <button class="btn btn-soft" {% if exchange_points < row.cost %}disabled{% endif %}>称号を交換</button>
+                        <button class="btn btn-soft" style="margin-top:5px;width:100%;" {% if exchange_points < row.cost %}disabled{% endif %}>称号を交換</button>
                     </form>
                     <form method="POST">
                         {% csrf_token %}
@@ -85,7 +117,7 @@
                         <select class="form-control" name="shop_item_name">
                             {% for rarity, names in shop_catalog.icon.items %}{% if rarity == row.rarity %}{% for name in names %}<option value="{{ name }}">{{ name }}</option>{% endfor %}{% endif %}{% endfor %}
                         </select>
-                        <button class="btn btn-soft" {% if exchange_points < row.cost %}disabled{% endif %}>アイコンを交換</button>
+                        <button class="btn btn-soft" style="margin-top:5px;width:100%;" {% if exchange_points < row.cost %}disabled{% endif %}>アイコンを交換</button>
                     </form>
                 </div>
             </div>
@@ -135,18 +167,26 @@
             </div>
         </section>
     </main>
-    <form action="{% url 'logout' %}" method="POST" id="bottom-logout-form" style="display:none;">{% csrf_token %}</form>
+
+    <!-- 🟢 スッキリした黒統一のボトムナビゲーション -->
     <nav class="bottom-nav">
         <a href="{% url 'index' %}" class="nav-item"><i class="fas fa-home"></i></a>
         <a href="{% url 'rankings' %}" class="nav-item"><i class="fas fa-trophy"></i></a>
         <a href="{% url 'analytics' %}" class="nav-item"><i class="fas fa-chart-pie"></i></a>
         <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins" style="color:#fbc02d;"></i></a>
-        <a href="{% url 'notifications' %}" class="nav-item"><i class="fas fa-bell"></i>{% if unread_count > 0 %}<span class="badge">{{ unread_count }}</span>{% endif %}</a>
-        <a href="{% url 'index' %}#post-form" class="nav-item"><i class="fas fa-pen" style="color:#1877f2;"></i></a>
-        <a href="{% url 'edit_profile' %}" class="nav-item active"><i class="fas fa-user-gear"></i></a>
+        <a href="{% url 'notifications' %}" class="nav-item" style="position:relative;">
+            <i class="fas fa-bell"></i>
+            {% if unread_count > 0 %}
+            <span class="badge" style="background:#ff4757; color:white; border-radius:50%; padding:2px 6px; font-size:0.7rem; position:absolute; top:-5px; right:-10px;">{{ unread_count }}</span>
+            {% endif %}
+        </a>
         <a href="{% url 'user_profile' user.username %}" class="nav-item nav-avatar">
             {% if user.profile.icon %}<img src="{{ user.profile.icon }}" alt="icon">{% elif user.profile.icon_file %}<img src="{{ user.profile.icon_file.url }}" alt="icon">{% else %}<i class="fas fa-user-circle" style="font-size:32px;color:#ccc;"></i>{% endif %}
         </a>
     </nav>
+    <script>
+        function openNav(){document.getElementById("sidebar").style.width="250px";document.getElementById("overlay").style.display="block";}
+        function closeNav(){document.getElementById("sidebar").style.width="0";document.getElementById("overlay").style.display="none";}
+    </script>
 </body>
 </html>

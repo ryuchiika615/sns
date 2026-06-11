@@ -3,18 +3,51 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>{{ target_user.username }}のプロフィール</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'sns/css/ryutter.css' %}">
     <style>
-        body{font-family:sans-serif;background:#f0f2f5;margin:0;padding-bottom:90px;color:#111827}.container{max-width:900px;margin:20px auto;padding:0 15px;display:grid;grid-template-columns:300px 1fr;gap:18px}.card{background:#fff;border-radius:10px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.06)}.profile-header{display:flex;align-items:center;gap:14px}.profile-avatar{position:relative;display:inline-grid;place-items:center;width:64px;height:64px;flex-shrink:0}.profile-avatar-img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.12);position:relative;z-index:5;background:white}.profile-avatar:before{content:"";position:absolute;inset:2px;border-radius:50%;border:2px solid transparent;z-index:3;pointer-events:none}.profile-avatar:after{content:"";position:absolute;width:76px;height:30px;top:17px;left:-6px;z-index:1;opacity:0;pointer-events:none}.profile-avatar.av-SSR:before{border-color:#ffd84d;border-style:dashed;box-shadow:0 0 10px rgba(255,216,77,.7)}.profile-avatar.av-SSR:after{opacity:1;background:linear-gradient(90deg,#ff4f94 0 24%,transparent 24% 76%,#ff4f94 76%);clip-path:polygon(0 50%,24% 0,24% 100%,76% 100%,76% 0,100% 50%,76% 100%,24% 100%)}.profile-avatar.av-UR:before{border-color:#38bdf8;box-shadow:0 0 12px #38bdf8}.profile-avatar.av-UR:after{opacity:1;background:linear-gradient(90deg,#7b2ff7 0 24%,transparent 24% 76%,#00d2ff 76%);clip-path:polygon(0 50%,24% 0,24% 100%,76% 100%,76% 0,100% 50%,76% 100%,24% 100%)}.profile-avatar.av-LR:before{border-color:#f43f5e;border-style:dashed;box-shadow:0 0 14px #f43f5e,0 0 20px #fde047;animation:avatarPulse 1.8s ease-in-out infinite alternate}.profile-avatar.av-LR:after{opacity:1;background:linear-gradient(90deg,#111 0 24%,transparent 24% 76%,#fde047 76%);clip-path:polygon(0 50%,24% 0,24% 100%,76% 100%,76% 0,100% 50%,76% 100%,24% 100%)}.badge-r{font-size:.72rem;font-weight:900;padding:3px 8px;border-radius:5px;display:inline-block;white-space:nowrap;letter-spacing:.02em}clip-path:polygon(0 50%,27% 0,27% 100%,73% 100%,73% 0,100% 50%,73% 100%,27% 100%)}.badge-r{font-size:.75rem;font-weight:bold;border-radius:5px;padding:3px 8px;display:inline-block;margin:4px}.SSR{background:linear-gradient(45deg,#ffe259,#ffa751);color:#fff}.UR{background:linear-gradient(45deg,#00d2ff,#7b2ff7);color:#fff}.LR{background:linear-gradient(45deg,#111,#f43f5e,#fde047);color:#fff}.SR{background:#f3e5f5;color:#9c27b0}.R{background:#e3f2fd;color:#2196f3}.N{background:#f5f5f5;color:#424242}.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{background:#f8fafc;border-radius:8px;padding:10px;text-align:center}.stat strong{display:block;color:#1877f2;font-size:1.1rem}.follow-btn{width:100%;padding:10px;border-radius:20px;font-weight:bold;border:none;cursor:pointer;margin-top:12px}.btn-follow{background:#1877f2;color:#fff}.btn-unfollow{background:#e5e7eb;color:#111}.tabs{display:flex;border-bottom:2px solid #ddd;margin-bottom:12px;overflow-x:auto}.tab-link{padding:10px 14px;text-decoration:none;color:#65676b;font-weight:bold;white-space:nowrap}.tab-link.active{color:#1877f2;border-bottom:3px solid #1877f2}.post{border-bottom:1px solid #eee;padding:12px 0}.subject{color:#fff;font-size:.75rem;font-weight:bold;padding:3px 7px;border-radius:999px;background:#1877f2}.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;display:flex;justify-content:space-around;padding:10px 0}.nav-item,.logout-btn{color:#aaa;text-decoration:none;font-size:1.35rem;background:none;border:none;padding:6px}.logout-btn{color:#ff6b6b;cursor:pointer}.nav-item.active{color:#fff}@keyframes avatarPulse{from{transform:scale(.96)}to{transform:scale(1.05)}}@media(max-width:760px){.container{grid-template-columns:1fr}}
+        body{font-family:sans-serif;background:#f0f2f5;margin:0;padding-bottom:90px;color:#111827}.container{max-width:900px;margin:20px auto;padding:0 15px;display:grid;grid-template-columns:300px 1fr;gap:18px}.card{background:#fff;border-radius:10px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.06)}.profile-header{display:flex;align-items:center;gap:14px}.profile-avatar{position:relative;display:inline-grid;place-items:center;width:64px;height:64px;flex-shrink:0}.profile-avatar-img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.12);position:relative;z-index:5;background:white}.profile-avatar:before{content:"";position:absolute;inset:2px;border-radius:50%;border:2px solid transparent;z-index:3;pointer-events:none}.profile-avatar:after{content:"";position:absolute;width:76px;height:30px;top:17px;left:-6px;z-index:1;opacity:0;pointer-events:none}.profile-avatar.av-SSR:before{border-color:#ffd84d;border-style:dashed;box-shadow:0 0 10px rgba(255,216,77,.7)}.profile-avatar.av-SSR:after{opacity:1;background:linear-gradient(90deg,#ff4f94 0 24%,transparent 24% 76%,#ff4f94 76%);clip-path:polygon(0 50%,24% 0,24% 100%,76% 100%,76% 0,100% 50%,76% 100%,24% 100%)}.profile-avatar.av-UR:before{border-color:#38bdf8;box-shadow:0 0 12px #38bdf8}.profile-avatar.av-UR:after{opacity:1;background:linear-gradient(90deg,#7b2ff7 0 24%,transparent 24% 76%,#00d2ff 76%);clip-path:polygon(0 50%,24% 0,24% 100%,76% 100%,76% 0,100% 50%,76% 100%,24% 100%)}.profile-avatar.av-LR:before{border-color:#f43f5e;border-style:dashed;box-shadow:0 0 14px #f43f5e,0 0 20px #fde047;animation:avatarPulse 1.8s ease-in-out infinite alternate}.profile-avatar.av-LR:after{opacity:1;background:linear-gradient(90deg,#111 0 24%,transparent 24% 76%,#fde047 76%);clip-path:polygon(0 50%,24% 0,24% 100%,76% 100%,76% 0,100% 50%,76% 100%,24% 100%)}
+        .badge-r{font-size:.75rem;font-weight:bold;border-radius:5px;padding:3px 8px;display:inline-block;margin:4px}.SSR{background:linear-gradient(45deg,#ffe259,#ffa751);color:#fff}.UR{background:linear-gradient(45deg,#00d2ff,#7b2ff7);color:#fff}.LR{background:linear-gradient(45deg,#111,#f43f5e,#fde047);color:#fff}.SR{background:#f3e5f5;color:#9c27b0}.R{background:#e3f2fd;color:#2196f3}.N{background:#f5f5f5;color:#424242}.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{background:#f8fafc;border-radius:8px;padding:10px;text-align:center}.stat strong{display:block;color:#1877f2;font-size:1.1rem}.follow-btn{width:100%;padding:10px;border-radius:20px;font-weight:bold;border:none;cursor:pointer;margin-top:12px}.btn-follow{background:#1877f2;color:#fff}.btn-unfollow{background:#e5e7eb;color:#111}.tabs{display:flex;border-bottom:2px solid #ddd;margin-bottom:12px;overflow-x:auto}.tab-link{padding:10px 14px;text-decoration:none;color:#65676b;font-weight:bold;white-space:nowrap}.tab-link.active{color:#1877f2;border-bottom:3px solid #1877f2}.post{border-bottom:1px solid #eee;padding:12px 0}.subject{color:#fff;font-size:.75rem;font-weight:bold;padding:3px 7px;border-radius:999px;background:#1877f2}
+        @keyframes avatarPulse{from{transform:scale(.96)}to{transform:scale(1.05)}}@media(max-width:760px){.container{grid-template-columns:1fr}}
+
+        /* 🟢 新ナビゲーションシステム */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #111; display: flex; justify-content: space-around; align-items: center; padding: 12px 0 20px 0; border-top: 1px solid #333; z-index: 9999; }
+        .bottom-nav .nav-item { color: #fff; text-decoration: none; font-size: 1.5rem; position: relative; }
+        .bottom-nav .nav-item.active { color: #1877f2; }
+        .nav-avatar img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #fff; }
+        .sidebar { height: 100%; width: 0; position: fixed; z-index: 10000; top: 0; left: 0; background-color: #111; overflow-x: hidden; transition: 0.3s; padding-top: 60px; box-shadow: 2px 0 5px rgba(0,0,0,0.5); }
+        .sidebar a { padding: 15px 25px; text-decoration: none; font-size: 1.2rem; color: #ddd; display: block; transition: 0.3s; font-weight: bold; }
+        .sidebar a i { margin-right: 15px; width: 25px; text-align: center; }
+        .sidebar a:hover { color: #fff; background-color: #333; }
+        .sidebar .closebtn { position: absolute; top: 0; right: 15px; font-size: 36px; margin-left: 50px; padding: 10px; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 9999; }
+        .top-hamburger { position: fixed; top: 15px; left: 15px; font-size: 1.5rem; color: #333; z-index: 9000; cursor: pointer; background: rgba(255,255,255,0.9); border: none; width: 45px; height: 45px; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; justify-content: center; align-items: center; }
+        header, .top-nav { display: none !important; }
     </style>
 </head>
 <body>
+    <!-- 🟢 左上のハンバーガーボタン -->
+    <button type="button" class="top-hamburger" onclick="openNav()"><i class="fas fa-bars"></i></button>
 
-    <main class="container">
+    <!-- 🟢 スライド式メニューバー -->
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="{% url 'index' %}"><i class="fas fa-home"></i> ホーム</a>
+        <a href="{% url 'rankings' %}"><i class="fas fa-trophy"></i> ランキング</a>
+        <a href="{% url 'analytics' %}"><i class="fas fa-chart-pie"></i> 分析</a>
+        <a href="{% url 'gacha' %}"><i class="fas fa-coins" style="color:#fbc02d;"></i> ガチャ</a>
+        <a href="{% url 'edit_profile' %}"><i class="fas fa-user-gear"></i> 設定</a>
+        <hr style="border-color:#333; margin:20px;">
+        <form action="{% url 'logout' %}" method="POST" id="logout-form" style="display:none;">{% csrf_token %}</form>
+        <a href="javascript:void(0);" onclick="document.getElementById('logout-form').submit();" style="color:#ff4757;"><i class="fas fa-sign-out-alt"></i> ログアウト</a>
+    </div>
+    <div id="overlay" class="overlay" onclick="closeNav()"></div>
+
+    <!-- 🟢 余白追加 -->
+    <main class="container" style="padding-top: 60px;">
         <section>
             <div class="card">
                 <div class="profile-header">
@@ -34,7 +67,7 @@
                 <div style="display:flex;gap:18px;color:#374151;font-size:.9rem;"><strong>{{ following_count }}</strong> フォロー <strong>{{ followers_count }}</strong> フォロワー</div>
                 {% if user != target_user %}
                 <form action="{% url 'toggle_follow' target_user.username %}" method="POST" style="margin-top:12px;">{% csrf_token %}<button class="follow-btn {% if is_following %}btn-unfollow{% else %}btn-follow{% endif %}">{% if is_following %}フォロー解除{% else %}フォローする{% endif %}</button></form>
-                {% else %}<a href="{% url 'edit_profile' %}" class="follow-btn btn-unfollow" style="display:block;text-decoration:none;box-sizing:border-box;">プロフィール編集</a>{% endif %}
+                {% else %}<a href="{% url 'edit_profile' %}" class="follow-btn btn-unfollow" style="display:block;text-decoration:none;box-sizing:border-box;text-align:center;">プロフィール編集</a>{% endif %}
             </div>
             <div class="card">
                 <h3>勉強データ</h3>
@@ -69,25 +102,27 @@
             {% endif %}
         </section>
     </main>
-    <form action="{% url 'logout' %}" method="POST" id="bottom-logout-form" style="display:none;">{% csrf_token %}</form>
+
+    <!-- 🟢 スッキリした黒統一のボトムナビゲーション -->
     <nav class="bottom-nav">
-        <button type="button" class="nav-item" onclick="openNav()" style="background:none;border:none;color:#aaa;font-size:1.25rem;padding:4px 6px;cursor:pointer;"><i class="fas fa-bars"></i></button>
         <a href="{% url 'index' %}" class="nav-item"><i class="fas fa-home"></i></a>
         <a href="{% url 'rankings' %}" class="nav-item"><i class="fas fa-trophy"></i></a>
         <a href="{% url 'analytics' %}" class="nav-item"><i class="fas fa-chart-pie"></i></a>
         <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins" style="color:#fbc02d;"></i></a>
-        <a href="{% url 'notifications' %}" class="nav-item"><i class="fas fa-bell"></i></a>
-        <a href="{% url 'index' %}#post-form" class="nav-item"><i class="fas fa-pen" style="color:#1877f2;"></i></a>
-        <a href="{% url 'edit_profile' %}" class="nav-item"><i class="fas fa-user-gear"></i></a>
+        <a href="{% url 'notifications' %}" class="nav-item" style="position:relative;">
+            <i class="fas fa-bell"></i>
+            {% if unread_count > 0 %}
+            <span class="badge" style="background:#ff4757; color:white; border-radius:50%; padding:2px 6px; font-size:0.7rem; position:absolute; top:-5px; right:-10px;">{{ unread_count }}</span>
+            {% endif %}
+        </a>
         <a href="{% url 'user_profile' user.username %}" class="nav-item nav-avatar active">
             {% if user.profile.icon %}<img src="{{ user.profile.icon }}" alt="icon">{% elif user.profile.icon_file %}<img src="{{ user.profile.icon_file.url }}" alt="icon">{% else %}<i class="fas fa-user-circle" style="font-size:32px;color:#ccc;"></i>{% endif %}
         </a>
     </nav>
     <script>
-        function openNav(){document.getElementById("sidebar")?.style?document.getElementById("sidebar").style.width="250px":null;document.getElementById("overlay")?.style?document.getElementById("overlay").style.display="block":null}
-        function closeNav(){document.getElementById("sidebar")?.style?document.getElementById("sidebar").style.width="0":null;document.getElementById("overlay")?.style?document.getElementById("overlay").style.display="none":null}
-    </script>
-    <script>
+        function openNav(){document.getElementById("sidebar").style.width="250px";document.getElementById("overlay").style.display="block";}
+        function closeNav(){document.getElementById("sidebar").style.width="0";document.getElementById("overlay").style.display="none";}
+
         const labels = {{ subject_labels|safe }};
         if (labels.length) {
             new Chart(document.getElementById('subjectChart').getContext('2d'), { type:'doughnut', data:{ labels, datasets:[{ data:{{ subject_data|safe }}, backgroundColor:{{ subject_colors|safe }} }] }, options:{ plugins:{ legend:{ position:'bottom' } } } });
