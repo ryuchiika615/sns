@@ -1,3 +1,4 @@
+import base64
 import json
 import random
 from datetime import datetime, time, timedelta
@@ -362,7 +363,11 @@ GACHA_COOLDOWN_SECONDS = 2
 
 
 def file_to_base64(file):
-    return file  # Cloudinaryに直接アップロードされるのでbase64変換不要
+    if not file:
+        return None
+    encoded = base64.b64encode(file.read()).decode("utf-8")
+    file.seek(0)  # 読み取り位置を戻してCloudinary用に再利用
+    return f"data:{file.content_type};base64,{encoded}"
 
 
 def format_study_time(minutes):
@@ -651,11 +656,13 @@ def index(request):
             study_date = (
                 parse_date(request.POST.get("study_date", "")) or timezone.localdate()
             )
+            uploaded_image = request.FILES.get("image")
             post = Post.objects.create(
                 user=request.user,
                 content=content,
                 study_minutes=minutes,
-                image_file=request.FILES.get("image"),
+                image=file_to_base64(uploaded_image),
+                image_file=uploaded_image,
                 subject=subject,
             )
             set_post_date(post, study_date)
@@ -922,7 +929,9 @@ def edit_profile(request):
             profile.target_date = request.POST.get("target_date") or None
             profile.target_minutes = int(request.POST.get("target_minutes") or 0)
             if "icon" in request.FILES:
-                profile.icon_file = request.FILES["icon"]
+                uploaded_icon = request.FILES["icon"]
+                profile.icon = file_to_base64(uploaded_icon)
+                profile.icon_file = uploaded_icon
             profile.save()
             if username_error:
                 return render_profile(username_error)
