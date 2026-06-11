@@ -3,18 +3,81 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>勉強ランキング</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'sns/css/ryutter.css' %}">
     <style>
-        body { font-family: sans-serif; background:#f0f2f5; margin:0; padding-bottom:80px; color:#111827; }
-        .container{max-width:720px;margin:auto;padding:15px}.card{background:#fff;border-radius:10px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.06)}.filters{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}.filters input,.filters button{padding:10px;border:1px solid #ddd;border-radius:8px}.filters button{background:#1877f2;color:#fff;font-weight:bold;border:none}.rank-row{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;border-bottom:1px solid #eee;padding:13px 0}.rank-row:last-child{border-bottom:none}.rank{width:34px;height:34px;border-radius:50%;background:#111827;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold}.rank.r1{background:#f59f00}.rank.r2{background:#6b7280}.rank.r3{background:#b45309}.user a{color:#111827;text-decoration:none;font-weight:bold}.user span{display:block;color:#6b7280;font-size:.8rem}.time{color:#1877f2;font-weight:bold;text-align:right}
+        /* 🟢 ベースのスタイル（元のデザインを維持） */
+        body { font-family: sans-serif; background:#f0f2f5; margin:0; padding-bottom:75px; color:#111827; }
+        .container{max-width:720px;margin:auto;padding:15px}
+        .card{background:#fff;border-radius:10px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+        .filters{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}
+        .filters input,.filters button{padding:10px;border:1px solid #ddd;border-radius:8px}
+        .filters button{background:#1877f2;color:#fff;font-weight:bold;border:none}
+        .rank-row{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;border-bottom:1px solid #eee;padding:13px 0}
+        .rank-row:last-child{border-bottom:none}
+        .rank{width:34px;height:34px;border-radius:50%;background:#111827;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold}
+        .rank.r1{background:#f59f00}.rank.r2{background:#6b7280}.rank.r3{background:#b45309}
+        .user a{color:#111827;text-decoration:none;font-weight:bold}
+        .user span{display:block;color:#6b7280;font-size:.8rem}
+        .time{color:#1877f2;font-weight:bold;text-align:right}
+
+        /* 🟢 黒統一の固定ボトムナビゲーションバー */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; background-color: #111;
+            display: flex; justify-content: space-around; align-items: center;
+            padding: 12px 0 20px 0; border-top: 1px solid #333; z-index: 9999;
+        }
+        .bottom-nav .nav-item { color: #fff; text-decoration: none; font-size: 1.5rem; position: relative; }
+        .bottom-nav .nav-item.active { color: #1877f2; }
+        .nav-avatar img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #fff; }
+
+        /* 🟢 サイドバーとオーバーレイ */
+        .sidebar {
+            height: 100%; width: 0; position: fixed; z-index: 10000; top: 0; left: 0;
+            background-color: #111; overflow-x: hidden; transition: 0.3s; padding-top: 60px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+        }
+        .sidebar a {
+            padding: 15px 25px; text-decoration: none; font-size: 1.2rem; color: #ddd;
+            display: block; transition: 0.3s; font-weight: bold;
+        }
+        .sidebar a i { margin-right: 15px; width: 25px; text-align: center; }
+        .sidebar a:hover { color: #fff; background-color: #333; }
+        .sidebar .closebtn { position: absolute; top: 0; right: 15px; font-size: 36px; margin-left: 50px; padding: 10px; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 9999; }
+
+        /* 🟢 左上のハンバーガーボタン */
+        .top-hamburger {
+            position: fixed; top: 15px; left: 15px; font-size: 1.5rem; color: #333;
+            z-index: 9000; cursor: pointer; background: rgba(255,255,255,0.9); border: none;
+            width: 45px; height: 45px; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: flex; justify-content: center; align-items: center;
+        }
+        header, .top-nav { display: none !important; }
     </style>
 </head>
 <body>
+    <!-- 🟢 左上のハンバーガーボタン -->
+    <button type="button" class="top-hamburger" onclick="openNav()"><i class="fas fa-bars"></i></button>
 
-    <main class="container">
+    <!-- 🟢 スライド式メニューバー -->
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="{% url 'index' %}"><i class="fas fa-home"></i> ホーム</a>
+        <a href="{% url 'rankings' %}"><i class="fas fa-trophy"></i> ランキング</a>
+        <a href="{% url 'analytics' %}"><i class="fas fa-chart-pie"></i> 分析</a>
+        <a href="{% url 'gacha' %}"><i class="fas fa-coins" style="color:#fbc02d;"></i> ガチャ</a>
+        <a href="{% url 'edit_profile' %}"><i class="fas fa-user-gear"></i> 設定</a>
+        <hr style="border-color:#333; margin:20px;">
+        <form action="{% url 'logout' %}" method="POST" id="logout-form" style="display:none;">{% csrf_token %}</form>
+        <a href="javascript:void(0);" onclick="document.getElementById('logout-form').submit();" style="color:#ff4757;"><i class="fas fa-sign-out-alt"></i> ログアウト</a>
+    </div>
+    <div id="overlay" class="overlay" onclick="closeNav()"></div>
+
+    <!-- メインコンテンツ（上に余白を追加） -->
+    <main class="container" style="padding-top: 60px;">
         <div class="card">
             <form method="GET" class="filters">
                 <input type="date" name="start" value="{{ start|date:'Y-m-d' }}">
@@ -38,18 +101,28 @@
             {% endfor %}
         </div>
     </main>
-    <form action="{% url 'logout' %}" method="POST" id="bottom-logout-form" style="display:none;">{% csrf_token %}</form>
+
+    <!-- 🟢 スッキリした黒統一のボトムナビゲーション -->
     <nav class="bottom-nav">
         <a href="{% url 'index' %}" class="nav-item"><i class="fas fa-home"></i></a>
+        <!-- ランキング画面なので trophy を active に -->
         <a href="{% url 'rankings' %}" class="nav-item active"><i class="fas fa-trophy"></i></a>
         <a href="{% url 'analytics' %}" class="nav-item"><i class="fas fa-chart-pie"></i></a>
         <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins" style="color:#fbc02d;"></i></a>
-        <a href="{% url 'notifications' %}" class="nav-item"><i class="fas fa-bell"></i>{% if unread_count > 0 %}<span class="badge">{{ unread_count }}</span>{% endif %}</a>
-        <a href="{% url 'index' %}#post-form" class="nav-item"><i class="fas fa-pen" style="color:#1877f2;"></i></a>
-        <a href="{% url 'edit_profile' %}" class="nav-item"><i class="fas fa-user-gear"></i></a>
+        <a href="{% url 'notifications' %}" class="nav-item" style="position:relative;">
+            <i class="fas fa-bell"></i>
+            {% if unread_count > 0 %}
+            <span class="badge" style="background:#ff4757; color:white; border-radius:50%; padding:2px 6px; font-size:0.7rem; position:absolute; top:-5px; right:-10px;">{{ unread_count }}</span>
+            {% endif %}
+        </a>
         <a href="{% url 'user_profile' user.username %}" class="nav-item nav-avatar">
             {% if user.profile.icon %}<img src="{{ user.profile.icon }}" alt="icon">{% elif user.profile.icon_file %}<img src="{{ user.profile.icon_file.url }}" alt="icon">{% else %}<i class="fas fa-user-circle" style="font-size:32px;color:#ccc;"></i>{% endif %}
         </a>
     </nav>
+    <script>
+        // サイドバー開閉用の関数を追加
+        function openNav(){document.getElementById("sidebar").style.width="250px";document.getElementById("overlay").style.display="block";}
+        function closeNav(){document.getElementById("sidebar").style.width="0";document.getElementById("overlay").style.display="none";}
+    </script>
 </body>
 </html>

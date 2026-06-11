@@ -9,87 +9,68 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'sns/css/ryutter.css' %}">
     <style>
-        /* =========================================
-           ここから下が今回追加した「絶対崩れない」最強CSSです
-           ========================================= */
-
-        /* 🟢 アバター（アイコン）をTwitter/LINE風の綺麗な丸にする */
-        .avatar-container {
-            width: 48px; /* スマホで一番押しやすい・見やすいサイズ */
-            height: 48px;
-            border-radius: 50%; /* ここで完全な丸に切り抜く */
-            overflow: hidden; /* 丸からはみ出た部分を隠す */
-            margin-right: 12px;
-            flex-shrink: 0;
-            background-color: #f0f2f5;
-        }
-        .avatar-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* 長方形の画像でも歪まずに中央を綺麗にくり抜く魔法のコード */
-        }
-        .avatar-placeholder {
-            font-size: 48px;
-            color: #ccc;
-        }
+        /* 🟢 アバター用CSS */
+        .avatar-container { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; margin-right: 12px; flex-shrink: 0; background-color: #f0f2f5; }
+        .avatar-img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-placeholder { font-size: 48px; color: #ccc; }
 
         /* 🟢 黒統一の固定ボトムナビゲーションバー */
-        body {
-            padding-bottom: 75px; /* 下にナビを置く分、一番下の投稿が隠れないように余白を作る */
-        }
+        body { padding-bottom: 75px; }
         .bottom-nav {
-            position: fixed; /* 画面の下にピタッと固定！ */
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: #111; /* カッコいい黒背景 */
-            display: flex;
-            justify-content: space-around; /* アイコンを均等に配置 */
-            align-items: center;
-            padding: 12px 0 20px 0; /* スマホの下部スワイプ領域を考慮した絶妙な余白 */
-            border-top: 1px solid #333; /* 上にうっすら境界線 */
-            z-index: 9999; /* 常に一番手前に表示して絶対に隠れないようにする */
+            position: fixed; bottom: 0; left: 0; width: 100%; background-color: #111;
+            display: flex; justify-content: space-around; align-items: center;
+            padding: 12px 0 20px 0; border-top: 1px solid #333; z-index: 9999;
         }
-        .bottom-nav .nav-item {
-            color: #fff; /* アイコンの色は白統一 */
-            text-decoration: none;
-            font-size: 1.5rem;
+        .bottom-nav .nav-item { color: #fff; text-decoration: none; font-size: 1.5rem; position: relative; }
+        .bottom-nav .nav-item.active { color: #1877f2; }
+        .nav-avatar img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #fff; }
+
+        /* 🟢 サイドバーとオーバーレイ（紫アイコン丸出しバグの修正） */
+        .sidebar {
+            height: 100%; width: 0; position: fixed; z-index: 10000; top: 0; left: 0;
+            background-color: #111; overflow-x: hidden; transition: 0.3s; padding-top: 60px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.5);
         }
-        .bottom-nav .nav-item.active {
-            color: #1877f2; /* 現在のページだけ青く光らせる */
+        .sidebar a {
+            padding: 15px 25px; text-decoration: none; font-size: 1.2rem; color: #ddd;
+            display: block; transition: 0.3s; font-weight: bold;
+        }
+        .sidebar a i { margin-right: 15px; width: 25px; text-align: center; }
+        .sidebar a:hover { color: #fff; background-color: #333; }
+        .sidebar .closebtn { position: absolute; top: 0; right: 15px; font-size: 36px; margin-left: 50px; padding: 10px; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 9999; }
+
+        /* 🟢 左上のハンバーガーボタン */
+        .top-hamburger {
+            position: fixed; top: 15px; left: 15px; font-size: 1.5rem; color: #333;
+            z-index: 9000; cursor: pointer; background: rgba(255,255,255,0.9); border: none;
+            width: 45px; height: 45px; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: flex; justify-content: center; align-items: center;
         }
 
-        /* ナビゲーション内の自分の極小アイコンも丸くする */
-        .nav-avatar img {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid #fff;
-        }
-
-        /* 上の不要なナビゲーションがあった場合、強制的に消し去る */
-        header, .top-nav {
-            display: none !important;
-        }
+        header, .top-nav { display: none !important; }
     </style>
 </head>
 <body>
+    <!-- 🟢 新設：左上のハンバーガーボタン -->
+    <button type="button" class="top-hamburger" onclick="openNav()"><i class="fas fa-bars"></i></button>
+
+    <!-- 🟢 スライド式メニューバー（文章付き） -->
     <div id="sidebar" class="sidebar">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-        <a href="{% url 'index' %}"><i class="fas fa-home" style="width:25px;"></i></a>
-        <a href="{% url 'rankings' %}"><i class="fas fa-trophy" style="width:25px;"></i></a>
-        <a href="{% url 'analytics' %}"><i class="fas fa-chart-pie" style="width:25px;"></i></a>
-        <a href="{% url 'user_profile' user.username %}"><i class="fas fa-user" style="width:25px;"></i></a>
-        <a href="{% url 'edit_profile' %}"><i class="fas fa-cog" style="width:25px;"></i></a>
-        <a href="{% url 'gacha' %}"><i class="fas fa-coins" style="width:25px;"></i></a>
+        <a href="{% url 'index' %}"><i class="fas fa-home"></i> ホーム</a>
+        <a href="{% url 'rankings' %}"><i class="fas fa-trophy"></i> ランキング</a>
+        <a href="{% url 'analytics' %}"><i class="fas fa-chart-pie"></i> 分析</a>
+        <a href="{% url 'gacha' %}"><i class="fas fa-coins" style="color:#fbc02d;"></i> ガチャ</a>
+        <a href="{% url 'edit_profile' %}"><i class="fas fa-user-gear"></i> 設定</a>
         <hr style="border-color:#333; margin:20px;">
         <form action="{% url 'logout' %}" method="POST" id="logout-form" style="display:none;">{% csrf_token %}</form>
-        <a href="javascript:void(0);" onclick="document.getElementById('logout-form').submit();" style="color:#ff4757;"><i class="fas fa-sign-out-alt" style="width:25px;"></i></a>
+        <a href="javascript:void(0);" onclick="document.getElementById('logout-form').submit();" style="color:#ff4757;"><i class="fas fa-sign-out-alt"></i> ログアウト</a>
     </div>
     <div id="overlay" class="overlay" onclick="closeNav()"></div>
 
-    <div class="container">
+    <!-- グラフがハンバーガーボタンに被らないよう上に余白（padding-top:60px）を追加 -->
+    <div class="container" style="padding-top: 60px;">
         {% if has_target %}
         <div class="card" style="background:linear-gradient(45deg,#111,#222); color:white; text-align:center; border:1px solid #fbc02d;">
             <h4 style="margin:0 0 8px; color:#fbc02d;"><i class="fas fa-bullseye"></i> {{ target_date|date:"Y年m月d日" }} までの目標</h4>
@@ -187,17 +168,18 @@
         </div>
     </div>
 
-    <form action="{% url 'logout' %}" method="POST" id="bottom-logout-form" style="display:none;">{% csrf_token %}</form>
-
+    <!-- 🟢 ペンと設定を消した黒統一のボトムナビゲーション -->
     <nav class="bottom-nav">
-        <button type="button" class="nav-item" onclick="openNav()" style="background:none;border:none;cursor:pointer;"><i class="fas fa-bars"></i></button>
         <a href="{% url 'index' %}" class="nav-item active"><i class="fas fa-home"></i></a>
         <a href="{% url 'rankings' %}" class="nav-item"><i class="fas fa-trophy"></i></a>
         <a href="{% url 'analytics' %}" class="nav-item"><i class="fas fa-chart-pie"></i></a>
         <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins" style="color:#fbc02d;"></i></a>
-        <a href="{% url 'notifications' %}" class="nav-item"><i class="fas fa-bell"></i>{% if unread_count > 0 %}<span class="badge" style="background:#ff4757; color:white; border-radius:50%; padding:2px 6px; font-size:0.7rem; position:absolute; top:-5px; right:-5px;">{{ unread_count }}</span>{% endif %}</a>
-        <a href="#post-form" class="nav-item" id="write-btn"><i class="fas fa-pen" style="color:#1877f2;"></i></a>
-        <a href="{% url 'edit_profile' %}" class="nav-item"><i class="fas fa-user-gear"></i></a>
+        <a href="{% url 'notifications' %}" class="nav-item" style="position:relative;">
+            <i class="fas fa-bell"></i>
+            {% if unread_count > 0 %}
+            <span class="badge" style="background:#ff4757; color:white; border-radius:50%; padding:2px 6px; font-size:0.7rem; position:absolute; top:-5px; right:-10px;">{{ unread_count }}</span>
+            {% endif %}
+        </a>
         <a href="{% url 'user_profile' user.username %}" class="nav-item nav-avatar">
             {% if user.profile.icon %}<img src="{{ user.profile.icon }}" alt="icon">{% elif user.profile.icon_file %}<img src="{{ user.profile.icon_file.url }}" alt="icon">{% else %}<i class="fas fa-user-circle" style="font-size:32px;color:#ccc;"></i>{% endif %}
         </a>
@@ -220,12 +202,6 @@
 
             const cmtBtn = e.target.closest('.comment-submit');
             if(cmtBtn){const id=cmtBtn.dataset.postId;const input=document.querySelector('.comment-input[data-post-id="'+id+'"]');const text=input.value.trim();if(!text)return;fetch('/comment/'+id+'/ajax/',{method:'POST',headers:{'X-CSRFToken':getCookie('csrftoken'),'Content-Type':'application/x-www-form-urlencoded'},body:'text='+encodeURIComponent(text)}).then(r=>r.json()).then(d=>{if(d.error)return;const list=document.querySelector('.comments-list[data-post-id="'+id+'"]');const div=document.createElement('div');div.style='margin-bottom:6px;padding-bottom:6px;border-bottom:1px dashed #eee';div.innerHTML='<strong>'+d.display_name+'</strong> <span style="font-size:.78rem;color:#777;">@'+d.username+'</span>: <span style="white-space:pre-wrap;">'+d.text+'</span>';list.appendChild(div);input.value=''});return}
-        });
-
-        // Write button smooth scroll
-        document.getElementById('write-btn')?.addEventListener('click', function(e){
-            e.preventDefault();
-            document.getElementById('post-form')?.scrollIntoView({ behavior: 'smooth' });
         });
     </script>
 </body>
