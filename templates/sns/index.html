@@ -9,53 +9,67 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'sns/css/ryutter.css' %}">
     <style>
-        /* 🟢 アバター用CSS */
-        .avatar-container { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; margin-right: 12px; flex-shrink: 0; background-color: #f0f2f5; }
-        .avatar-img { width: 100%; height: 100%; object-fit: cover; }
-        .avatar-placeholder { font-size: 48px; color: #ccc; }
+        /* 🟢 アバター（アイコン）の枠とエフェクト完全復活！ */
+        .avatar-container { position: relative; display: inline-grid; place-items: center; width: 48px; height: 48px; margin-right: 12px; flex-shrink: 0; }
+        .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.12); position: relative; z-index: 5; background: white; }
+        .avatar-placeholder { font-size: 48px; color: #ccc; border-radius: 50%; position: relative; z-index: 5; background: white; }
+
+        .avatar-container:before { content: ""; position: absolute; inset: -2px; border-radius: 50%; border: 2px solid transparent; z-index: 3; pointer-events: none; }
+        .avatar-container:after { content: ""; position: absolute; width: 60px; height: 24px; top: 12px; left: -6px; z-index: 1; opacity: 0; pointer-events: none; }
+
+        .av-SSR:before { border-color: #ffd84d; border-style: dashed; box-shadow: 0 0 10px rgba(255,216,77,.7); }
+        .av-SSR:after { opacity: 1; background: linear-gradient(90deg, #ff4f94 0 24%, transparent 24% 76%, #ff4f94 76%); clip-path: polygon(0 50%, 24% 0, 24% 100%, 76% 100%, 76% 0, 100% 50%, 76% 100%, 24% 100%); }
+
+        .av-UR:before { border-color: #38bdf8; box-shadow: 0 0 12px #38bdf8; }
+        .av-UR:after { opacity: 1; background: linear-gradient(90deg, #7b2ff7 0 24%, transparent 24% 76%, #00d2ff 76%); clip-path: polygon(0 50%, 24% 0, 24% 100%, 76% 100%, 76% 0, 100% 50%, 76% 100%, 24% 100%); }
+
+        .av-LR:before { border-color: #f43f5e; border-style: dashed; box-shadow: 0 0 14px #f43f5e, 0 0 20px #fde047; animation: avatarPulse 1.8s ease-in-out infinite alternate; }
+        .av-LR:after { opacity: 1; background: linear-gradient(90deg, #111 0 24%, transparent 24% 76%, #fde047 76%); clip-path: polygon(0 50%, 24% 0, 24% 100%, 76% 100%, 76% 0, 100% 50%, 76% 100%, 24% 100%); }
+
+        /* 🟢 称号（タイトル）のエフェクト完全復活！ */
+        .title-badge { font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; display: inline-block; padding: 3px 9px; border-radius: 5px; }
+        .LR { background: linear-gradient(135deg, #09090b, #f43f5e, #fde047, #09090b); color: #fff; box-shadow: 0 0 15px rgba(244,63,94,.8), 0 0 20px rgba(253,224,71,.45); animation: lrBeat 1.5s ease-in-out infinite alternate; }
+        .UR { background: linear-gradient(135deg, #00d2ff, #7b2ff7, #ff4fd8); color: #fff; box-shadow: 0 0 12px rgba(123,47,247,.7); animation: urShift 2.2s linear infinite; }
+        .SSR { background: linear-gradient(135deg, #ffe259, #ff7a18, #facc15); color: #fff; box-shadow: 0 0 10px rgba(250,204,21,.65); animation: ssrPulse 1.8s ease-in-out infinite alternate; }
+        .SR { background: #9c27b0; color: #fff; }
+        .R { background: #2196f3; color: #fff; }
+        .N { background: #666; color: #fff; }
+
+        @keyframes ssrPulse { from { filter: saturate(1); } to { filter: saturate(1.35) brightness(1.08); } }
+        @keyframes urShift { to { filter: hue-rotate(360deg); } }
+        @keyframes lrBeat { from { transform: scale(0.98); } to { transform: scale(1.04); } }
+        @keyframes avatarPulse { from { transform: scale(0.96); } to { transform: scale(1.05); } }
 
         /* 🟢 黒統一の固定ボトムナビゲーションバー */
         body { padding-bottom: 75px; }
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%; background-color: #111;
-            display: flex; justify-content: space-around; align-items: center;
-            padding: 12px 0 20px 0; border-top: 1px solid #333; z-index: 9999;
-        }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #111; display: flex; justify-content: space-around; align-items: center; padding: 12px 0 20px 0; border-top: 1px solid #333; z-index: 9999; }
         .bottom-nav .nav-item { color: #fff; text-decoration: none; font-size: 1.5rem; position: relative; }
         .bottom-nav .nav-item.active { color: #1877f2; }
         .nav-avatar img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #fff; }
 
-        /* 🟢 サイドバーとオーバーレイ（紫アイコン丸出しバグの修正） */
-        .sidebar {
-            height: 100%; width: 0; position: fixed; z-index: 10000; top: 0; left: 0;
-            background-color: #111; overflow-x: hidden; transition: 0.3s; padding-top: 60px;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.5);
-        }
-        .sidebar a {
-            padding: 15px 25px; text-decoration: none; font-size: 1.2rem; color: #ddd;
-            display: block; transition: 0.3s; font-weight: bold;
-        }
+        /* 🟢 サイドバーとハンバーガー */
+        .sidebar { height: 100%; width: 0; position: fixed; z-index: 10000; top: 0; left: 0; background-color: #111; overflow-x: hidden; transition: 0.3s; padding-top: 60px; box-shadow: 2px 0 5px rgba(0,0,0,0.5); }
+        .sidebar a { padding: 15px 25px; text-decoration: none; font-size: 1.2rem; color: #ddd; display: block; transition: 0.3s; font-weight: bold; }
         .sidebar a i { margin-right: 15px; width: 25px; text-align: center; }
         .sidebar a:hover { color: #fff; background-color: #333; }
         .sidebar .closebtn { position: absolute; top: 0; right: 15px; font-size: 36px; margin-left: 50px; padding: 10px; }
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 9999; }
 
-        /* 🟢 左上のハンバーガーボタン */
+        /* 🔥 修正：スクロールで邪魔にならないように absolute に変更！ */
         .top-hamburger {
-            position: fixed; top: 15px; left: 15px; font-size: 1.5rem; color: #333;
+            position: absolute; top: 15px; left: 15px; font-size: 1.5rem; color: #333;
             z-index: 9000; cursor: pointer; background: rgba(255,255,255,0.9); border: none;
             width: 45px; height: 45px; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             display: flex; justify-content: center; align-items: center;
         }
-
         header, .top-nav { display: none !important; }
     </style>
 </head>
 <body>
-    <!-- 🟢 新設：左上のハンバーガーボタン -->
+    <!-- 🟢 左上のハンバーガーボタン -->
     <button type="button" class="top-hamburger" onclick="openNav()"><i class="fas fa-bars"></i></button>
 
-    <!-- 🟢 スライド式メニューバー（文章付き） -->
+    <!-- 🟢 スライド式メニューバー -->
     <div id="sidebar" class="sidebar">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         <a href="{% url 'index' %}"><i class="fas fa-home"></i> ホーム</a>
@@ -69,7 +83,6 @@
     </div>
     <div id="overlay" class="overlay" onclick="closeNav()"></div>
 
-    <!-- グラフがハンバーガーボタンに被らないよう上に余白（padding-top:60px）を追加 -->
     <div class="container" style="padding-top: 60px;">
         {% if has_target %}
         <div class="card" style="background:linear-gradient(45deg,#111,#222); color:white; text-align:center; border:1px solid #fbc02d;">
@@ -168,7 +181,6 @@
         </div>
     </div>
 
-    <!-- 🟢 ペンと設定を消した黒統一のボトムナビゲーション -->
     <nav class="bottom-nav">
         <a href="{% url 'index' %}" class="nav-item active"><i class="fas fa-home"></i></a>
         <a href="{% url 'rankings' %}" class="nav-item"><i class="fas fa-trophy"></i></a>
