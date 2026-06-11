@@ -9,10 +9,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'sns/css/ryutter.css' %}">
     <style>
-        /* 🟢 アバター（アイコン）の枠とエフェクト完全復活！ */
-        .avatar-container { position: relative; display: inline-grid; place-items: center; width: 48px; height: 48px; margin-right: 12px; flex-shrink: 0; }
-        .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.12); position: relative; z-index: 5; background: white; }
-        .avatar-placeholder { font-size: 48px; color: #ccc; border-radius: 50%; position: relative; z-index: 5; background: white; }
+        /* 🟢 アバター（アイコン）の歪みを直し、絶対に「まん丸」にする！ */
+        .avatar-container { position: relative; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; min-width: 48px; margin-right: 12px; flex-shrink: 0; border-radius: 50%; }
+        .avatar-img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.12); position: relative; z-index: 5; background: white; aspect-ratio: 1 / 1; }
+        .avatar-placeholder { font-size: 48px; color: #ccc; border-radius: 50%; position: relative; z-index: 5; background: white; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; }
 
         .avatar-container:before { content: ""; position: absolute; inset: -2px; border-radius: 50%; border: 2px solid transparent; z-index: 3; pointer-events: none; }
         .avatar-container:after { content: ""; position: absolute; width: 60px; height: 24px; top: 12px; left: -6px; z-index: 1; opacity: 0; pointer-events: none; }
@@ -48,10 +48,12 @@
             z-index: 8000; font-size: 1.3rem; font-weight: bold; letter-spacing: 2px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
+
+        /* 🟢 ヘッダーに馴染むハンバーガーボタン */
         .top-hamburger {
-            position: fixed; top: 7px; left: 10px; font-size: 1.5rem; color: #111;
-            z-index: 9000; cursor: pointer; background: #fff; border: none;
-            width: 46px; height: 46px; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            position: fixed; top: 7px; left: 10px; font-size: 1.5rem; color: #fff;
+            z-index: 9000; cursor: pointer; background: transparent; border: none;
+            width: 46px; height: 46px; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
         }
 
@@ -101,12 +103,12 @@
     </style>
 </head>
 <body>
-    <!-- 🟢 黒背景のトップヘッダー -->
+    <!-- 🟢 黒背景のトップヘッダー（追加！） -->
     <header class="top-header">
         リュッター
     </header>
 
-    <!-- 🟢 左上のハンバーガーボタン -->
+    <!-- 🟢 ヘッダーの中におさまるハンバーガーボタン -->
     <button type="button" class="top-hamburger" onclick="openNav()"><i class="fas fa-bars"></i></button>
 
     <!-- 🟢 スライド式メニューバー -->
@@ -162,7 +164,7 @@
             </form>
         </div>
 
-        <!-- 🟢 投稿一覧をモダンなカードデザインに大改造！ -->
+        <!-- 🟢 投稿一覧 -->
         {% for post in posts %}
         <div class="post-card">
             <div class="post-header">
@@ -172,8 +174,8 @@
                 <div class="post-meta">
                     <div class="post-user-info">
                         <strong><a href="{% url 'user_profile' post.user.username %}">{{ post.author_label }}</a></strong>
-                        <span class="post-meta-text">@{{ post.user.username }}</span>
-                        <span class="post-meta-text">·</span>
+                        <!-- 🟢 @の重複を防止するため、ここから @{{ post.user.username }} を削除しました！ -->
+                        <span class="post-meta-text" style="margin-left: 4px;">·</span>
                         <span class="post-meta-text"><i class="far fa-clock"></i> {{ post.formatted_time }}</span>
                     </div>
                     <div class="post-badges">
