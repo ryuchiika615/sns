@@ -86,13 +86,13 @@ USE_I18N = True
 USE_TZ = True
 
 # 静的ファイルの設定
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'  # ★ 先頭にスラッシュを追加して修正しました！
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # メディアファイル（画像）の設定
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media') # ★念のため追加
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -101,3 +101,13 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'login'
 SITE_ADMIN_USERNAME = os.environ.get('SITE_ADMIN_USERNAME', 'りゅうのすけ')
+
+# --- Jazzmin（管理画面）をカッコよく＆使いやすくする設定 ---
+JAZZMIN_SETTINGS = {
+    "site_title": "リュッター管理",
+    "site_header": "リュッター",
+    "site_brand": "リュッター管理",
+    "welcome_sign": "ようこそ管理画面へ！神の力で操作してください。",
+    # ★ これで右上に「リュッターを開く（サイトを表示）」ボタンが復活します！
+    "site_url": "/",
+}
