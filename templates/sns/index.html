@@ -9,9 +9,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'sns/css/ryutter.css' %}">
     <style>
-        /* 🟢 アバター（アイコン）の歪みを直し、絶対に「まん丸」にする！ */
-        .avatar-container { position: relative; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; min-width: 48px; margin-right: 12px; flex-shrink: 0; border-radius: 50%; }
-        .avatar-img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.12); position: relative; z-index: 5; background: white; aspect-ratio: 1 / 1; }
+        /* 🟢 アバター（アイコン）の絶対まん丸化！ */
+        .avatar-container { position: relative; display: flex; align-items: center; justify-content: center; width: 48px !important; height: 48px !important; min-width: 48px; min-height: 48px; margin-right: 12px; flex-shrink: 0; border-radius: 50%; }
+        .avatar-img { width: 48px !important; height: 48px !important; min-width: 48px; min-height: 48px; border-radius: 50%; object-fit: cover !important; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.12); position: relative; z-index: 5; background: white; }
         .avatar-placeholder { font-size: 48px; color: #ccc; border-radius: 50%; position: relative; z-index: 5; background: white; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; }
 
         .avatar-container:before { content: ""; position: absolute; inset: -2px; border-radius: 50%; border: 2px solid transparent; z-index: 3; pointer-events: none; }
@@ -19,62 +19,60 @@
 
         .av-SSR:before { border-color: #ffd84d; border-style: dashed; box-shadow: 0 0 10px rgba(255,216,77,.7); }
         .av-SSR:after { opacity: 1; background: linear-gradient(90deg, #ff4f94 0 24%, transparent 24% 76%, #ff4f94 76%); clip-path: polygon(0 50%, 24% 0, 24% 100%, 76% 100%, 76% 0, 100% 50%, 76% 100%, 24% 100%); }
-
         .av-UR:before { border-color: #38bdf8; box-shadow: 0 0 12px #38bdf8; }
         .av-UR:after { opacity: 1; background: linear-gradient(90deg, #7b2ff7 0 24%, transparent 24% 76%, #00d2ff 76%); clip-path: polygon(0 50%, 24% 0, 24% 100%, 76% 100%, 76% 0, 100% 50%, 76% 100%, 24% 100%); }
-
         .av-LR:before { border-color: #f43f5e; border-style: dashed; box-shadow: 0 0 14px #f43f5e, 0 0 20px #fde047; animation: avatarPulse 1.8s ease-in-out infinite alternate; }
         .av-LR:after { opacity: 1; background: linear-gradient(90deg, #111 0 24%, transparent 24% 76%, #fde047 76%); clip-path: polygon(0 50%, 24% 0, 24% 100%, 76% 100%, 76% 0, 100% 50%, 76% 100%, 24% 100%); }
 
-        /* 🟢 称号（タイトル）のエフェクト完全復活！ */
-        .title-badge { font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; display: inline-block; padding: 3px 9px; border-radius: 5px; }
-        .LR { background: linear-gradient(135deg, #09090b, #f43f5e, #fde047, #09090b); color: #fff; box-shadow: 0 0 15px rgba(244,63,94,.8), 0 0 20px rgba(253,224,71,.45); animation: lrBeat 1.5s ease-in-out infinite alternate; }
-        .UR { background: linear-gradient(135deg, #00d2ff, #7b2ff7, #ff4fd8); color: #fff; box-shadow: 0 0 12px rgba(123,47,247,.7); animation: urShift 2.2s linear infinite; }
-        .SSR { background: linear-gradient(135deg, #ffe259, #ff7a18, #facc15); color: #fff; box-shadow: 0 0 10px rgba(250,204,21,.65); animation: ssrPulse 1.8s ease-in-out infinite alternate; }
-        .SR { background: #9c27b0; color: #fff; }
-        .R { background: #2196f3; color: #fff; }
-        .N { background: #666; color: #fff; }
-
-        @keyframes ssrPulse { from { filter: saturate(1); } to { filter: saturate(1.35) brightness(1.08); } }
-        @keyframes urShift { to { filter: hue-rotate(360deg); } }
-        @keyframes lrBeat { from { transform: scale(0.98); } to { transform: scale(1.04); } }
         @keyframes avatarPulse { from { transform: scale(0.96); } to { transform: scale(1.05); } }
 
-        /* 🟢 新設：トップヘッダー（リュッターロゴ） */
-        .top-header {
-            position: fixed; top: 0; left: 0; width: 100%; height: 60px;
-            background-color: #111; color: #fff;
-            display: flex; align-items: center; justify-content: center;
-            z-index: 8000; font-size: 1.3rem; font-weight: bold; letter-spacing: 2px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        /* 🟢 画像3枚目再現：豪華なトップバナー */
+        .lytter-home-banner {
+            position: relative;
+            background: linear-gradient(to bottom, #0f172a, #1e3a8a);
+            border-bottom: 3px solid #d4af37;
+            text-align: center;
+            padding: 15px 0 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            margin-bottom: 15px;
         }
+        .banner-title {
+            font-family: serif; font-size: 2rem; color: #e2c073;
+            letter-spacing: 2px; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .banner-subtitle { font-size: 0.95rem; color: #e2c073; letter-spacing: 4px; margin-top: 5px; }
 
-        /* 🟢 ヘッダーに馴染むハンバーガーボタン */
         .top-hamburger {
-            position: fixed; top: 7px; left: 10px; font-size: 1.5rem; color: #fff;
-            z-index: 9000; cursor: pointer; background: transparent; border: none;
-            width: 46px; height: 46px; border-radius: 50%;
+            position: absolute; top: 50%; left: 15px; transform: translateY(-50%);
+            font-size: 1.5rem; color: #111; z-index: 9000; cursor: pointer;
+            background: rgba(255,255,255,0.9); border: none; width: 42px; height: 42px;
+            border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             display: flex; justify-content: center; align-items: center;
         }
 
-        /* 🟢 モダンなアプリ風 投稿カードデザイン */
+        /* 🟢 画像3枚目再現：投稿カードと称号の帯 */
         .post-card { background: #fff; border-radius: 12px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #f0f2f5; }
-        .post-header { display: flex; padding: 16px 16px 8px; position: relative; }
-        .post-meta { flex: 1; }
-        .post-user-info { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
-        .post-user-info strong a { color: #111; text-decoration: none; font-size: 1.05rem; }
-        .post-meta-text { color: #65676b; font-size: 0.85rem; }
-        .post-badges { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+        .post-title-band { padding: 6px 15px; font-weight: bold; text-align: center; font-size: 0.95rem; letter-spacing: 1px; }
+        .post-title-band.SSR { background: linear-gradient(90deg, #d4af37, #fde047, #d4af37); color: #111; text-shadow: 0 1px 1px rgba(255,255,255,0.5); }
+        .post-title-band.UR { background: linear-gradient(90deg, #00d2ff, #7b2ff7); color: #fff; }
+        .post-title-band.LR { background: linear-gradient(90deg, #111, #f43f5e, #111); color: #fde047; }
+        .post-title-band.SR { background: linear-gradient(90deg, #a855f7, #c084fc); color: #fff; }
+        .post-title-band.R { background: linear-gradient(90deg, #3b82f6, #60a5fa); color: #fff; }
+        .post-title-band.N { background: #cbd5e1; color: #333; }
 
-        .post-body { padding: 0 16px 12px; color: #111; font-size: 0.95rem; line-height: 1.6; word-wrap: break-word; }
+        .post-header { display: flex; padding: 12px 16px 8px; position: relative; }
+        .post-meta { flex: 1; }
+        .post-user-info { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px; }
+        .post-user-info strong a { color: #111; text-decoration: none; font-size: 1.15rem; }
+        .post-meta-text { color: #65676b; font-size: 0.9rem; }
+
+        .post-body { padding: 0 16px 12px; color: #111; font-size: 1rem; line-height: 1.6; word-wrap: break-word; }
         .post-body-img { max-width: 100%; border-radius: 12px; margin-top: 10px; border: 1px solid #f0f2f5; }
 
-        /* 🟢 アクションボタン（いいね・コメント） */
         .post-actions { display: flex; border-top: 1px solid #f0f2f5; padding: 4px 16px; }
         .action-btn { flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; background: none; border: none; padding: 10px 0; color: #65676b; font-size: 0.95rem; font-weight: bold; cursor: pointer; border-radius: 6px; transition: background 0.2s; }
         .action-btn:hover { background: #f0f2f5; }
 
-        /* 🟢 スライド開閉式のコメント欄 */
         .comment-section { display: none; padding: 16px; background: #f8fafc; border-top: 1px solid #f0f2f5; }
         .comment-item { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #e2e8f0; font-size: 0.9rem; }
         .comment-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
@@ -99,17 +97,15 @@
         .sidebar a:hover { color: #fff; background-color: #333; }
         .sidebar .closebtn { position: absolute; top: 0; right: 15px; font-size: 36px; margin-left: 50px; padding: 10px; }
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 9999; }
-        header, .top-nav { display: none !important; }
     </style>
 </head>
 <body>
-    <!-- 🟢 黒背景のトップヘッダー（追加！） -->
-    <header class="top-header">
-        リュッター
+    <!-- 🟢 豪華なトップバナー（ハンバーガーもここに内包） -->
+    <header class="lytter-home-banner">
+        <button type="button" class="top-hamburger" onclick="openNav()"><i class="fas fa-bars"></i></button>
+        <h1 class="banner-title">LYTTER HOME</h1>
+        <div class="banner-subtitle">リュッター ホーム</div>
     </header>
-
-    <!-- 🟢 ヘッダーの中におさまるハンバーガーボタン -->
-    <button type="button" class="top-hamburger" onclick="openNav()"><i class="fas fa-bars"></i></button>
 
     <!-- 🟢 スライド式メニューバー -->
     <div id="sidebar" class="sidebar">
@@ -125,8 +121,7 @@
     </div>
     <div id="overlay" class="overlay" onclick="closeNav()"></div>
 
-    <!-- ヘッダー分、上に多めに余白（80px）を取る -->
-    <div class="container" style="padding-top: 80px;">
+    <div class="container">
         {% if has_target %}
         <div class="card" style="background:linear-gradient(45deg,#111,#222); color:white; text-align:center; border:1px solid #fbc02d;">
             <h4 style="margin:0 0 8px; color:#fbc02d;"><i class="fas fa-bullseye"></i> {{ target_date|date:"Y年m月d日" }} までの目標</h4>
@@ -141,6 +136,11 @@
                 <span style="font-size:.85rem; color:#1877f2; font-weight:bold;">合計 {{ total_this_week_display }}</span>
             </div>
             <canvas id="studyChart" height="210"></canvas>
+        </div>
+
+        <!-- 🟢 フィード見出しを追加 -->
+        <div style="font-size: 1.3rem; font-weight: bold; margin: 25px 0 15px; padding-bottom: 8px; border-bottom: 1px solid #ccc; letter-spacing: 2px;">
+            フィード (FEED)
         </div>
 
         <form action="{% url 'index' %}" method="GET" style="margin-bottom:15px;">
@@ -164,22 +164,27 @@
             </form>
         </div>
 
-        <!-- 🟢 投稿一覧 -->
+        <!-- 🟢 投稿一覧（帯付き・@重複なし・綺麗なレイアウト） -->
         {% for post in posts %}
         <div class="post-card">
+            <!-- 称号の帯 -->
+            <div class="post-title-band {{ post.current_rarity }}">
+                {{ post.current_rarity }} {{ post.current_title_display }}
+            </div>
+
             <div class="post-header">
+                <!-- まん丸アイコン -->
                 <div class="avatar-container av-{{ post.avatar_rarity }}">
                     {% if post.user.profile.icon %}<img src="{{ post.user.profile.icon }}" class="avatar-img">{% elif post.user.profile.icon_file %}<img src="{{ post.user.profile.icon_file.url }}" class="avatar-img">{% else %}<i class="fas fa-user-circle avatar-placeholder"></i>{% endif %}
                 </div>
+                <!-- ユーザー情報と時間 -->
                 <div class="post-meta">
                     <div class="post-user-info">
                         <strong><a href="{% url 'user_profile' post.user.username %}">{{ post.author_label }}</a></strong>
-                        <!-- 🟢 @の重複を防止するため、ここから @{{ post.user.username }} を削除しました！ -->
-                        <span class="post-meta-text" style="margin-left: 4px;">·</span>
-                        <span class="post-meta-text"><i class="far fa-clock"></i> {{ post.formatted_time }}</span>
+                        <span class="post-meta-text">@{{ post.user.username }}</span>
                     </div>
-                    <div class="post-badges">
-                        <span class="title-badge {{ post.current_rarity }}">{{ post.current_rarity }} {{ post.current_title_display }}</span>
+                    <div style="margin-top: 5px; display: flex; align-items: center; gap: 8px;">
+                        <span class="post-meta-text"><i class="far fa-clock"></i> {{ post.formatted_time }}</span>
                         <span class="subject-chip" style="background:{{ post.subject_color }}; color:white; padding:2px 8px; border-radius:12px; font-size:0.8rem;">{{ post.subject }}</span>
                     </div>
                 </div>
@@ -262,7 +267,7 @@
         function openNav(){document.getElementById("sidebar").style.width="250px";document.getElementById("overlay").style.display="block";}
         function closeNav(){document.getElementById("sidebar").style.width="0";document.getElementById("overlay").style.display="none";}
 
-        // 🟢 コメント欄の開閉アニメーション
+        // コメント欄の開閉アニメーション
         function toggleComment(postId) {
             const section = document.getElementById('comment-section-' + postId);
             if (section.style.display === 'none' || section.style.display === '') {
