@@ -12,7 +12,7 @@
     </style>
 </head>
 <body>
-    <div class="header"><strong><i class="fas fa-wand-magic-sparkles"></i> ガチャ</strong><span style="color:#fbc02d;font-weight:bold;"><i class="fas fa-gem"></i> {{ points }} pt</span></div>
+    <div class="header"><strong><i class="fas fa-wand-magic-sparkles"></i> ガチャ</strong><div style="display:flex;align-items:center;gap:8px;"><span style="color:#fbc02d;font-weight:bold;"><i class="fas fa-gem"></i> {{ points }}</span><a href="{% url 'user_profile' user.username %}">{% if user.profile.icon %}<img src="{{ user.profile.icon }}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;background:white;">{% elif user.profile.icon_file %}<img src="{{ user.profile.icon_file.url }}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;background:white;">{% else %}<i class="fas fa-user-circle" style="font-size:40px;color:#ccc;background:white;border-radius:50%;"></i>{% endif %}</a></div></div>
     <main class="container">
         <div class="gacha-container">
             <div class="gacha-inner">
@@ -52,7 +52,7 @@
         </div>
     </main>
     <form action="{% url 'logout' %}" method="POST" id="bottom-logout-form" style="display:none;">{% csrf_token %}</form>
-    <div class="bottom-nav">
+    <nav class="bottom-nav">
         <a href="{% url 'index' %}" class="nav-item"><i class="fas fa-home"></i></a>
         <a href="{% url 'rankings' %}" class="nav-item"><i class="fas fa-trophy"></i></a>
         <a href="{% url 'analytics' %}" class="nav-item"><i class="fas fa-chart-pie"></i></a>
@@ -61,7 +61,7 @@
         <a href="{% url 'notifications' %}" class="nav-item"><i class="fas fa-bell"></i>{% if unread_count > 0 %}<span class="badge">{{ unread_count }}</span>{% endif %}</a>
         <a href="{% url 'index' %}#post-form" class="nav-item"><i class="fas fa-pen" style="color:#1877f2;"></i></a>
         <button type="button" class="logout-btn" onclick="document.getElementById('bottom-logout-form').submit();"><i class="fas fa-right-from-bracket"></i></button>
-    </div>
+    </nav>
     <script>
         const form = document.getElementById("gacha-form");
         if (form) {

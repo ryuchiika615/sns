@@ -34,11 +34,6 @@ h2,h3{margin:0 0 12px}
 .pill.study{color:#60a5fa}
 .pill.exchange{color:#fbc02d}
 
-/* ===== Quick Grid ===== */
-.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:15px}
-.quick-link{background:#fff;border-radius:10px;padding:12px 8px;text-align:center;color:#111827;text-decoration:none;font-weight:bold;box-shadow:0 1px 2px rgba(0,0,0,0.06)}
-.quick-link i{display:block;color:#1877f2;font-size:1.25rem;margin-bottom:6px}
-
 /* ===== Forms ===== */
 input,textarea,select{width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:10px;box-sizing:border-box;font-size:.95rem}
 textarea{font-family:sans-serif}

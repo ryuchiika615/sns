@@ -17,9 +17,11 @@
         <div style="display:flex; align-items:center; gap:15px;">
             <i class="fas fa-bars menu-icon" onclick="openNav()"></i>
         </div>
-        <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
-            <span style="background:#333; padding:5px 10px; border-radius:15px; font-weight:bold; font-size:.78rem; color:#60a5fa;"><i class="fas fa-gem"></i> ガチャ {{ user.profile.points }} pt</span>
-            <span style="background:#333; padding:5px 10px; border-radius:15px; font-weight:bold; font-size:.78rem; color:#fbc02d;"><i class="fas fa-coins"></i> 交換 {{ user.profile.exchange_points }} pt</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <span style="background:#333; padding:5px 10px; border-radius:15px; font-weight:bold; font-size:.78rem; color:#60a5fa;"><i class="fas fa-gem"></i> {{ user.profile.points }}</span>
+            <a href="{% url 'user_profile' user.username %}">
+                {% if user.profile.icon %}<img src="{{ user.profile.icon }}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;background:white;">{% elif user.profile.icon_file %}<img src="{{ user.profile.icon_file.url }}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;background:white;">{% else %}<i class="fas fa-user-circle" style="font-size:40px;color:#ccc;background:white;border-radius:50%;"></i>{% endif %}
+            </a>
         </div>
     </div>
 
@@ -38,12 +40,6 @@
     <div id="overlay" class="overlay" onclick="closeNav()"></div>
 
     <div class="container">
-        <div class="quick-grid">
-            <a class="quick-link" href="{% url 'rankings' %}"><i class="fas fa-trophy"></i>ランキング</a>
-            <a class="quick-link" href="{% url 'analytics' %}"><i class="fas fa-chart-simple"></i>期間集計</a>
-            <a class="quick-link" href="{% url 'gacha' %}"><i class="fas fa-wand-magic-sparkles"></i>ガチャ</a>
-        </div>
-
         {% if has_target %}
         <div class="card" style="background:linear-gradient(45deg,#111,#222); color:white; text-align:center; border:1px solid #fbc02d;">
             <h4 style="margin:0 0 8px; color:#fbc02d;"><i class="fas fa-bullseye"></i> {{ target_date|date:"Y年m月d日" }} までの目標</h4>
@@ -142,7 +138,7 @@
     </div>
 
     <form action="{% url 'logout' %}" method="POST" id="bottom-logout-form" style="display:none;">{% csrf_token %}</form>
-    <div class="bottom-nav">
+    <nav class="bottom-nav">
         <a href="{% url 'index' %}" class="nav-item active"><i class="fas fa-home"></i></a>
         <a href="{% url 'rankings' %}" class="nav-item"><i class="fas fa-trophy"></i></a>
         <a href="{% url 'analytics' %}" class="nav-item"><i class="fas fa-chart-pie"></i></a>
@@ -151,7 +147,7 @@
         <a href="{% url 'notifications' %}" class="nav-item"><i class="fas fa-bell"></i>{% if unread_count > 0 %}<span class="badge">{{ unread_count }}</span>{% endif %}</a>
         <a href="#post-form" class="nav-item" id="write-btn"><i class="fas fa-pen" style="color:#1877f2;"></i></a>
         <button type="button" class="logout-btn" onclick="document.getElementById('bottom-logout-form').submit();"><i class="fas fa-right-from-bracket"></i></button>
-    </div>
+    </nav>
 
     <script>
         function openNav(){document.getElementById("sidebar").style.width="250px";document.getElementById("overlay").style.display="block";}
