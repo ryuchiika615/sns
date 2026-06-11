@@ -4,16 +4,12 @@ body{font-family:sans-serif;background:#f0f2f5;margin:0;padding-bottom:80px;colo
 a{color:#1877f2;text-decoration:none}
 img{max-width:100%}
 
-/* ===== Header ===== */
-.header{background:#1a1a1a;padding:15px 20px;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;color:white}
-.header strong{font-size:1.1rem}
-
 /* ===== Bottom Navigation ===== */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;display:flex;justify-content:space-around;padding:12px 0;z-index:1000;border-top:1px solid #333}
-.nav-item,.logout-btn{color:#aaa;text-decoration:none;font-size:1.35rem;position:relative;background:none;border:none;padding:6px;cursor:pointer}
-.logout-btn{color:#ff6b6b}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;display:flex;align-items:center;justify-content:space-around;padding:8px 4px;z-index:1000;border-top:1px solid #333;gap:2px}
+.nav-item{color:#aaa;text-decoration:none;font-size:1.25rem;position:relative;background:none;border:none;padding:4px 6px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav-item img{width:32px;height:32px;border-radius:50%;object-fit:cover;display:block}
 .nav-item.active{color:white}
-.badge{position:absolute;top:-5px;right:-8px;background:#e0245e;color:white;border-radius:50%;padding:2px 6px;font-size:0.7rem;font-weight:bold;border:2px solid #1a1a1a}
+.badge{position:absolute;top:-2px;right:-4px;background:#e0245e;color:white;border-radius:50%;padding:1px 5px;font-size:0.65rem;font-weight:bold;border:2px solid #1a1a1a}
 
 /* ===== Sidebar ===== */
 .sidebar{height:100%;width:0;position:fixed;z-index:2000;top:0;left:0;background-color:#1a1a1a;overflow-x:hidden;transition:0.3s;padding-top:60px;box-shadow:2px 0 5px rgba(0,0,0,0.5)}

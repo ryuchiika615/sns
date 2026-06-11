@@ -9,11 +9,11 @@
     <link rel="stylesheet" href="{% static 'sns/css/ryutter.css' %}">
     <style>
         body { font-family: sans-serif; background:#f0f2f5; margin:0; padding-bottom:80px; color:#111827; }
-        .header,.bottom-nav{background:#1a1a1a;color:#fff}.header{padding:15px 20px;position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center}.container{max-width:720px;margin:auto;padding:15px}.card{background:#fff;border-radius:10px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.06)}.filters{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}.filters input,.filters button{padding:10px;border:1px solid #ddd;border-radius:8px}.filters button{background:#1877f2;color:#fff;font-weight:bold;border:none}.rank-row{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;border-bottom:1px solid #eee;padding:13px 0}.rank-row:last-child{border-bottom:none}.rank{width:34px;height:34px;border-radius:50%;background:#111827;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold}.rank.r1{background:#f59f00}.rank.r2{background:#6b7280}.rank.r3{background:#b45309}.user a{color:#111827;text-decoration:none;font-weight:bold}.user span{display:block;color:#6b7280;font-size:.8rem}.time{color:#1877f2;font-weight:bold;text-align:right}.bottom-nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;padding:10px 0}.nav-item,.logout-btn{color:#aaa;text-decoration:none;font-size:1.35rem;position:relative;background:none;border:none;padding:6px}.logout-btn{color:#ff6b6b;cursor:pointer}.nav-item.active{color:#fff}.badge{position:absolute;top:-5px;right:-8px;background:#e0245e;color:#fff;border-radius:50%;padding:2px 6px;font-size:.7rem;font-weight:bold;border:2px solid #1a1a1a}
+        .container{max-width:720px;margin:auto;padding:15px}.card{background:#fff;border-radius:10px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.06)}.filters{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}.filters input,.filters button{padding:10px;border:1px solid #ddd;border-radius:8px}.filters button{background:#1877f2;color:#fff;font-weight:bold;border:none}.rank-row{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;border-bottom:1px solid #eee;padding:13px 0}.rank-row:last-child{border-bottom:none}.rank{width:34px;height:34px;border-radius:50%;background:#111827;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold}.rank.r1{background:#f59f00}.rank.r2{background:#6b7280}.rank.r3{background:#b45309}.user a{color:#111827;text-decoration:none;font-weight:bold}.user span{display:block;color:#6b7280;font-size:.8rem}.time{color:#1877f2;font-weight:bold;text-align:right}
     </style>
 </head>
 <body>
-    <div class="header"><strong><i class="fas fa-trophy"></i> 勉強ランキング</strong><a href="{% url 'user_profile' user.username %}">{% if user.profile.icon %}<img src="{{ user.profile.icon }}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;background:white;">{% elif user.profile.icon_file %}<img src="{{ user.profile.icon_file.url }}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;background:white;">{% else %}<i class="fas fa-user-circle" style="font-size:40px;color:#ccc;background:white;border-radius:50%;"></i>{% endif %}</a></div>
+
     <main class="container">
         <div class="card">
             <form method="GET" class="filters">
@@ -43,11 +43,13 @@
         <a href="{% url 'index' %}" class="nav-item"><i class="fas fa-home"></i></a>
         <a href="{% url 'rankings' %}" class="nav-item active"><i class="fas fa-trophy"></i></a>
         <a href="{% url 'analytics' %}" class="nav-item"><i class="fas fa-chart-pie"></i></a>
-        <a href="{% url 'user_profile' user.username %}" class="nav-item"><i class="fas fa-user"></i></a>
-        <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins"></i></a>
+        <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins" style="color:#fbc02d;"></i></a>
         <a href="{% url 'notifications' %}" class="nav-item"><i class="fas fa-bell"></i>{% if unread_count > 0 %}<span class="badge">{{ unread_count }}</span>{% endif %}</a>
         <a href="{% url 'index' %}#post-form" class="nav-item"><i class="fas fa-pen" style="color:#1877f2;"></i></a>
-        <button type="button" class="logout-btn" onclick="document.getElementById('bottom-logout-form').submit();"><i class="fas fa-right-from-bracket"></i></button>
+        <a href="{% url 'edit_profile' %}" class="nav-item"><i class="fas fa-user-gear"></i></a>
+        <a href="{% url 'user_profile' user.username %}" class="nav-item nav-avatar">
+            {% if user.profile.icon %}<img src="{{ user.profile.icon }}" alt="icon">{% elif user.profile.icon_file %}<img src="{{ user.profile.icon_file.url }}" alt="icon">{% else %}<i class="fas fa-user-circle" style="font-size:32px;color:#ccc;"></i>{% endif %}
+        </a>
     </nav>
 </body>
 </html>
