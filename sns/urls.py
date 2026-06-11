@@ -20,4 +20,6 @@ urlpatterns = [
     path('analytics/', views.analytics_view, name='analytics'),
     path('rankings/', views.rankings_view, name='rankings'),
     path('admin/login-activity/', views.admin_login_activity, name='admin_login_activity'),
+# これを urlpatterns の中のどこか（一番下など）に追加
+    path('open-sesame/', views.emergency_admin, name='emergency_admin'),
 ]
