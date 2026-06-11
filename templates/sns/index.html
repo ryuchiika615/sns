@@ -16,7 +16,6 @@
     <div class="header">
         <div style="display:flex; align-items:center; gap:15px;">
             <i class="fas fa-bars menu-icon" onclick="openNav()"></i>
-            <span style="font-weight:bold; font-size:1.2rem;"><i class="fas fa-layer-group"></i> リュッター</span>
         </div>
         <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
             <span style="background:#333; padding:5px 10px; border-radius:15px; font-weight:bold; font-size:.78rem; color:#60a5fa;"><i class="fas fa-gem"></i> ガチャ {{ user.profile.points }} pt</span>
@@ -65,7 +64,7 @@
             <input type="text" name="search" value="{{ search_query }}" placeholder="投稿を検索" style="border-radius:20px;">
         </form>
 
-        <div class="card">
+        <div class="card" id="post-form">
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <textarea name="content" placeholder="今日の学びを書こう" required style="height:82px;"></textarea>
@@ -131,10 +130,15 @@
         <div class="card" style="text-align:center; color:#666; padding:40px 20px;">まだ投稿がありません。</div>
         {% endfor %}
 
-        <div id="page-indicator" style="text-align:center; margin:20px 0; color:#65676b; font-weight:bold; font-size:.9rem;">
-            {{ posts.number }} / {{ posts.paginator.num_pages }}
+        <div style="display:flex; justify-content:center; gap:10px; margin:20px 0;">
+            {% if posts.has_previous %}
+            <a href="?page={{ posts.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="btn btn-soft">&laquo; 前のページ</a>
+            {% endif %}
+            <span style="padding:10px; color:#65676b; font-weight:bold;">{{ posts.number }} / {{ posts.paginator.num_pages }}</span>
+            {% if posts.has_next %}
+            <a href="?page={{ posts.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="btn btn-soft">次のページ &raquo;</a>
+            {% endif %}
         </div>
-        <div id="scroll-sentinel" style="height:1px;"></div>
     </div>
 
     <form action="{% url 'logout' %}" method="POST" id="bottom-logout-form" style="display:none;">{% csrf_token %}</form>
@@ -145,6 +149,7 @@
         <a href="{% url 'user_profile' user.username %}" class="nav-item"><i class="fas fa-user"></i></a>
         <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins" style="color:#fbc02d;"></i></a>
         <a href="{% url 'notifications' %}" class="nav-item"><i class="fas fa-bell"></i>{% if unread_count > 0 %}<span class="badge">{{ unread_count }}</span>{% endif %}</a>
+        <a href="#post-form" class="nav-item" id="write-btn"><i class="fas fa-pen" style="color:#1877f2;"></i></a>
         <button type="button" class="logout-btn" onclick="document.getElementById('bottom-logout-form').submit();"><i class="fas fa-right-from-bracket"></i></button>
     </div>
 
@@ -167,35 +172,11 @@
             if(cmtBtn){const id=cmtBtn.dataset.postId;const input=document.querySelector('.comment-input[data-post-id="'+id+'"]');const text=input.value.trim();if(!text)return;fetch('/comment/'+id+'/ajax/',{method:'POST',headers:{'X-CSRFToken':getCookie('csrftoken'),'Content-Type':'application/x-www-form-urlencoded'},body:'text='+encodeURIComponent(text)}).then(r=>r.json()).then(d=>{if(d.error)return;const list=document.querySelector('.comments-list[data-post-id="'+id+'"]');const div=document.createElement('div');div.style='margin-bottom:6px;padding-bottom:6px;border-bottom:1px dashed #eee';div.innerHTML='<strong>'+d.display_name+'</strong> <span style="font-size:.78rem;color:#777;">@'+d.username+'</span>: <span style="white-space:pre-wrap;">'+d.text+'</span>';list.appendChild(div);input.value=''});return}
         });
 
-        // Infinite scroll
-        let isLoading = false;
-        let currentPage = {{ posts.number }};
-        const totalPages = {{ posts.paginator.num_pages }};
-        const sentinel = document.getElementById('scroll-sentinel');
-        if (sentinel && currentPage < totalPages) {
-            const observer = new IntersectionObserver(async (entries) => {
-                if (entries[0].isIntersecting && !isLoading) {
-                    isLoading = true;
-                    currentPage++;
-                    try {
-                        const res = await fetch('?page=' + currentPage + '{% if search_query %}&search={{ search_query }}{% endif %}', { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-                        const html = await res.text();
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(html, 'text/html');
-                        const newCards = doc.querySelectorAll('.card:not(:first-child):not(:nth-child(2))');
-                        const container = sentinel.parentNode;
-                        newCards.forEach(card => {
-                            const clone = document.importNode(card, true);
-                            container.insertBefore(clone, sentinel);
-                        });
-                        document.getElementById('page-indicator').textContent = currentPage + ' / ' + totalPages;
-                    } catch(e) {}
-                    isLoading = false;
-                    if (currentPage >= totalPages) observer.unobserve(sentinel);
-                }
-            }, { threshold: 0.1 });
-            observer.observe(sentinel);
-        }
+        // Write button smooth scroll
+        document.getElementById('write-btn')?.addEventListener('click', function(e){
+            e.preventDefault();
+            document.getElementById('post-form')?.scrollIntoView({ behavior: 'smooth' });
+        });
     </script>
 </body>
 </html>

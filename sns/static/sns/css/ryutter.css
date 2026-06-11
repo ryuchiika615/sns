@@ -81,17 +81,7 @@ textarea{font-family:sans-serif}
 .comment-section{background:#f8f9fa;border-radius:8px;padding:10px;margin-top:10px;font-size:0.85rem}
 .error-msg{background:#fee2e2;color:#991b1b;border:1px solid #fecaca;padding:10px;border-radius:8px;margin-bottom:12px}
 
-/* ===== Profile Avatar (large) ===== */
-.avatar-wrap{position:relative;display:inline-grid;place-items:center;width:120px;height:120px;margin:4px auto 0}
-.avatar{width:96px;height:96px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.15);position:relative;z-index:5;background:white}
-.avatar-wrap:before{content:'';position:absolute;inset:7px;border-radius:50%;border:3px solid transparent;z-index:3;pointer-events:none}
-.avatar-wrap:after{content:'';position:absolute;width:140px;height:56px;top:32px;left:-10px;z-index:1;opacity:0;pointer-events:none}
-.avatar-wrap.av-SSR:before{border-color:#ffd84d;border-style:dashed;box-shadow:0 0 18px rgba(255,216,77,.8)}
-.avatar-wrap.av-SSR:after{opacity:1;background:linear-gradient(90deg,#ff4f94 0 27%,transparent 27% 73%,#ff4f94 73%);clip-path:polygon(0 50%,27% 0,27% 100%,73% 100%,73% 0,100% 50%,73% 100%,27% 100%)}
-.avatar-wrap.av-UR:before{border-color:#38bdf8;box-shadow:0 0 22px #38bdf8}
-.avatar-wrap.av-UR:after{opacity:1;background:linear-gradient(90deg,#7b2ff7 0 27%,transparent 27% 73%,#00d2ff 73%);clip-path:polygon(0 50%,27% 0,27% 100%,73% 100%,73% 0,100% 50%,73% 100%,27% 100%)}
-.avatar-wrap.av-LR:before{border-color:#f43f5e;border-style:dashed;box-shadow:0 0 24px #f43f5e,0 0 34px #fde047;animation:avatarPulse 1.8s ease-in-out infinite alternate}
-.avatar-wrap.av-LR:after{opacity:1;background:linear-gradient(90deg,#111 0 27%,transparent 27% 73%,#fde047 73%);clip-path:polygon(0 50%,27% 0,27% 100%,73% 100%,73% 0,100% 50%,73% 100%,27% 100%)}
+/* ===== Profile Avatar (large - unused, now .profile-avatar in template) ===== */
 
 /* ===== Tabs ===== */
 .tabs{display:flex;gap:0;border-bottom:1px solid #e5e7eb;margin-bottom:16px}
@@ -153,4 +143,4 @@ textarea{font-family:sans-serif}
 
 /* ===== Responsive ===== */
 @media (max-width:520px){.quick-grid{grid-template-columns:1fr}.row{grid-template-columns:1fr}.filters{grid-template-columns:1fr}}
-@media (max-width:480px){.avatar-wrap{width:100px;height:100px}.avatar{width:80px;height:80px}.avatar-placeholder{font-size:80px}.avatar-wrap:after{width:120px;height:48px;top:26px;left:-10px}.bottom-nav{padding:8px 0}.nav-item,.logout-btn{font-size:1.2rem}}
+@media (max-width:480px){.bottom-nav{padding:8px 0}.nav-item,.logout-btn{font-size:1.2rem}}

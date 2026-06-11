@@ -149,6 +149,7 @@
         <a href="{% url 'user_profile' user.username %}" class="nav-item active"><i class="fas fa-user"></i></a>
         <a href="{% url 'gacha' %}" class="nav-item"><i class="fas fa-coins"></i></a>
         <a href="{% url 'notifications' %}" class="nav-item"><i class="fas fa-bell"></i>{% if unread_count > 0 %}<span class="badge">{{ unread_count }}</span>{% endif %}</a>
+        <a href="{% url 'index' %}#post-form" class="nav-item"><i class="fas fa-pen" style="color:#1877f2;"></i></a>
         <button type="button" class="logout-btn" onclick="document.getElementById('bottom-logout-form').submit();"><i class="fas fa-right-from-bracket"></i></button>
     </div>
 </body>
