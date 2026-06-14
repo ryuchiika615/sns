@@ -26,48 +26,6 @@ def health_check(request):
     return HttpResponse("ok", content_type="text/plain")
 
 
-NAMES_LIST = ["リュウ", "ミナ", "ソラ", "ハル", "ユイ", "レン", "アオ", "ナギ"]
-WORDS_LIST = [
-    "限界突破の",
-    "集中の",
-    "知識を喰らう",
-    "夜明けの",
-    "継続する",
-    "答案を砕く",
-    "ノートの守護者",
-    "暗記特化",
-    "計算疾走",
-    "眠気討伐",
-    "努力型",
-    "図書館の",
-]
-AVATAR_PREFIXES = ["星屑の", "深夜の", "黄金の", "透明な", "覚醒した", "ふわふわ"]
-AVATAR_NOUNS = ["翼", "魔眼", "オーラ", "王冠", "守護獣", "勉強ねこ", "集中うさぎ"]
-LEGENDARY_PREFIXES = [
-    "星海を裂く",
-    "終焉を照らす",
-    "天穹を統べる",
-    "不可視の",
-    "黎明の",
-]
-LEGENDARY_NOUNS = ["観測者", "時間術師", "学習賢者", "記憶の王冠", "答案破壊者"]
-CUTE_PREFIXES = ["もちもち", "きらきら", "ふわふわ", "ほめ上手な", "ゆるかわ"]
-CUTE_NOUNS = [
-    "勉強ねこ",
-    "集中うさぎ",
-    "ノート妖精",
-    "ごほうびパンダ",
-    "暗記ハムスター",
-]
-ANIMAL_PREFIXES = ["疾走する", "夜更けの", "図書館の", "森の", "黄金の"]
-ANIMAL_NOUNS = [
-    "きつね先生",
-    "ふくろう博士",
-    "こぐま隊長",
-    "しばいぬ賢者",
-    "ペンギン参謀",
-]
-
 NAMES_LIST = [
     "ゆいちゃん",
     "たいき",
@@ -267,6 +225,7 @@ NOUNS_LIST = [
     "ブロンズ",
     "インフルエンサー",
 ]
+
 AVATAR_PREFIXES = ["星屑の", "深夜の", "黒鉄の", "透明な", "覚醒した", "まばゆい"]
 AVATAR_NOUNS = ["翼", "魔導書", "オーラ", "王冠", "守護印", "勉強ねこ", "集中うさぎ"]
 LEGENDARY_PREFIXES = [
@@ -358,8 +317,6 @@ RARITY_BY_VALUE = {value: key for key, value in RARITY_ORDER.items()}
 SELL_VALUES = {"N": 1, "R": 4, "SR": 15, "SSR": 60, "UR": 180, "LR": 650}
 BUY_COSTS = {"N": 5, "R": 15, "SR": 60, "SSR": 240, "UR": 720, "LR": 2600}
 RARITY_LABELS = {"N": "N", "R": "R", "SR": "SR", "SSR": "SSR", "UR": "UR", "LR": "LR"}
-GACHA_COST_PER_PULL = 10
-GACHA_COOLDOWN_SECONDS = 2
 
 
 def file_to_base64(file):
@@ -479,61 +436,6 @@ def shop_item_name(rarity):
     if random.choice([True, False]):
         return f"{random.choice(NAMES_LIST)}{random.choice(WORDS_LIST)}"
     return f"{random.choice(WORDS_LIST)}{random.choice(NAMES_LIST)}"
-
-
-def gacha_title_name(rarity):
-    if rarity == "N":
-        return random.choice(NAMES_LIST + NOUNS_LIST[:10] + WORDS_LIST[:20])
-    if rarity == "R":
-        return random.choice(WORDS_LIST[20:65] + NOUNS_LIST[10:18])
-    if rarity == "SR":
-        return random.choice(WORDS_LIST[65:100] + NOUNS_LIST[18:26])
-    if rarity == "SSR":
-        return random.choice(
-            WORDS_LIST[100:125]
-            + NOUNS_LIST[26:]
-            + [f"{random.choice(WORDS_LIST[:60])}{random.choice(NAMES_LIST)}"]
-        )
-    if rarity == "UR":
-        return random.choice(
-            WORDS_LIST[125:]
-            + ["終焉を照らす観測者", "天空を統べる学習賢者", "不可視の時間術師"]
-        )
-    return random.choice(
-        ["黒炎の記憶の王冠", "星海を裂く答案破壊者", "終焉を照らす時間術師"]
-        + WORDS_LIST[-20:]
-    )
-
-
-def roll_gacha_item():
-    rand = random.randint(1, 10000000)
-    if rand == 1:
-        rarity = "LR"
-    elif rand <= 1200:
-        rarity = "UR"
-    elif rand <= 70000:
-        rarity = "SSR"
-    elif rand <= 450000:
-        rarity = "SR"
-    elif rand <= 2000000:
-        rarity = "R"
-    else:
-        rarity = "N"
-
-    if random.random() < 0.38:
-        generated_name = (
-            f"【アイコン】{random.choice(ANIMAL_PREFIXES)}{random.choice(ANIMAL_NOUNS)}"
-        )
-    elif random.random() < 0.38:
-        generated_name = (
-            f"【アイコン】{random.choice(AVATAR_PREFIXES)}{random.choice(AVATAR_NOUNS)}"
-        )
-    else:
-        generated_name = gacha_title_name(rarity)
-
-    return GachaItem.objects.get_or_create(
-        name=generated_name, defaults={"rarity": rarity}
-    )[0]
 
 
 def sell_items(profile, items):
@@ -656,18 +558,58 @@ def index(request):
             study_date = (
                 parse_date(request.POST.get("study_date", "")) or timezone.localdate()
             )
+
+            # 🌟 画像を受け取る処理（安全な形に調整）
             uploaded_image = request.FILES.get("image")
+
             post = Post.objects.create(
                 user=request.user,
                 content=content,
                 study_minutes=minutes,
-                image=file_to_base64(uploaded_image),
+                image=file_to_base64(uploaded_image) if uploaded_image else None,
                 image_file=uploaded_image,
                 subject=subject,
             )
             set_post_date(post, study_date)
-            profile.points += minutes
-            profile.save(update_fields=["points"])
+
+            # 🌟 ズル防止！連続投稿ボーナスシステム
+            real_today = timezone.localdate()
+            last_date = getattr(profile, "last_post_date", None)
+            streak = getattr(profile, "consecutive_post_days", 0)
+
+            # 最後に投稿したのが「現実の今日」じゃなければ判定
+            if last_date != real_today:
+                if last_date == real_today - timedelta(days=1):
+                    # 昨日も投稿していたら連続記録アップ
+                    streak += 1
+                    if streak > 7:
+                        streak = 1  # 7日超えたら1日目に戻るループ
+                else:
+                    # 途切れたら1日にリセット
+                    streak = 1
+
+                # ポイント計算: 2の(連続日数-1)乗 (1, 2, 4, 8, 16, 32, 64)
+                bonus_points = 2 ** (streak - 1)
+
+                profile.points += minutes
+                profile.exchange_points = (
+                    getattr(profile, "exchange_points", 0) + bonus_points
+                )
+                profile.consecutive_post_days = streak
+                profile.last_post_date = real_today
+                profile.save(
+                    update_fields=[
+                        "points",
+                        "exchange_points",
+                        "consecutive_post_days",
+                        "last_post_date",
+                    ]
+                )
+            else:
+                # 1日に何回も投稿した場合は、普通のポイントだけ追加
+                profile.points += minutes
+                profile.save(update_fields=["points"])
+
         return redirect("index")
 
     base_query = Post.objects.select_related("user", "user__profile").prefetch_related(
@@ -763,71 +705,16 @@ def index(request):
     )
 
 
+# 🌟 ガチャ画面を「ログインボーナス画面」に変更
 @login_required
 def gacha(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
-    result_items = []
-    error = None
-    summary = None
 
-    if request.method == "POST":
-        now_ts = timezone.now().timestamp()
-        last_gacha_ts = request.session.get("last_gacha_ts", 0)
-        if now_ts - last_gacha_ts < GACHA_COOLDOWN_SECONDS:
-            error = "?????????????????????????????"
-            return render(
-                request,
-                "sns/gacha.html",
-                {
-                    "result_items": result_items,
-                    "points": profile.points,
-                    "error": error,
-                    "summary": summary,
-                    "unread_count": Notification.objects.filter(
-                        recipient=request.user, is_read=False
-                    ).count(),
-                },
-            )
-
-        if "gacha_100" in request.POST:
-            pull_count = 100
-        elif "gacha_10" in request.POST:
-            pull_count = 10
-        else:
-            pull_count = 1
-
-        cost = pull_count * GACHA_COST_PER_PULL
-        if profile.points >= cost:
-            request.session["last_gacha_ts"] = now_ts
-            profile.points -= cost
-            rarity_counts = {
-                rarity: 0 for rarity in ["N", "R", "SR", "SSR", "UR", "LR"]
-            }
-            for _ in range(pull_count):
-                result_item = roll_gacha_item()
-                result_items.append(result_item)
-                rarity_counts[result_item.rarity] = (
-                    rarity_counts.get(result_item.rarity, 0) + 1
-                )
-            if result_items:
-                profile.items.add(*result_items)
-            profile.save(update_fields=["points"])
-            summary = [
-                {"rarity": rarity, "count": rarity_counts[rarity]}
-                for rarity in ["LR", "UR", "SSR", "SR", "R", "N"]
-                if rarity_counts[rarity]
-            ]
-        else:
-            error = "????????????????????????????"
-
+    # ガチャの抽選処理は完全に削除し、単にボーナス画面を表示するだけ！
     return render(
         request,
         "sns/gacha.html",
         {
-            "result_items": result_items,
-            "points": profile.points,
-            "error": error,
-            "summary": summary,
             "unread_count": Notification.objects.filter(
                 recipient=request.user, is_read=False
             ).count(),
@@ -1116,7 +1003,6 @@ def comment_ajax(request, post_id):
     return JsonResponse({"error": "empty"}, status=400)
 
 
-# Keep old like_post for backward compatibility
 @login_required
 def like_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
@@ -1355,8 +1241,6 @@ def admin_login_activity(request):
 
 class CustomLoginView(LoginView):
     def get_success_url(self):
-        # もしログインした人がスーパーユーザー（管理者）なら管理画面へ！
         if self.request.user.is_superuser:
             return "/admin/"
-        # 一般ユーザーならいつものホーム画面へ！
         return reverse_lazy("index")

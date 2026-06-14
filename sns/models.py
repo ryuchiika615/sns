@@ -52,6 +52,11 @@ class Profile(models.Model):
 
     points = models.IntegerField("ポイント", default=0)
     exchange_points = models.IntegerField("交換ポイント", default=0)
+    # 🌟 追加：ログイン（連続投稿）ボーナス用の記録
+    consecutive_post_days = models.IntegerField(default=0)  # 連続投稿日数
+    last_post_date = models.DateField(
+        null=True, blank=True
+    )  # 最後に投稿した「現実の」日付
     items = models.ManyToManyField(GachaItem, blank=True, verbose_name="所持アイテム")
     current_title = models.CharField(
         "現在の称号", max_length=100, default="新人エンジニア", blank=True
