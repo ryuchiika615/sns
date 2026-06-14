@@ -4,117 +4,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ガチャ - リュッター</title>
+    <title>ログインボーナス - リュッター</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'sns/css/ryutter.css' %}">
     <style>
-        body{font-family:sans-serif;background:#151515;color:white;margin:0;padding-bottom:90px}.header{background:#111;padding:15px 20px;position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;border-bottom:1px solid #333}.container{max-width:620px;margin:28px auto;padding:0 15px}.gacha-container{background:#242424;padding:24px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.45);border:1px solid #fbc02d;text-align:center;overflow:hidden;position:relative}.gacha-container:before{content:"";position:absolute;inset:-60px;background:conic-gradient(from 90deg,transparent,#fbc02d22,transparent,#38bdf822,transparent);animation:spin-bg 12s linear infinite;pointer-events:none}.gacha-inner{position:relative}.points{background:#fbc02d;color:#000;padding:5px 15px;border-radius:20px;font-weight:bold;display:inline-block;margin-bottom:10px}.rates{color:#bbb;font-size:.82rem;line-height:1.6}.result-box{margin:18px 0;padding:14px;background:#333;border-radius:10px;border:1px dashed #555;max-height:300px;overflow-y:auto}.summary{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:12px}.summary-chip{background:#111;border:1px solid #444;border-radius:999px;padding:6px 10px;font-weight:bold}.result-grid{display:grid;gap:10px}.result-item-card{background:#1f1f1f;border-radius:8px;padding:12px;border:1px solid #444;position:relative;overflow:hidden}.rarity-badge{font-size:.9rem;font-weight:bold;margin-bottom:5px;display:inline-block;padding:3px 9px;border-radius:5px}.LR{background:linear-gradient(135deg,#09090b,#f43f5e,#fde047,#09090b);color:#fff;box-shadow:0 0 22px rgba(244,63,94,.8),0 0 36px rgba(253,224,71,.45);animation:lrBeat 1.5s ease-in-out infinite alternate}.UR{background:linear-gradient(135deg,#00d2ff,#7b2ff7,#ff4fd8);color:#fff;box-shadow:0 0 18px rgba(123,47,247,.7);animation:urShift 2.2s linear infinite}.SSR{background:linear-gradient(135deg,#ffe259,#ff7a18,#facc15);color:#fff;box-shadow:0 0 16px rgba(250,204,21,.65);animation:ssrPulse 1.8s ease-in-out infinite alternate}.SR{background:#9c27b0;color:#fff}.R{background:#2196f3;color:#fff}.N{background:#666;color:#fff}.result-item-card.has-aura:after{content:"";position:absolute;inset:-30%;background:radial-gradient(circle,rgba(255,255,255,.22),transparent 55%);animation:shine 2.5s linear infinite;pointer-events:none}.btn-group{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:15px}.spin-btn{background:#fbc02d;color:#000;border:none;padding:15px;border-radius:10px;font-size:1rem;font-weight:bold;cursor:pointer;box-shadow:0 4px 0 #c49000}.spin-btn-10{background:#ff4757;color:#fff;box-shadow:0 4px 0 #bf1f2f}.spin-btn-100{background:#38bdf8;color:#04111d;box-shadow:0 4px 0 #0e7490}.spin-btn:disabled{background:#555;color:#888;box-shadow:none;cursor:not-allowed}.link-btn{display:inline-flex;align-items:center;gap:6px;margin-top:14px;color:#111;background:#fff;text-decoration:none;padding:10px 14px;border-radius:8px;font-weight:bold}.error-msg{color:#ff6b6b;font-weight:bold}
-        @keyframes shine{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}@keyframes spin-bg{to{transform:rotate(360deg)}}@keyframes ssrPulse{from{filter:saturate(1)}to{filter:saturate(1.35) brightness(1.08)}}@keyframes urShift{to{filter:hue-rotate(360deg)}}@keyframes lrBeat{from{transform:scale(.98)}to{transform:scale(1.04)}}@media(max-width:520px){.btn-group{grid-template-columns:1fr}}
+        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 75px; color: #111827; }
+        .lytter-home-banner { position: relative; background: linear-gradient(to bottom, #0f172a, #1e3a8a); border-bottom: 3px solid #d4af37; text-align: center; padding: 15px 0 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .banner-title { font-family: serif; font-size: 1.8rem; color: #e2c073; letter-spacing: 2px; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
-        /* 🟢 新ナビゲーションシステム */
+        .container { max-width: 620px; margin: 20px auto; padding: 0 15px; }
+        .bonus-card { background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; border: 1px solid #e5e7eb; }
+        .bonus-header { background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: white; padding: 20px; text-align: center; }
+        .bonus-header h2 { margin: 0 0 10px 0; font-size: 1.5rem; letter-spacing: 1px; }
+        .streak-count { font-size: 2.5rem; font-weight: bold; color: #fde047; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+
+        .bonus-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 20px; background: #f8fafc; }
+        .day-box { background: #fff; border: 2px solid #e2e8f0; border-radius: 8px; padding: 15px 5px; text-align: center; position: relative; }
+        .day-box.claimed { border-color: #4ade80; background: #f0fdf4; }
+        .day-box.current { border-color: #3b82f6; box-shadow: 0 0 10px rgba(59,130,246,0.3); transform: scale(1.05); }
+        .day-box.day7 { grid-column: span 4; background: linear-gradient(135deg, #fffbeb, #fef08a); border-color: #fde047; }
+
+        .day-label { font-size: 0.8rem; font-weight: bold; color: #64748b; margin-bottom: 5px; }
+        .pt-val { font-size: 1.2rem; font-weight: 900; color: #1e293b; }
+        .day7 .pt-val { font-size: 1.8rem; color: #b45309; }
+
+        .check-mark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #4ade80; font-size: 2.5rem; opacity: 0.7; }
+
+        .info-text { padding: 15px 20px; font-size: 0.9rem; color: #64748b; line-height: 1.6; text-align: center; border-top: 1px solid #e2e8f0; }
+
+        /* ナビゲーションバー共通設定 */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #111; display: flex; justify-content: space-around; align-items: center; padding: 12px 0 20px 0; border-top: 1px solid #333; z-index: 9999; }
         .bottom-nav .nav-item { color: #fff; text-decoration: none; font-size: 1.5rem; position: relative; }
         .bottom-nav .nav-item.active { color: #1877f2; }
         .nav-avatar img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #fff; }
-        .sidebar { height: 100%; width: 0; position: fixed; z-index: 10000; top: 0; left: 0; background-color: #111; overflow-x: hidden; transition: 0.3s; padding-top: 60px; box-shadow: 2px 0 5px rgba(0,0,0,0.5); }
-        .sidebar a { padding: 15px 25px; text-decoration: none; font-size: 1.2rem; color: #ddd; display: block; transition: 0.3s; font-weight: bold; }
-        .sidebar a i { margin-right: 15px; width: 25px; text-align: center; }
-        .sidebar a:hover { color: #fff; background-color: #333; }
-        .sidebar .closebtn { position: absolute; top: 0; right: 15px; font-size: 36px; margin-left: 50px; padding: 10px; }
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 9999; }
-        .top-hamburger { position: absolute; top: 15px; left: 15px; font-size: 1.5rem; color: #333; z-index: 9000; cursor: pointer; background: rgba(255,255,255,0.9); border: none; width: 45px; height: 45px; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; justify-content: center; align-items: center; }
-        header, .top-nav { display: none !important; }
     </style>
 </head>
 <body>
-    <!-- 🟢 左上のハンバーガーボタン -->
-    <button type="button" class="top-hamburger" onclick="openNav()"><i class="fas fa-bars"></i></button>
+    <header class="lytter-home-banner">
+        <h1 class="banner-title">LOGIN BONUS</h1>
+    </header>
 
-    <!-- 🟢 スライド式メニューバー -->
-    <div id="sidebar" class="sidebar">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-        <a href="{% url 'index' %}"><i class="fas fa-home"></i> ホーム</a>
-        <a href="{% url 'rankings' %}"><i class="fas fa-trophy"></i> ランキング</a>
-        <a href="{% url 'analytics' %}"><i class="fas fa-chart-pie"></i> 分析</a>
-        <a href="{% url 'gacha' %}"><i class="fas fa-coins" style="color:#fbc02d;"></i> ガチャ</a>
-        <a href="{% url 'edit_profile' %}"><i class="fas fa-user-gear"></i> 設定</a>
-        <hr style="border-color:#333; margin:20px;">
-        <form action="{% url 'logout' %}" method="POST" id="logout-form" style="display:none;">{% csrf_token %}</form>
-        <a href="javascript:void(0);" onclick="document.getElementById('logout-form').submit();" style="color:#ff4757;"><i class="fas fa-sign-out-alt"></i> ログアウト</a>
-    </div>
-    <div id="overlay" class="overlay" onclick="closeNav()"></div>
+    <div class="container">
+        <div class="bonus-card">
+            <div class="bonus-header">
+                <h2>連続投稿ボーナス</h2>
+                <div>現在の連続記録</div>
+                <div class="streak-count">{{ user.profile.consecutive_post_days }} 日目</div>
+            </div>
 
-    <!-- 🟢 余白追加 -->
-    <main class="container" style="padding-top: 60px;">
-        <div class="gacha-container">
-            <div class="gacha-inner">
-                <h2>称号・アイコンガチャ</h2>
-                <div class="points">{{ points }} pt</div>
-                <div class="rates">100連は1回の通信でまとめて引きます。連打防止のため、処理中はボタンが止まります。</div>
-                <div class="result-box">
-                    {% if summary %}
-                    <div class="summary">
-                        {% for row in summary %}
-                        <span class="summary-chip"><span class="rarity-badge {{ row.rarity }}">{{ row.rarity }}</span> x {{ row.count }}</span>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                    {% if result_items %}
-                    <div class="result-grid">
-                        {% for item in result_items %}
-                        <div class="result-item-card {% if item.rarity == 'LR' or item.rarity == 'UR' %}has-aura{% endif %}">
-                            <div class="rarity-badge {{ item.rarity }}">{{ item.rarity }}</div>
-                            <div style="font-size:1rem;font-weight:bold;margin-top:5px;word-break:break-word;">{{ item.name }}</div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% else %}
-                    <div style="color:#999;"><i class="fas fa-box-open fa-3x"></i><br>ポイントを使って景品を引こう</div>
-                    {% endif %}
+            <div class="bonus-grid">
+                {% for day, pt in "1:1, 2:2, 3:4, 4:8, 5:16, 6:32"|slice:"," %}
+                <div class="day-box {% if user.profile.consecutive_post_days >= day %}claimed{% elif user.profile.consecutive_post_days == day|add:'-1' %}current{% endif %}">
+                    <div class="day-label">{{ day }}日目</div>
+                    <div class="pt-val">{{ pt }}pt</div>
+                    {% if user.profile.consecutive_post_days >= day %}<i class="fas fa-check-circle check-mark"></i>{% endif %}
                 </div>
-                {% if error %}<div class="error-msg">{{ error }}</div>{% endif %}
-                <form method="POST" class="btn-group" id="gacha-form">
-                    {% csrf_token %}
-                    <button type="submit" name="gacha_1" class="spin-btn" {% if points < 10 %}disabled{% endif %}>単発 10pt</button>
-                    <button type="submit" name="gacha_10" class="spin-btn spin-btn-10" {% if points < 100 %}disabled{% endif %}>10連 100pt</button>
-                    <button type="submit" name="gacha_100" class="spin-btn spin-btn-100" {% if points < 1000 %}disabled{% endif %}>100連 1000pt</button>
-                </form>
-                <a class="link-btn" href="{% url 'edit_profile' %}"><i class="fas fa-boxes-stacked"></i> 持ち物を整理する</a>
+                {% endfor %}
+
+                <div class="day-box day7 {% if user.profile.consecutive_post_days == 7 %}claimed{% elif user.profile.consecutive_post_days == 6 %}current{% endif %}">
+                    <div class="day-label">7日目達成ボーナス！</div>
+                    <div class="pt-val">64 pt</div>
+                    {% if user.profile.consecutive_post_days == 7 %}<i class="fas fa-check-circle check-mark"></i>{% endif %}
+                </div>
+            </div>
+
+            <div class="info-text">
+                <i class="fas fa-info-circle"></i> 1日1回、勉強記録をポストするとポイントがもらえます。<br>
+                連続でポストするほどもらえるポイントが倍増！<br>
+                <span style="color:#ef4444; font-weight:bold;">※過去の日付でポストしても連続記録にはなりません。</span>
             </div>
         </div>
-    </main>
+    </div>
 
-    <!-- 🟢 スッキリした黒統一のボトムナビゲーション -->
     <nav class="bottom-nav">
         <a href="{% url 'index' %}" class="nav-item"><i class="fas fa-home"></i></a>
         <a href="{% url 'rankings' %}" class="nav-item"><i class="fas fa-trophy"></i></a>
         <a href="{% url 'analytics' %}" class="nav-item"><i class="fas fa-chart-pie"></i></a>
-        <a href="{% url 'gacha' %}" class="nav-item active"><i class="fas fa-coins" style="color:#fbc02d;"></i></a>
-        <a href="{% url 'notifications' %}" class="nav-item" style="position:relative;">
-            <i class="fas fa-bell"></i>
-            {% if unread_count > 0 %}
-            <span class="badge" style="background:#ff4757; color:white; border-radius:50%; padding:2px 6px; font-size:0.7rem; position:absolute; top:-5px; right:-10px;">{{ unread_count }}</span>
-            {% endif %}
-        </a>
+        <a href="{% url 'gacha' %}" class="nav-item active"><i class="far fa-calendar-check" style="color:#4ade80;"></i></a>
+        <a href="{% url 'notifications' %}" class="nav-item"><i class="fas fa-bell"></i></a>
         <a href="{% url 'user_profile' user.username %}" class="nav-item nav-avatar">
-            {% if user.profile.icon %}<img src="{{ user.profile.icon }}" alt="icon">{% elif user.profile.icon_file %}<img src="{{ user.profile.icon_file.url }}" alt="icon">{% else %}<i class="fas fa-user-circle" style="font-size:32px;color:#ccc;"></i>{% endif %}
+            {% if user.profile.icon %}<img src="{{ user.profile.icon }}">{% else %}<i class="fas fa-user-circle" style="color:#ccc;"></i>{% endif %}
         </a>
     </nav>
-    <script>
-        function openNav(){document.getElementById("sidebar").style.width="250px";document.getElementById("overlay").style.display="block";}
-        function closeNav(){document.getElementById("sidebar").style.width="0";document.getElementById("overlay").style.display="none";}
-
-        const form = document.getElementById("gacha-form");
-        if (form) {
-            form.addEventListener("submit", () => {
-                setTimeout(() => {
-                    form.querySelectorAll("button").forEach((button) => {
-                        button.disabled = true;
-                        button.textContent = "処理中...";
-                    });
-                }, 10);
-            });
-        }
-    </script>
 </body>
 </html>
